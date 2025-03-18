@@ -1,6 +1,6 @@
 import MeshSource from "./MeshSource.ts";
 import { gl } from "../../main.ts";
-import { sizeof } from "../../webgl.ts";
+import { FLOAT_SIZE } from "../../webgl.ts";
 
 
 
@@ -32,7 +32,7 @@ export default class Mesh {
             vertexLayout.getVertexFloats(),
             gl.FLOAT,
             false,
-            vertexLayout.getTotal() * sizeof(gl.FLOAT),
+            vertexLayout.getTotal() * FLOAT_SIZE,
             0
         );
 
@@ -42,8 +42,8 @@ export default class Mesh {
             vertexLayout.getNormalFloats(),
             gl.FLOAT,
             false,
-            vertexLayout.getTotal() * sizeof(gl.FLOAT),
-            vertexLayout.getVertexFloats() * sizeof(gl.FLOAT)
+            vertexLayout.getTotal() * FLOAT_SIZE,
+            vertexLayout.getVertexFloats() * FLOAT_SIZE
         );
 
         gl.enableVertexAttribArray(2);
@@ -52,8 +52,8 @@ export default class Mesh {
             vertexLayout.getTextureCoordFloats(),
             gl.FLOAT,
             false,
-            vertexLayout.getTotal() * sizeof(gl.FLOAT),
-            (vertexLayout.getVertexFloats() + vertexLayout.getNormalFloats()) * sizeof(gl.FLOAT)
+            vertexLayout.getTotal() * FLOAT_SIZE,
+            (vertexLayout.getVertexFloats() + vertexLayout.getNormalFloats()) * FLOAT_SIZE
         );
 
         gl.bindVertexArray(null);

@@ -9,7 +9,7 @@ import { glm_mat4, glm_vec3 } from "../../types";
 export type ShaderCallback = (shader: Shader) => void;
 
 export default class Shader {
-    private static currentlyBound: WebGLProgram;
+    private static currentlyBound: Opt<Shader>;
 
     public static getShaderTypeName(type: GLenum): string {
         switch (type) {
@@ -132,7 +132,18 @@ export default class Shader {
     }
 
     public bind(): void {
+        if (this === Shader.currentlyBound) {
+            return;
+        }
+
+        if (is(Shader.currentlyBound)) {
+            Shader.currentlyBound.unbindCallback(Shader.currentlyBound);
+        }
+
+        Shader.currentlyBound = this;
         gl.useProgram(this.program);
+
+        this.bindCallback(this);
     }
 
     public getProgram(): WebGLProgram {
