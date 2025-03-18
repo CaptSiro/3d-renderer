@@ -4,8 +4,19 @@ import Path from "./resource/Path.ts";
 import ShaderSource from "./resource/shader/ShaderSource.ts";
 import Shader from "./resource/shader/Shader.ts";
 import Mesh from "./resource/mesh/Mesh.ts";
+import { float, Mat4 } from "./types";
+import Scene from "./object/Scene.ts";
+import GameObject from "./object/GameObject.ts";
+import Camera from "./component/Camera.ts";
+import Mathf from "./primitives/Mathf.ts";
+import { Quaternion } from "./primitives/Quaternion.ts";
+import Vector3 from "./primitives/Vector3.ts";
 
-declare const glm: any;
+
+
+declare global {
+    const glm: any;
+}
 
 
 
@@ -14,7 +25,7 @@ if (!is(viewport)) {
     throw new Error("Could not locate main viewport");
 }
 
-let projectionMatrix: any;
+export let projectionMatrix: Mat4;
 
 function resizeViewport() {
     if (!is(viewport)) {
@@ -43,37 +54,28 @@ window.addEventListener("resize", resizeViewport);
 
 
 
+export let mainScene: Scene = new Scene();
+
+const defaultCameraObject = new GameObject(
+    "default_camera",
+    mainScene
+);
+
+mainScene.setMainCamera(
+    defaultCameraObject.addComponent(Camera)
+);
+
+
+
 let suzanneMesh: Mesh;
 let teapotMesh: Mesh;
 let shader: Shader;
-
-const camera = {
-    speed: 1,
-    sensitivity: 0.05,
-
-    yaw: -90,
-    pitch: 0,
-
-    position: glm.vec3(0, 0, 0),
-    front: glm.vec3(0, 0, -1),
-    up: glm.vec3(0, 1, 0),
-    right: glm.vec3(0, 0, 0),
-    direction: glm.vec3(0, 0, 0),
-
-    view: undefined,
-};
-
-export function createMVP(model: any): any {
-    return projectionMatrix ["*"] (camera.view) ["*"] (model);
-}
 
 async function init() {
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.BACK);
-
-    camera.view = glm.lookAt(camera.position, camera.position ["+"] (camera.front), camera.up);
 
     // const cubeSource = await MeshSource.load(Path.from("/models/Cube.obj"));
     const suzanneSource = await MeshSource.load(Path.from("/models/Suzanne.obj"));
@@ -91,6 +93,11 @@ async function init() {
     );
 
     shader.onBind(() => {
+        const camera = mainScene.getMainCamera();
+        if (!is(camera)) {
+            return;
+        }
+
         shader.setVec3("ViewPosition", camera.position);
 
         shader.setVec3("light.position", glm.vec3(0, 3, 0));
@@ -117,42 +124,41 @@ async function update() {
     deltaTime = now - time;
     time = now;
 
+    const camera = mainScene.getMainCamera();
+    if (!is(camera)) {
+        return;
+    }
+
     const cameraSpeed = camera.speed * deltaTime;
-    let viewChange = false;
+    const cameraTransform = camera.transform;
+    const forward = glm.normalize(cameraTransform.getForward());
+    const up = glm.normalize(cameraTransform.getUp());
 
     if (keyboard["w"]) {
-        camera.position ["+="] (camera.front ["*"] (cameraSpeed));
-        viewChange = true;
+        camera.position ["+="] (forward ["*"] (cameraSpeed));
     }
 
     if (keyboard["s"]) {
-        camera.position ["-="] (camera.front ["*"] (cameraSpeed));
-        viewChange = true;
+        camera.position ["-="] (forward ["*"] (cameraSpeed));
     }
 
     if (keyboard["a"]) {
-        camera.position ["-="] (glm.normalize(glm.cross(camera.front, camera.up)) ["*"] (cameraSpeed));
-        viewChange = true;
+        camera.position ["-="] (glm.normalize(glm.cross(forward, Vector3.UP)) ["*"] (cameraSpeed));
     }
 
     if (keyboard["d"]) {
-        camera.position ["+="] (glm.normalize(glm.cross(camera.front, camera.up)) ["*"] (cameraSpeed));
-        viewChange = true;
+        camera.position ["+="] (glm.normalize(glm.cross(forward, Vector3.UP)) ["*"] (cameraSpeed));
     }
 
     if (keyboard[" "]) {
-        camera.position ["+="] (camera.up ["*"] (cameraSpeed));
-        viewChange = true;
+        camera.position ["+="] (up ["*"] (cameraSpeed));
     }
 
     if (keyboard["shift"]) {
-        camera.position ["-="] (camera.up ["*"] (cameraSpeed));
-        viewChange = true;
+        camera.position ["-="] (up ["*"] (cameraSpeed));
     }
 
-    if (viewChange) {
-        camera.view = glm.lookAt(camera.position, camera.position ["+"] (camera.front), camera.up);
-    }
+    mainScene.update();
 }
 
 async function render() {
@@ -162,15 +168,20 @@ async function render() {
         return;
     }
 
+    const camera = mainScene.getMainCamera();
+    if (!is(camera)) {
+        return;
+    }
+
     shader.bind();
 
     // suzanne
-    const suzanneModel = glm.translate(glm.vec3(-1, 0, -3))
+    const suzanneModel = glm.translate(glm.vec3(-1, 0, 3))
         ["*"] (glm.toMat4(glm.quat(0, 0, 0, 0)))
         ["*"] (glm.scale(glm.vec3(1, 1, 1)));
 
     shader.setMat4("Model", suzanneModel);
-    shader.setMat4("MVP", createMVP(suzanneModel));
+    shader.setMat4("MVP", camera.createMVP(suzanneModel));
 
     shader.setVec3("material.ambient", glm.vec3(0.0215, 0.1745, 0.0215));
     shader.setVec3("material.diffuse", glm.vec3(0.07568, 0.61424, 0.07568));
@@ -181,12 +192,12 @@ async function render() {
     suzanneMesh.draw();
 
     // teapot
-    const teapotModel = glm.translate(glm.vec3(1, 0, -3))
+    const teapotModel = glm.translate(glm.vec3(1, 0, 3))
         ["*"] (glm.toMat4(glm.quat(0, 0, 0, 0)))
         ["*"] (glm.scale(glm.vec3(1, 1, 1)));
 
     shader.setMat4("Model", teapotModel);
-    shader.setMat4("MVP", createMVP(teapotModel));
+    shader.setMat4("MVP", camera.createMVP(teapotModel));
 
     shader.setVec3("material.ambient", glm.vec3(0.25, 0.20725, 0.20725));
     shader.setVec3("material.diffuse", glm.vec3(1, 0.829, 0.829));
@@ -202,33 +213,29 @@ window.addEventListener("click", async () => {
     viewport.focus();
 });
 
+let yaw: float = 0;
+let pitch: float = 0;
 viewport.addEventListener("pointermove", event => {
     if (document.pointerLockElement !== viewport) {
         return;
     }
 
-    const offsetX = event.movementX * camera.sensitivity;
-    const offsetY = -event.movementY * camera.sensitivity;
-
-    camera.yaw += offsetX;
-    camera.pitch += offsetY;
-
-    if (camera.pitch > 89) {
-        camera.pitch = 89;
+    const camera = mainScene.getMainCamera();
+    if (!is(camera)) {
+        return;
     }
 
-    if (camera.pitch < -89) {
-        camera.pitch = -89;
-    }
+    const offsetX = -event.movementX * camera.sensitivity;
+    const offsetY = event.movementY * camera.sensitivity;
 
-    camera.direction.x = Math.cos(glm.radians(camera.yaw)) * Math.cos(glm.radians(camera.pitch));
-    camera.direction.y = Math.sin(glm.radians(camera.pitch));
-    camera.direction.z = Math.sin(glm.radians(camera.yaw)) * Math.cos(glm.radians(camera.pitch));
+    yaw += offsetX;
+    pitch += offsetY;
 
-    camera.front = glm.normalize(camera.direction);
-//    camera.front = glm.normalize(glm.vec3(cos(glm.radians(camera.yaw)) * cos(glm.radians(camera.pitch)), 1.0, sin(glm.radians(camera.yaw)) * cos(glm.radians(camera.pitch))));
+    pitch = Mathf.clamp(pitch, -90, 90);
 
-    camera.view = glm.lookAt(camera.position, camera.position ["+"] (camera.front), camera.up);
+    camera.transform.setRotation(
+        Quaternion.euler(glm.radians(pitch), glm.radians(yaw), 0)
+    );
 });
 
 window.addEventListener("keyup", event => {

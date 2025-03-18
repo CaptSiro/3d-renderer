@@ -3,6 +3,7 @@ import ObjParser from "./parser/ObjParser.ts";
 import MeshFileParser from "./parser/MeshFileParser.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
 import VertexLayout from "./VertexLayout.ts";
+import ResourceCache from "../ResourceCache.ts";
 
 
 
@@ -11,7 +12,12 @@ const parsers: Record<string, MeshFileParser> = {
 };
 
 export default class MeshSource {
-    public static async load(path: Path): Promise<MeshSource[]> {
+    private static cache: ResourceCache<Path, MeshSource[]> = new ResourceCache(
+        path => path.getLiteral(),
+        MeshSource.create
+    );
+
+    public static async create(path: Path): Promise<MeshSource[]> {
         const extension = path.getExtension();
 
         if (!is(extension)) {
@@ -23,6 +29,10 @@ export default class MeshSource {
         }
 
         return parsers[extension].parse(await path.read());
+    }
+
+    public static async load(path: Path): Promise<MeshSource[]> {
+        return MeshSource.cache.get(path);
     }
 
 

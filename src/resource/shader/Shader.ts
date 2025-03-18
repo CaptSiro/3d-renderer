@@ -2,7 +2,7 @@ import ShaderSource from "./ShaderSource.ts";
 import { gl } from "../../main.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
 import { Opt } from "../../../lib/types";
-import { glm_mat4, glm_vec3 } from "../../types";
+import { Mat4, Vec3 } from "../../types";
 
 
 
@@ -89,7 +89,7 @@ export default class Shader {
     private program: WebGLProgram;
     private bindCallback: ShaderCallback;
     private unbindCallback: ShaderCallback;
-    private uniforms: Map<string, WebGLUniformLocation>;
+    private uniforms: Map<string, WebGLUniformLocation | null>;
 
     constructor(
         source: ShaderSource
@@ -151,30 +151,30 @@ export default class Shader {
     }
 
 
-    public getUniformLocation(uniform: string) {
-        const location = this.uniforms.get(uniform);
-        if (is(location)) {
-            return location;
+    public getUniformLocation(uniform: string): WebGLUniformLocation | null {
+        const cached = this.uniforms.get(uniform);
+        if (is(cached)) {
+            return cached;
         }
 
-        const l = gl.getUniformLocation(this.program, uniform);
-        if (!is(l)) {
-            throw new Error(uniform + " does not exist in shader program");
+        if (cached === null) {
+            return null;
         }
 
-        this.uniforms.set(uniform, l);
-        return l;
+        const location = gl.getUniformLocation(this.program, uniform);
+        this.uniforms.set(uniform, location);
+        return location;
     }
 
     public setFloat(uniform: string, float: GLfloat) {
         gl.uniform1f(this.getUniformLocation(uniform), float);
     }
 
-    public setVec3(uniform: string, vector: glm_vec3) {
+    public setVec3(uniform: string, vector: Vec3) {
         gl.uniform3f(this.getUniformLocation(uniform), vector.x, vector.y, vector.z);
     }
 
-    public setMat4(uniform: string, matrix: glm_mat4, transpose: boolean = false) {
+    public setMat4(uniform: string, matrix: Mat4, transpose: boolean = false) {
         gl.uniformMatrix4fv(
             this.getUniformLocation(uniform),
             transpose,
