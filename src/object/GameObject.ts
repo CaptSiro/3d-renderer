@@ -8,17 +8,20 @@ import { is } from "../../lib/jsml/jsml.ts";
 
 
 export default class GameObject {
-    private components: Map<string, Component>;
-    private hasRenderer: boolean;
+    private isActive: boolean;
+    private readonly components: Map<string, Component>;
     private readonly _transform: Transform;
+    private renderer: Opt<MeshRenderer>;
+
+
 
     constructor(
         private _name: string,
         private scene: Scene,
         transform: Opt<Transform> = undefined,
     ) {
+        this.isActive = true;
         this.components = new Map<string, Component>();
-        this.hasRenderer = false;
 
         this._transform = is(transform)
             ? transform
@@ -30,9 +33,27 @@ export default class GameObject {
 
 
     public update(): void {
+        if (!this.isActive) {
+            return;
+        }
+
         for (const [_, component] of this.components) {
             component.update();
         }
+    }
+
+    public render(): void {
+        if (!this.isActive) {
+            return;
+        }
+
+        this.renderer?.draw();
+    }
+
+
+
+    public setActive(isActive: boolean): void {
+        this.isActive = isActive;
     }
 
     public get transform(): Transform {
@@ -51,14 +72,10 @@ export default class GameObject {
         return this._name;
     }
 
-    public isRenderAble(): boolean {
-        return this.hasRenderer
-    }
-
     public addComponent<C extends Component, Constructor extends new () => C>(componentClass: Constructor): C {
         const component = new componentClass();
         if (component instanceof MeshRenderer) {
-            this.hasRenderer = true;
+            this.renderer = component;
         }
 
         component.bind(this);

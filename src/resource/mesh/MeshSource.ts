@@ -4,6 +4,7 @@ import MeshFileParser from "./parser/MeshFileParser.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
 import VertexLayout from "./VertexLayout.ts";
 import ResourceCache from "../ResourceCache.ts";
+import MaterialSource from "../material/MaterialSource.ts";
 
 
 
@@ -28,7 +29,7 @@ export default class MeshSource {
             throw new Error("Extension is not supported");
         }
 
-        return parsers[extension].parse(await path.read());
+        return await parsers[extension].parse(await path.read());
     }
 
     public static async load(path: Path): Promise<MeshSource[]> {
@@ -40,7 +41,8 @@ export default class MeshSource {
     constructor(
         private data: Float32Array,
         private faceCount: number,
-        private vertexLayout: VertexLayout
+        private vertexLayout: VertexLayout,
+        private material: MaterialSource
     ) {}
 
 
@@ -55,5 +57,9 @@ export default class MeshSource {
 
     public getVertexLayout(): VertexLayout {
         return this.vertexLayout;
+    }
+
+    public getMaterialSource(): MaterialSource {
+        return this.material;
     }
 }

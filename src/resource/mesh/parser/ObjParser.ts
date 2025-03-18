@@ -2,6 +2,7 @@ import MeshSource from "../MeshSource.ts";
 import MeshFileParser from "./MeshFileParser.ts";
 import { OBJFile } from "../../../../lib/OBJFile.ts";
 import VertexLayout from "../VertexLayout.ts";
+import MaterialSource from "../../material/MaterialSource.ts";
 
 
 
@@ -17,13 +18,14 @@ const vertexLayout = new VertexLayout(
 
 
 export default class ObjParser implements MeshFileParser {
-    parse(content: string): MeshSource[] {
+    async parse(content: string): Promise<MeshSource[]> {
         // @ts-ignore
         const file = new OBJFile(content, 'model');
         const description = file.parse();
 
-        console.log(description)
+        console.log(description);
 
+        const material = await MaterialSource.load(MaterialSource.getDefaultMaterial());
         const models = [];
 
         for (const model of description.models) {
@@ -52,7 +54,12 @@ export default class ObjParser implements MeshFileParser {
                 }
             }
 
-            models.push(new MeshSource(data, model.faces.length, vertexLayout));
+            models.push(new MeshSource(
+                data,
+                model.faces.length,
+                vertexLayout,
+                material
+            ));
         }
 
         return models;

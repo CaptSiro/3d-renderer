@@ -3,6 +3,7 @@ import { gl } from "../../main.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
 import { Opt } from "../../../lib/types";
 import { Mat4, Vec3 } from "../../types";
+import ResourceCache from "../ResourceCache.ts";
 
 
 
@@ -10,6 +11,37 @@ export type ShaderCallback = (shader: Shader) => void;
 
 export default class Shader {
     private static currentlyBound: Opt<Shader>;
+    private static shaders: ResourceCache<ShaderSource, Shader> = new ResourceCache(
+        source => source.getName(),
+        Shader.create
+    );
+
+    public static create(source: ShaderSource): Shader {
+        const vertex = Shader.compile(gl.VERTEX_SHADER, source.getVertexCode());
+        if (!is(vertex)) {
+            throw new Error("Shader compilation error");
+        }
+
+        const fragment = Shader.compile(gl.FRAGMENT_SHADER, source.getFragmentCode());
+        if (!is(fragment)) {
+            throw new Error("Shader compilation error");
+        }
+
+        const program = Shader.link(vertex, fragment);
+
+        gl.deleteShader(fragment);
+        gl.deleteShader(vertex);
+
+        if (!is(program)) {
+            throw new Error("Shader program compilation error");
+        }
+
+        return new Shader(program);
+    }
+
+    public static async load(source: ShaderSource): Promise<Shader> {
+        return Shader.shaders.get(source);
+    }
 
     public static getShaderTypeName(type: GLenum): string {
         switch (type) {
@@ -86,34 +118,13 @@ export default class Shader {
 
 
 
-    private program: WebGLProgram;
     private bindCallback: ShaderCallback;
     private unbindCallback: ShaderCallback;
     private uniforms: Map<string, WebGLUniformLocation | null>;
 
     constructor(
-        source: ShaderSource
+        private program: WebGLProgram,
     ) {
-        const vertex = Shader.compile(gl.VERTEX_SHADER, source.getVertexCode());
-        if (!is(vertex)) {
-            throw new Error("Shader compilation error");
-        }
-
-        const fragment = Shader.compile(gl.FRAGMENT_SHADER, source.getFragmentCode());
-        if (!is(fragment)) {
-            throw new Error("Shader compilation error");
-        }
-
-        const program = Shader.link(vertex, fragment);
-
-        gl.deleteShader(fragment);
-        gl.deleteShader(vertex);
-
-        if (!is(program)) {
-            throw new Error("Shader program compilation error");
-        }
-
-        this.program = program;
         this.uniforms = new Map<string, WebGLUniformLocation>();
         this.bindCallback = () => {};
         this.unbindCallback = () => {};

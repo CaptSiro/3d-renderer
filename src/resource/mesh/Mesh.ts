@@ -1,6 +1,7 @@
 import MeshSource from "./MeshSource.ts";
 import { gl } from "../../main.ts";
 import { FLOAT_SIZE } from "../../webgl.ts";
+import Material from "../material/Material.ts";
 
 
 
@@ -8,12 +9,15 @@ export default class Mesh {
     private readonly vao: WebGLVertexArrayObject;
     private readonly vbo: WebGLBuffer;
     private readonly vertexCount: number;
+    private readonly material: Material;
 
 
 
     constructor(
         source: MeshSource
     ) {
+        this.material = new Material(source.getMaterialSource());
+
         const data = source.getData();
 
         const vertexLayout = source.getVertexLayout();
@@ -72,5 +76,9 @@ export default class Mesh {
     public delete(): void {
         gl.deleteVertexArray(this.vao);
         gl.deleteBuffer(this.vbo);
+    }
+
+    public getMaterial(): Material {
+        return this.material;
     }
 }

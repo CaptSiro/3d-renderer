@@ -26,10 +26,18 @@ export default class MaterialSource {
         return this.cache.get(path);
     }
 
+    public static getDefaultMaterial(): Path {
+        return Path.from("/materials/plastic-white.json");
+    }
+
+
+
     constructor(
         private data: MaterialShape
     ) {
     }
+
+
 
     public getData(): MaterialShape {
         return this.data;

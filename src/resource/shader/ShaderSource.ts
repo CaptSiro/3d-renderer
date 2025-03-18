@@ -10,15 +10,19 @@ type ShaderSourceArg = {
 
 export default class ShaderSource {
     private static cache: ResourceCache<ShaderSourceArg, ShaderSource> = new ResourceCache(
-        arg => arg.vertex.getLiteral() + arg.fragment.getLiteral(),
+        ShaderSource.stringifyArg,
         ShaderSource.create
     );
+
+    public static stringifyArg(arg: ShaderSourceArg): string {
+        return arg.vertex.getLiteral() + arg.fragment.getLiteral();
+    }
 
     public static async create(arg: ShaderSourceArg): Promise<ShaderSource> {
         const vert = await arg.vertex.read();
         const frag = await arg.fragment.read();
 
-        return new ShaderSource(vert, frag);
+        return new ShaderSource(ShaderSource.stringifyArg(arg), vert, frag);
     }
 
     public static async load(vertex: Path, fragment: Path): Promise<ShaderSource> {
@@ -28,6 +32,7 @@ export default class ShaderSource {
 
 
     constructor(
+        private name: string,
         private vertexCode: string,
         private fragmentCode: string
     ) {
@@ -39,5 +44,9 @@ export default class ShaderSource {
 
     public getFragmentCode(): string {
         return this.fragmentCode;
+    }
+
+    public getName(): string {
+        return this.name;
     }
 }

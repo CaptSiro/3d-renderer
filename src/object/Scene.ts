@@ -1,11 +1,15 @@
 import GameObject from "./GameObject.ts";
 import Camera from "../component/Camera.ts";
 import { Opt } from "../../lib/types";
+import Path from "../resource/Path.ts";
+import MeshSource from "../resource/mesh/MeshSource.ts";
+import ShaderSource from "../resource/shader/ShaderSource.ts";
+import MeshRenderer from "../component/MeshRenderer.ts";
 
 
 
 export default class Scene {
-    private gameObjects: Map<string, GameObject>;
+    private readonly gameObjects: Map<string, GameObject>;
     private mainCamera: Opt<Camera>;
 
     constructor() {
@@ -20,6 +24,14 @@ export default class Scene {
         }
     }
 
+    public render(): void {
+        for (const [_, gameObject] of this.gameObjects) {
+            gameObject.render();
+        }
+    }
+
+
+
     public addGameObject(gameObject: GameObject): void {
         this.gameObjects.set(gameObject.name, gameObject);
     }
@@ -30,5 +42,20 @@ export default class Scene {
 
     public setMainCamera(camera: Camera): void {
         this.mainCamera = camera;
+    }
+
+    public async loadGameObject(name: string, path: Path): Promise<GameObject> {
+        const gameObject = new GameObject(name, this);
+
+        const meshSources = await MeshSource.load(path);
+        const shaderSource = await ShaderSource.load(
+            Path.from("/shaders/base.vert"),
+            Path.from("/shaders/base.frag")
+        );
+
+        const meshRenderer = gameObject.addComponent(MeshRenderer) as MeshRenderer;
+        await meshRenderer.init(meshSources, shaderSource);
+
+        return gameObject;
     }
 }
