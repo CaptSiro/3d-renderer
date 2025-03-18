@@ -266,8 +266,7 @@ export const OBJFile = function OBJFile () {
         throw 'Smoothing group statements must have exactly 1 argument (eg. s <number|off>)';
       }
 
-      var groupNumber = lineItems[1].toLowerCase() == 'off' ? 0 : parseInt(lineItems[1]);
-      this.smoothingGroup = groupNumber;
+      this.smoothingGroup = lineItems[1].toLowerCase() == 'off' ? 0 : parseInt(lineItems[1]);
     }
   }]);
 

@@ -32,7 +32,7 @@ export default class Mesh {
             vertexLayout.getVertexFloats(),
             gl.FLOAT,
             false,
-            vertexLayout.getTotal(),
+            vertexLayout.getTotal() * sizeof(gl.FLOAT),
             0
         );
 
@@ -42,7 +42,7 @@ export default class Mesh {
             vertexLayout.getNormalFloats(),
             gl.FLOAT,
             false,
-            vertexLayout.getTotal(),
+            vertexLayout.getTotal() * sizeof(gl.FLOAT),
             vertexLayout.getVertexFloats() * sizeof(gl.FLOAT)
         );
 
@@ -52,7 +52,7 @@ export default class Mesh {
             vertexLayout.getTextureCoordFloats(),
             gl.FLOAT,
             false,
-            vertexLayout.getTotal(),
+            vertexLayout.getTotal() * sizeof(gl.FLOAT),
             (vertexLayout.getVertexFloats() + vertexLayout.getNormalFloats()) * sizeof(gl.FLOAT)
         );
 

@@ -22,15 +22,14 @@ function resizeViewport() {
     }
 
     const rect = viewport.getBoundingClientRect();
-    viewport.width = rect.width;
-    viewport.height = rect.height;
+    viewport.width = Math.floor(rect.width);
+    viewport.height = Math.floor(rect.height);
+
+    gl.viewport(0, 0, viewport.width, viewport.height);
 
     const aspectRatio = rect.width / rect.height;
     projectionMatrix = glm.perspective(glm.radians(35.0), aspectRatio, 0.1, 100);
 }
-
-resizeViewport();
-window.addEventListener("resize", resizeViewport);
 
 const context = viewport?.getContext("webgl2");
 if (!is(context)) {
@@ -39,9 +38,12 @@ if (!is(context)) {
 
 export const gl = context;
 
+resizeViewport();
+window.addEventListener("resize", resizeViewport);
 
 
-let suzaneMesh: Mesh;
+
+let suzanneMesh: Mesh;
 let teapotMesh: Mesh;
 let shader: Shader;
 
@@ -66,6 +68,11 @@ export function createMVP(model: any): any {
 }
 
 async function main() {
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
+    gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.BACK);
+
     camera.view = glm.lookAt(camera.position, camera.position ["+"] (camera.front), camera.up);
 
     // const cubeSource = await MeshSource.load(Path.from("/models/Cube.obj"));
@@ -76,7 +83,7 @@ async function main() {
     const suzanne = suzanneSource.map(source => new Mesh(source));
     const teapot = teapotSource.map(source => new Mesh(source));
 
-    suzaneMesh = suzanne[0];
+    suzanneMesh = suzanne[0];
     teapotMesh = teapot[0];
 
     shader = new Shader(
@@ -110,7 +117,7 @@ async function render() {
     shader.setVec3("light.specular", glm.vec3(1.0, 1.0, 1.0));
 
     // suzanne
-    const suzanneModel = glm.translate(glm.vec3(-1, -1, -3))
+    const suzanneModel = glm.translate(glm.vec3(-1, 0, -3))
         ["*"] (glm.toMat4(glm.quat(0, 0, 0, 0)))
         ["*"] (glm.scale(glm.vec3(1, 1, 1)));
 
@@ -122,11 +129,11 @@ async function render() {
     shader.setVec3("material.specular", glm.vec3(0.332741, 0.328634, 0.346435));
     shader.setFloat("material.shininess", 0.3 * 128);
 
-    suzaneMesh.bind();
-    suzaneMesh.draw();
+    suzanneMesh.bind();
+    suzanneMesh.draw();
 
     // teapot
-    const teapotModel = glm.translate(glm.vec3(1, -1, -3))
+    const teapotModel = glm.translate(glm.vec3(1, 0, -3))
         ["*"] (glm.toMat4(glm.quat(0, 0, 0, 0)))
         ["*"] (glm.scale(glm.vec3(1, 1, 1)));
 
