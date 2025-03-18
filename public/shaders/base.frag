@@ -38,12 +38,16 @@ void main()
 
     vec3 diffuse = light.diffuse * (alpha * material.diffuse);
 
-    vec3 viewDir = normalize(ViewPosition - FragmentPosition);
-    vec3 reflectDir = reflect(-lightDirection, norm);
+    vec3 viewDirection = normalize(ViewPosition - FragmentPosition);
+    vec3 reflectDirection = reflect(-lightDirection, norm);
 
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), max(material.shininess, 1.0));
+    float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), max(material.shininess, 1.0));
     vec3 specular = light.specular * (spec * material.specular);
 
-    vec3 result = ambient + diffuse + specular;
+    vec3 result = ambient + diffuse;
+    if (dot(Normal, lightDirection) > 0.0) {
+        result += specular;
+    }
+
     OutColor = vec4(result, 1.0);
 }
