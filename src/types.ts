@@ -1,4 +1,5 @@
 export type float = number;
+export type int = number;
 
 export type Vec3 = {
     x: float,
@@ -16,3 +17,9 @@ export type Quat = {
 export type Mat4 = {
     elements: Float32Array
 } | any;
+
+export type Rgb = {
+    red: number,
+    green: number,
+    blue: number
+};

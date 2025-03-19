@@ -77,8 +77,10 @@ async function init() {
         .setPosition(glm.vec3(1, 0, 3))
         .setRotation(Quaternion.eulerDegrees(0, 180, 0));
 
-    const teapot = await mainScene.loadGameObject("teapot", Path.from("/models/Teapot.obj"));
-    teapot.transform.setPosition(glm.vec3(-1, 0, 3));
+    const teapot = await mainScene.loadGameObject("teapot", Path.from("/models/Cube.obj"));
+    teapot.transform
+        .setPosition(glm.vec3(-1, 0, 3))
+        .setScale(glm.vec3(0.5, 0.5, 0.5));
 
 }
 
@@ -140,39 +142,6 @@ async function render() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     mainScene.render();
-
-    // shader.bind();
-    //
-    // // suzanne
-    // const suzanneModel = glm.translate(glm.vec3(-1, 0, 3))
-    //     ["*"] (glm.toMat4(glm.quat(0, 0, 0, 0)))
-    //     ["*"] (glm.scale(glm.vec3(1, 1, 1)));
-    //
-    // shader.setMat4("Model", suzanneModel);
-    // shader.setMat4("MVP", camera.createMVP(suzanneModel));
-    //
-    // suzanneMesh
-    //     .getMaterial()
-    //     .bind(shader, "material");
-    //
-    // suzanneMesh.bind();
-    // suzanneMesh.draw();
-    //
-    // // teapot
-    // const teapotModel = glm.translate(glm.vec3(1, 0, 3))
-    //     ["*"] (glm.toMat4(glm.quat(0, 0, 0, 0)))
-    //     ["*"] (glm.scale(glm.vec3(1, 1, 1)));
-    //
-    // shader.setMat4("Model", teapotModel);
-    // shader.setMat4("MVP", camera.createMVP(teapotModel));
-    //
-    // shader.setVec3("material.ambient", glm.vec3(0.25, 0.20725, 0.20725));
-    // shader.setVec3("material.diffuse", glm.vec3(1, 0.829, 0.829));
-    // shader.setVec3("material.specular", glm.vec3(0.296648, 0.296648, 0.296648));
-    // shader.setFloat("material.shininess", 0);
-    //
-    // teapotMesh.bind();
-    // teapotMesh.draw();
 }
 
 window.addEventListener("click", async () => {

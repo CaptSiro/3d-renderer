@@ -32,9 +32,7 @@ export default class MeshRenderer extends Component {
         this.shader.setMat4("MVP", camera.createMVP(model));
 
         for (const mesh of this.meshes) {
-            mesh
-                .getMaterial()
-                .bind(this.shader, "material");
+            mesh.bindMaterials(this.shader, "materials");
 
             mesh.bind();
             mesh.draw();

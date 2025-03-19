@@ -1,7 +1,8 @@
 import MeshSource from "../MeshSource.ts";
+import Path from "../../Path.ts";
 
 
 
 export default interface MeshFileParser {
-    parse(content: string): Promise<MeshSource[]>;
+    parse(path: Path, content: string): Promise<MeshSource[]>;
 }

@@ -1,27 +1,39 @@
+import { int } from "../../types.ts";
+
+
+
 export default class VertexLayout {
-    private total: number;
+    private readonly total: int;
 
     constructor(
-        private readonly vertexFloats: number,
-        private readonly normalFloats: number,
-        private readonly textureCoordFloats: number,
+        private readonly vertexFloats: int,
+        private readonly normalFloats: int,
+        private readonly textureCoordFloats: int,
+        private readonly materialIndexFloats: int,
     ) {
-        this.total = this.vertexFloats + this.normalFloats + this.textureCoordFloats;
+        this.total = this.vertexFloats
+            + this.normalFloats
+            + this.textureCoordFloats
+            + this.materialIndexFloats;
     }
 
-    public getVertexFloats(): number {
+    public getMaterialIndexFloats(): int {
+        return this.materialIndexFloats;
+    }
+
+    public getVertexFloats(): int {
         return this.vertexFloats;
     }
 
-    public getNormalFloats(): number {
-        return this.vertexFloats;
+    public getNormalFloats(): int {
+        return this.normalFloats;
     }
 
-    public getTextureCoordFloats(): number {
-        return this.vertexFloats;
+    public getTextureCoordFloats(): int {
+        return this.textureCoordFloats;
     }
 
-    public getTotal(): number {
+    public getTotal(): int {
         return this.total;
     }
 }

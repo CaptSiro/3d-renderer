@@ -155,6 +155,10 @@ export default class Shader {
         gl.useProgram(this.program);
 
         this.bindCallback(this);
+
+        setTimeout(() => {
+            console.log(this.uniforms);
+        }, 1000);
     }
 
     public getProgram(): WebGLProgram {
