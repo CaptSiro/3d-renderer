@@ -6,6 +6,7 @@ import { deleteBuffer, deleteVertexArray, lineVertexLayout } from "../../webgl.t
 import ShaderSource from "../../resource/shader/ShaderSource.ts";
 import Shader from "../../resource/shader/Shader.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
+import { Vec3 } from "../../types.ts";
 
 
 
@@ -16,6 +17,8 @@ export default class BoundingBoxRenderer extends Component {
     private _vbo: Opt<WebGLBuffer>;
     private _ebo: Opt<WebGLBuffer>;
     private _shader: Opt<Shader>;
+
+    public color: Vec3 = boundingBoxColor;
 
 
 
@@ -41,7 +44,7 @@ export default class BoundingBoxRenderer extends Component {
         this._shader.bind();
 
         this._shader.setMat4("MVP", camera.createMvp(this.gameObject.transform.getMatrix()));
-        this._shader.setVec3("Color", boundingBoxColor);
+        this._shader.setVec3("Color", this.color);
 
         gl.bindVertexArray(this._vao);
         gl.bindBuffer(gl.ARRAY_BUFFER, this._vbo);

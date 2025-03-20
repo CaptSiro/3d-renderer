@@ -56,7 +56,7 @@ export default class MeshRenderer extends Component implements Renderer {
         this._boundingBoxRenderer.draw();
     }
 
-    getBoundingBox(): Opt<BoundingBox> {
+    public getBoundingBox(): Opt<BoundingBox> {
         return this._boundingBox;
     }
 

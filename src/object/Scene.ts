@@ -19,13 +19,13 @@ export default class Scene {
 
 
     public update(): void {
-        for (const [_, gameObject] of this.gameObjects) {
+        for (const gameObject of this.gameObjects.values()) {
             gameObject.update();
         }
     }
 
     public render(): void {
-        for (const [_, gameObject] of this.gameObjects) {
+        for (const gameObject of this.gameObjects.values()) {
             gameObject.render();
         }
     }
@@ -38,6 +38,10 @@ export default class Scene {
 
     public deleteGameObject(gameObject: GameObject): void {
         this.gameObjects.delete(gameObject.name);
+    }
+
+    public getGameObjects(): MapIterator<GameObject> {
+        return this.gameObjects.values();
     }
 
     public getMainCamera(): Opt<Camera> {

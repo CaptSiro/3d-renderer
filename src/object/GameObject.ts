@@ -37,7 +37,7 @@ export default class GameObject {
             return;
         }
 
-        for (const [_, component] of this.components) {
+        for (const component of this.components.values()) {
             component.update();
         }
     }
@@ -53,7 +53,7 @@ export default class GameObject {
     public delete(): void {
         this.setActive(false);
 
-        for (const [_, component] of this.components) {
+        for (const component of this.components.values()) {
             component.delete();
         }
 
@@ -100,7 +100,7 @@ export default class GameObject {
     }
 
     public findComponent(predicate: (component: Component) => boolean): Opt<Component> {
-        for (const [_, component] of this.components) {
+        for (const component of this.components.values()) {
             if (predicate(component)) {
                 return component;
             }

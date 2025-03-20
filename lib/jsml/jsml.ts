@@ -1,5 +1,6 @@
 import addContent from "./add-content.js";
 import addProps from "./add-props.js";
+import { Opt } from "../types.ts";
 
 
 
@@ -58,4 +59,12 @@ export function $$(query: string, root: HTMLElement|Document = document): NodeLi
 
 export function is<T>(x: T|null|undefined): x is T {
     return x !== undefined && x !== null;
+}
+
+export function assert<T>(x: Opt<T>): T {
+    if (!is(x)) {
+        throw new Error("Is-Assertion failed x does not have defined value");
+    }
+
+    return x;
 }

@@ -1,15 +1,22 @@
 export type float = number;
 export type int = number;
 
+export type Vec2 = {
+    x: float,
+    y: float,
+} | any;
+
 export type Vec3 = {
     x: float,
     y: float,
     z: float,
 } | any;
 
-export type Vec2 = {
+export type Vec4 = {
     x: float,
     y: float,
+    z: float,
+    w: float,
 } | any;
 
 export type Quat = {

@@ -1,4 +1,4 @@
-import { $, is } from "../lib/jsml/jsml.ts";
+import { $, assert, is } from "../lib/jsml/jsml.ts";
 import Path from "./resource/Path.ts";
 import { float, Mat4 } from "./types";
 import Scene from "./object/Scene.ts";
@@ -9,6 +9,7 @@ import { Quaternion } from "./primitives/Quaternion.ts";
 import Vector3 from "./primitives/Vector3.ts";
 import MaterialSource from "./resource/material/MaterialSource.ts";
 import { RayRenderer } from "./component/renderer/RayRenderer.ts";
+import BoundingBoxRenderer from "./component/renderer/BoundingBoxRenderer.ts";
 
 
 
@@ -82,7 +83,7 @@ async function init() {
     const suzanne = await mainScene.loadGameObject("suzanne", Path.from("/models/Suzanne.obj"));
     suzanne.transform
         .setPosition(glm.vec3(1, 0, 3))
-        .setRotation(Quaternion.eulerDegrees(0, 180, 0));
+        .setRotation(Quaternion.eulerDegrees(-30, 180, 60));
 
     const teapot = await mainScene.loadGameObject("teapot", Path.from("/models/Cube.obj"));
     teapot.transform
@@ -153,13 +154,22 @@ async function render() {
 }
 
 window.addEventListener("click", async (event) => {
-    const camera = mainScene.getMainCamera();
-    if (is(camera)) {
-        const mouseRay = camera.screenPositionToWorldRay(glm.vec2(event.clientX, event.clientY));
-        ray.setRay(mouseRay.getStart(), mouseRay.getDirection());
-        ray.setColor(glm.vec3(1.0, 0.3, 0.3));
-    }
-    
+    // const camera = mainScene.getMainCamera();
+    // if (is(camera)) {
+    //     const mouseRay = camera.screenPositionToWorldRay(glm.vec2(event.clientX, event.clientY));
+    //     ray.setRay(mouseRay.getStart(), mouseRay.getDirection());
+    //     ray.setColor(glm.vec3(1.0, 0.3, 0.3));
+    //
+    //     const hit = mouseRay.cast(mainScene);
+    //     if (!is(hit)) {
+    //         console.log('Ray did not hit anything');
+    //     } else {
+    //         const bb = assert(hit.getComponent(BoundingBoxRenderer));
+    //         bb.color = glm.vec3(0.3, 0.3, 1.0);
+    //         console.log('Hit ', hit.name);
+    //     }
+    // }
+
     await _viewport.requestPointerLock();
     _viewport.focus();
 });
