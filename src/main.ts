@@ -1,4 +1,4 @@
-import { $, assert, is } from "../lib/jsml/jsml.ts";
+import { $, is } from "../lib/jsml/jsml.ts";
 import Path from "./resource/Path.ts";
 import { float, Mat4 } from "./types";
 import Scene from "./object/Scene.ts";
@@ -9,7 +9,6 @@ import { Quaternion } from "./primitives/Quaternion.ts";
 import Vector3 from "./primitives/Vector3.ts";
 import MaterialSource from "./resource/material/MaterialSource.ts";
 import { RayRenderer } from "./component/renderer/RayRenderer.ts";
-import BoundingBoxRenderer from "./component/renderer/BoundingBoxRenderer.ts";
 
 
 
@@ -68,7 +67,8 @@ mainScene.setMainCamera(
 
 
 const rayGameObject = new GameObject("ray", mainScene);
-const ray = rayGameObject.addComponent(RayRenderer);
+// const ray =
+    rayGameObject.addComponent(RayRenderer);
 
 
 
@@ -153,7 +153,7 @@ async function render() {
     mainScene.render();
 }
 
-window.addEventListener("click", async (event) => {
+window.addEventListener("click", async () => {
     // const camera = mainScene.getMainCamera();
     // if (is(camera)) {
     //     const mouseRay = camera.screenPositionToWorldRay(glm.vec2(event.clientX, event.clientY));

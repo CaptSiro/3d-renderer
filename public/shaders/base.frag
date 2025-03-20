@@ -46,7 +46,7 @@ void main()
     vec3 viewDirection = normalize(ViewPosition - FragmentPosition);
     vec3 reflectDirection = reflect(-lightDirection, norm);
 
-    float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), max(materials[materialIndex].shininess, 1.0));
+    float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), max(materials[materialIndex].shininess * 128.0, 1.0));
     vec3 specular = light.specular * (spec * materials[materialIndex].specular);
 
     vec3 result = ambient + diffuse;

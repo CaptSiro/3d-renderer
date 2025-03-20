@@ -143,6 +143,7 @@ export class MTLFile {
     const newMaterial = {
       name: name,
       illum: 0,
+      Ns: 32,
       Ka: {
         method: 'rgb',
         red: 0,
@@ -290,7 +291,11 @@ export class MTLFile {
   // Defines how focused the specular highlight is,
   // typically in the range of 0 to 1000.
   _parseNs(lineItems) {
-    this._notImplemented('Ns');
+    if (lineItems.length < 2) {
+      this._fileError('to few arguments, expected: Ns keyword followed by: f');
+    }
+
+    this._getCurrentMaterial().Ns = parseFloat(lineItems[1]);
   }
 
   _parseNi(lineItems) {

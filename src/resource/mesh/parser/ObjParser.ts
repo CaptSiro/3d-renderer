@@ -85,6 +85,8 @@ export default class ObjParser implements MeshFileParser {
                 }
             }
 
+            console.log(materialSources);
+
             models.push(new MeshSource(
                 data,
                 model.faces.length,

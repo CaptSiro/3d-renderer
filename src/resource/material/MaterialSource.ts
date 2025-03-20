@@ -57,7 +57,7 @@ export default class MaterialSource {
             ambient,
             diffuse: MaterialSource.rgbToFloatArray(description.Kd),
             specular: MaterialSource.rgbToFloatArray(description.Ks),
-            shininess: description.Ns ?? 32
+            shininess: (description.Ns ?? 250) / 1000
         });
     }
 
