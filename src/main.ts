@@ -94,11 +94,12 @@ async function init() {
 export let time: number = 0;
 export let deltaTime: number = 0;
 
-const keyboard: Record<string, boolean> = {
+export const keyboard: Record<string, boolean> = {
     w: false,
     a: false,
     s: false,
     d: false,
+    f: false,
     " ": false,
     "shift": false,
 }
@@ -151,7 +152,14 @@ async function render() {
     mainScene.render();
 }
 
-window.addEventListener("click", async () => {
+window.addEventListener("click", async (event) => {
+    const camera = mainScene.getMainCamera();
+    if (is(camera)) {
+        const mouseRay = camera.screenPositionToWorldRay(glm.vec2(event.clientX, event.clientY));
+        ray.setRay(mouseRay.getStart(), mouseRay.getDirection());
+        ray.setColor(glm.vec3(1.0, 0.3, 0.3));
+    }
+    
     await _viewport.requestPointerLock();
     _viewport.focus();
 });
@@ -165,9 +173,6 @@ _viewport.addEventListener("pointermove", event => {
     }
 
     if (document.pointerLockElement !== _viewport) {
-        const mouseRay = camera.screenPositionToWorldRay(glm.vec2(event.clientX, event.clientY));
-        ray.setRay(mouseRay.getStart(), mouseRay.getDirection());
-        ray.setColor(glm.vec3(1.0, 0.3, 0.3));
         return;
     }
 
@@ -185,11 +190,25 @@ _viewport.addEventListener("pointermove", event => {
 });
 
 window.addEventListener("keyup", event => {
+    if (event.key.toLowerCase() === 'f') {
+        return;
+    }
+
     keyboard[event.key.toLowerCase()] = false;
 });
 
 window.addEventListener("keydown", event => {
+    if (event.key.toLowerCase() === 'f') {
+        return;
+    }
+
     keyboard[event.key.toLowerCase()] = true;
+});
+
+window.addEventListener("keypress", event => {
+    if (event.key.toLowerCase() === 'f') {
+        keyboard.f = !keyboard.f;
+    }
 });
 
 function frameCallback() {

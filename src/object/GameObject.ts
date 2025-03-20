@@ -98,4 +98,14 @@ export default class GameObject {
     public getComponent<T extends new () => Component>(componentClass: T): Opt<InstanceType<T>> {
         return this.components.get(componentClass.name) as Opt<InstanceType<T>>;
     }
+
+    public findComponent(predicate: (component: Component) => boolean): Opt<Component> {
+        for (const [_, component] of this.components) {
+            if (predicate(component)) {
+                return component;
+            }
+        }
+
+        return null;
+    }
 }

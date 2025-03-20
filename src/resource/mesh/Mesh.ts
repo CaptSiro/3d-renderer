@@ -4,6 +4,7 @@ import { FLOAT_SIZE } from "../../webgl.ts";
 import Material from "../material/Material.ts";
 import { int } from "../../types.ts";
 import Shader from "../shader/Shader.ts";
+import BoundingBox from "../../primitives/BoundingBox.ts";
 
 
 
@@ -13,19 +14,22 @@ export default class Mesh {
     private readonly vertexCount: number;
 
     private readonly materials: Map<string, Material>;
-    private readonly matersialIndexes: Map<string, int>;
+    private readonly materialIndexes: Map<string, int>;
+    private readonly boundingBox: BoundingBox;
 
 
 
     constructor(
         source: MeshSource
     ) {
+        this.boundingBox = source.getBoundingBox();
+
         this.materials = new Map<string, Material>();
         for (const [name, materialSource] of source.getMaterialSources()) {
             this.materials.set(name, new Material(materialSource));
         }
 
-        this.matersialIndexes = source.getMaterialIndexes();
+        this.materialIndexes = source.getMaterialIndexes();
 
         const data = source.getData();
 
@@ -106,7 +110,11 @@ export default class Mesh {
 
     public bindMaterials(shader: Shader, staticArray: string): void {
         for (const [name, material] of this.materials) {
-            material.bind(shader, `${staticArray}[${this.matersialIndexes.get(name) ?? 0}]`);
+            material.bind(shader, `${staticArray}[${this.materialIndexes.get(name) ?? 0}]`);
         }
+    }
+
+    public getBoundingBox(): BoundingBox {
+        return this.boundingBox;
     }
 }

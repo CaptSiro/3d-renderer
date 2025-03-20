@@ -3,21 +3,26 @@ import { Opt } from "../../../lib/types.ts";
 import Shader from "../../resource/shader/Shader.ts";
 import Mesh from "../../resource/mesh/Mesh.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
-import { mainScene } from "../../main.ts";
+import { keyboard, mainScene } from "../../main.ts";
 import MeshSource from "../../resource/mesh/MeshSource.ts";
 import ShaderSource from "../../resource/shader/ShaderSource.ts";
 import Renderer from "./Renderer.ts";
+import BoundingBox from "../../primitives/BoundingBox.ts";
+import BoundingBoxRenderer from "./BoundingBoxRenderer.ts";
 
 
 
 export default class MeshRenderer extends Component implements Renderer {
-    private shader: Opt<Shader>;
-    private meshes: Opt<Mesh[]>;
+    private _shader: Opt<Shader>;
+    private _meshes: Opt<Mesh[]>;
+    private _boundingBox: Opt<BoundingBox>;
+    private _boundingBoxRenderer: Opt<BoundingBoxRenderer>;
 
 
 
+    // Renderer
     public draw(): void {
-        if (!is(this.shader) || !is(this.meshes)) {
+        if (!is(this._shader) || !is(this._meshes)) {
             return;
         }
 
@@ -26,32 +31,56 @@ export default class MeshRenderer extends Component implements Renderer {
             return;
         }
 
-        this.shader.bind();
+        this._shader.bind();
 
         const model = this.gameObject.transform.getMatrix();
-        this.shader.setMat4("Model", model);
-        this.shader.setMat4("MVP", camera.createMvp(model));
+        this._shader.setMat4("Model", model);
+        this._shader.setMat4("MVP", camera.createMvp(model));
 
-        for (const mesh of this.meshes) {
-            mesh.bindMaterials(this.shader, "materials");
+        for (const mesh of this._meshes) {
+            mesh.bindMaterials(this._shader, "materials");
 
             mesh.bind();
             mesh.draw();
         }
-    }
 
-    public delete() {
-        if (!is(this.meshes)) {
+        if (!keyboard.f || !is(this._boundingBox)) {
             return;
         }
 
-        for (const mesh of this.meshes) {
+        if (!is(this._boundingBoxRenderer)) {
+            this._boundingBoxRenderer = this.gameObject.addComponent(BoundingBoxRenderer);
+            this._boundingBoxRenderer.init(this._boundingBox).then();
+        }
+
+        this._boundingBoxRenderer.draw();
+    }
+
+    getBoundingBox(): Opt<BoundingBox> {
+        return this._boundingBox;
+    }
+
+    // Component
+    public delete() {
+        if (!is(this._meshes)) {
+            return;
+        }
+
+        for (const mesh of this._meshes) {
             mesh.delete();
         }
     }
 
+
+
     public async init(meshSources: MeshSource[], shaderSource: ShaderSource): Promise<void> {
         const meshes = meshSources.map(x => new Mesh(x));
+        const boundingBox = BoundingBox.initial();
+
+        for (const mesh of meshes) {
+            boundingBox.merge(mesh.getBoundingBox());
+        }
+
         const shader = await Shader.load(shaderSource);
 
         shader.onBind(() => {
@@ -68,7 +97,8 @@ export default class MeshRenderer extends Component implements Renderer {
             shader.setVec3("light.specular", glm.vec3(1.0, 1.0, 1.0));
         });
 
-        this.meshes = meshes;
-        this.shader = shader;
+        this._meshes = meshes;
+        this._shader = shader;
+        this._boundingBox = boundingBox;
     }
 }

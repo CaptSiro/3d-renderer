@@ -1,23 +1,14 @@
 import MeshSource from "../MeshSource.ts";
 import MeshFileParser from "./MeshFileParser.ts";
 import { OBJFile } from "../../../../lib/OBJFile.ts";
-import VertexLayout from "../VertexLayout.ts";
 import MaterialSource from "../../material/MaterialSource.ts";
 import Path from "../../Path.ts";
 import { is } from "../../../../lib/jsml/jsml.ts";
 import { MTLFile } from "../../../../lib/MTLFile.ts";
 import { int, Vec3 } from "../../../types.ts";
-import { LAYOUT_INDEX, LAYOUT_NORMAL3, LAYOUT_TEX_COORD2, LAYOUT_VERTEX3, MAX_MATERIALS } from "../../../webgl.ts";
 import BoundingBox from "../../../primitives/BoundingBox.ts";
-
-
-
-const vertexLayout = new VertexLayout(
-    LAYOUT_VERTEX3,
-    LAYOUT_NORMAL3,
-    LAYOUT_TEX_COORD2,
-    LAYOUT_INDEX,
-);
+import Vector3 from "../../../primitives/Vector3.ts";
+import { MAX_MATERIALS, meshVertexLayout } from "../../../webgl.ts";
 
 
 
@@ -54,11 +45,11 @@ export default class ObjParser implements MeshFileParser {
         const models = [];
 
         for (const model of description.models) {
-            const data = new Float32Array(3 * model.faces.length * vertexLayout.getTotal());
+            const data = new Float32Array(3 * model.faces.length * meshVertexLayout.getTotal());
             let dataIndex = 0;
 
-            const low: Vec3 = glm.vec3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-            const high: Vec3 = glm.vec3(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+            const low: Vec3 = Vector3.MAX;
+            const high: Vec3 = Vector3.MIN;
 
             for (const face of model.faces) {
                 if (face.vertices.length !== 3) {
@@ -97,7 +88,7 @@ export default class ObjParser implements MeshFileParser {
             models.push(new MeshSource(
                 data,
                 model.faces.length,
-                vertexLayout,
+                meshVertexLayout,
                 materialSources,
                 materialIndexes,
                 new BoundingBox(low, high)

@@ -29,6 +29,13 @@ export default class ShaderSource {
         return this.cache.get({ vertex, fragment });
     }
 
+    public static async loadShader(name: string): Promise<ShaderSource> {
+        return ShaderSource.load(
+            Path.from("/shaders/" + name + ".vert"),
+            Path.from("/shaders/" + name + ".frag"),
+        );
+    }
+
 
 
     constructor(

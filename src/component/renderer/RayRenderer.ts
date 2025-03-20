@@ -8,6 +8,7 @@ import { Opt } from "../../../lib/types.ts";
 import ShaderSource from "../../resource/shader/ShaderSource.ts";
 import Path from "../../resource/Path.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
+import BoundingBox from "../../primitives/BoundingBox.ts";
 
 
 
@@ -25,6 +26,7 @@ export class RayRenderer extends Component implements Renderer {
 
 
 
+    // Component
     awake(): void {
         this._vao = gl.createVertexArray();
         gl.bindVertexArray(this._vao);
@@ -53,7 +55,7 @@ export class RayRenderer extends Component implements Renderer {
             Shader.load(source).then(shader => {
                 this._shader = shader;
             });
-        })
+        });
     }
 
     private updateVbo(): void {
@@ -75,6 +77,7 @@ export class RayRenderer extends Component implements Renderer {
         }
     }
 
+    // Renderer
     public draw(): void {
         if (!is(this._shader) || !is(this._vao)) {
             return;
@@ -93,6 +96,10 @@ export class RayRenderer extends Component implements Renderer {
         gl.bindVertexArray(this._vao);
         gl.drawArrays(gl.LINES, 0, 2);
         gl.bindVertexArray(null);
+    }
+
+    getBoundingBox(): Opt<BoundingBox> {
+        return undefined;
     }
 
 

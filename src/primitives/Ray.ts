@@ -1,15 +1,8 @@
 import { Vec3 } from "../types.ts";
 import VertexLayout from "../resource/mesh/VertexLayout.ts";
-import { LAYOUT_NONE, LAYOUT_VERTEX3 } from "../webgl.ts";
+import { lineVertexLayout } from "../webgl.ts";
 
 
-
-const rayVertexLayout = new VertexLayout(
-    LAYOUT_VERTEX3,
-    LAYOUT_NONE,
-    LAYOUT_NONE,
-    LAYOUT_NONE,
-);
 
 export default class Ray {
     constructor(
@@ -39,11 +32,11 @@ export default class Ray {
     }
 
     public getVertexLayout(): VertexLayout {
-        return rayVertexLayout;
+        return lineVertexLayout;
     }
 
     public getData(): Float32Array {
-        const array = new Float32Array(rayVertexLayout.getTotal() * 2);
+        const array = new Float32Array(lineVertexLayout.getTotal() * 2);
 
         let i = 0;
         array[i++] = this.start.x;
