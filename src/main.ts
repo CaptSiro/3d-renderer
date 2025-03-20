@@ -9,6 +9,7 @@ import { Quaternion } from "./primitives/Quaternion.ts";
 import Vector3 from "./primitives/Vector3.ts";
 import MaterialSource from "./resource/material/MaterialSource.ts";
 import { RayRenderer } from "./component/renderer/RayRenderer.ts";
+import { Opt } from "../lib/types.ts";
 
 
 
@@ -95,15 +96,30 @@ async function init() {
 export let time: number = 0;
 export let deltaTime: number = 0;
 
-export const keyboard: Record<string, boolean> = {
-    w: false,
-    a: false,
-    s: false,
-    d: false,
-    f: false,
-    " ": false,
-    "shift": false,
+
+
+type Key = {
+    pressedToggle: boolean,
+    held: boolean
+};
+
+export const keyboard: Record<string, Opt<Key>> = {}
+
+function getKey(key: string): Key {
+    if (is(keyboard[key])) {
+        return keyboard[key];
+    }
+
+    const k = {
+        pressedToggle: false,
+        held: false
+    };
+
+    keyboard[key] = k;
+    return k;
 }
+
+
 
 async function update() {
     const now = Date.now() / 1000;
@@ -120,27 +136,27 @@ async function update() {
     const forward = glm.normalize(cameraTransform.getForward());
     const up = glm.normalize(cameraTransform.getUp());
 
-    if (keyboard["w"]) {
+    if (keyboard["w"]?.held) {
         camera.position ["+="] (forward ["*"] (cameraSpeed));
     }
 
-    if (keyboard["s"]) {
+    if (keyboard["s"]?.held) {
         camera.position ["-="] (forward ["*"] (cameraSpeed));
     }
 
-    if (keyboard["a"]) {
+    if (keyboard["a"]?.held) {
         camera.position ["-="] (glm.normalize(glm.cross(forward, Vector3.UP)) ["*"] (cameraSpeed));
     }
 
-    if (keyboard["d"]) {
+    if (keyboard["d"]?.held) {
         camera.position ["+="] (glm.normalize(glm.cross(forward, Vector3.UP)) ["*"] (cameraSpeed));
     }
 
-    if (keyboard[" "]) {
+    if (keyboard[" "]?.held) {
         camera.position ["+="] (up ["*"] (cameraSpeed));
     }
 
-    if (keyboard["shift"]) {
+    if (keyboard["shift"]?.held) {
         camera.position ["-="] (up ["*"] (cameraSpeed));
     }
 
@@ -200,25 +216,18 @@ _viewport.addEventListener("pointermove", event => {
 });
 
 window.addEventListener("keyup", event => {
-    if (event.key.toLowerCase() === 'f') {
-        return;
-    }
-
-    keyboard[event.key.toLowerCase()] = false;
+    const key = getKey(event.key.toLowerCase());
+    key.held = false;
 });
 
 window.addEventListener("keydown", event => {
-    if (event.key.toLowerCase() === 'f') {
-        return;
-    }
-
-    keyboard[event.key.toLowerCase()] = true;
+    const key = getKey(event.key.toLowerCase());
+    key.held = true;
 });
 
 window.addEventListener("keypress", event => {
-    if (event.key.toLowerCase() === 'f') {
-        keyboard.f = !keyboard.f;
-    }
+    const key = getKey(event.key.toLowerCase());
+    key.pressedToggle = !key.pressedToggle;
 });
 
 function frameCallback() {

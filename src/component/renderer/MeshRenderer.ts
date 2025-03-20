@@ -44,7 +44,7 @@ export default class MeshRenderer extends Component implements Renderer {
             mesh.draw();
         }
 
-        if (!keyboard.f || !is(this._boundingBox)) {
+        if (!keyboard["f"]?.pressedToggle || !is(this._boundingBox)) {
             return;
         }
 
@@ -91,9 +91,9 @@ export default class MeshRenderer extends Component implements Renderer {
 
             shader.setVec3("ViewPosition", camera.position);
 
-            shader.setVec3("light.position", glm.vec3(0, 3, 0));
-            shader.setVec3("light.ambient", glm.vec3(0.2, 0.2, 0.2));
-            shader.setVec3("light.diffuse", glm.vec3(0.5, 0.5, 0.5));
+            shader.setVec3("light.position", glm.vec3(0, 2, 0));
+            shader.setVec3("light.ambient", glm.vec3(0.3, 0.3, 0.35));
+            shader.setVec3("light.diffuse", glm.vec3(1.0, 1.0, 0.9));
             shader.setVec3("light.specular", glm.vec3(1.0, 1.0, 1.0));
         });
 
