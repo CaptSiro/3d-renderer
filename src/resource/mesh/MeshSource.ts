@@ -6,6 +6,7 @@ import VertexLayout from "./VertexLayout.ts";
 import ResourceCache from "../ResourceCache.ts";
 import MaterialSource from "../material/MaterialSource.ts";
 import { int } from "../../types.ts";
+import BoundingBox from "../../primitives/BoundingBox.ts";
 
 
 
@@ -45,6 +46,7 @@ export default class MeshSource {
         private vertexLayout: VertexLayout,
         private materialSources: Map<string, MaterialSource>,
         private materialIndexes: Map<string, int>,
+        private boundingBox: BoundingBox
     ) {}
 
 
@@ -67,5 +69,9 @@ export default class MeshSource {
 
     public getMaterialIndexes(): Map<string, int> {
         return this.materialIndexes;
+    }
+
+    public getBoundingBox(): BoundingBox {
+        return this.boundingBox;
     }
 }

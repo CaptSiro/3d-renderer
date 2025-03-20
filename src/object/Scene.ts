@@ -4,7 +4,7 @@ import { Opt } from "../../lib/types";
 import Path from "../resource/Path.ts";
 import MeshSource from "../resource/mesh/MeshSource.ts";
 import ShaderSource from "../resource/shader/ShaderSource.ts";
-import MeshRenderer from "../component/MeshRenderer.ts";
+import MeshRenderer from "../component/renderer/MeshRenderer.ts";
 
 
 
@@ -36,6 +36,10 @@ export default class Scene {
         this.gameObjects.set(gameObject.name, gameObject);
     }
 
+    public deleteGameObject(gameObject: GameObject): void {
+        this.gameObjects.delete(gameObject.name);
+    }
+
     public getMainCamera(): Opt<Camera> {
         return this.mainCamera;
     }
@@ -53,7 +57,7 @@ export default class Scene {
             Path.from("/shaders/base.frag")
         );
 
-        const meshRenderer = gameObject.addComponent(MeshRenderer) as MeshRenderer;
+        const meshRenderer = gameObject.addComponent(MeshRenderer);
         await meshRenderer.init(meshSources, shaderSource);
 
         return gameObject;

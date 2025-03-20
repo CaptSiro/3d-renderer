@@ -7,6 +7,11 @@ export type Vec3 = {
     z: float,
 } | any;
 
+export type Vec2 = {
+    x: float,
+    y: float,
+} | any;
+
 export type Quat = {
     x: float,
     y: float,

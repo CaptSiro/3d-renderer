@@ -26,4 +26,6 @@ export default class Component {
     public awake(): void {}
 
     public update(): void {}
+
+    public delete(): void {}
 }

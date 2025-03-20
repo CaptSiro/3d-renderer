@@ -26,7 +26,7 @@ uniform vec3 ViewPosition;
 uniform Material material;
 uniform Light light;
 
-#define MAX_MATERIALS 32
+#define MAX_MATERIALS 128
 uniform Material materials[MAX_MATERIALS];
 
 // Output

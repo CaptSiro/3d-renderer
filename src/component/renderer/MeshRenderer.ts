@@ -1,15 +1,16 @@
-import Mesh from "../resource/mesh/Mesh.ts";
-import Shader from "../resource/shader/Shader.ts";
-import MeshSource from "../resource/mesh/MeshSource.ts";
-import ShaderSource from "../resource/shader/ShaderSource.ts";
-import { mainScene } from "../main.ts";
-import { Opt } from "../../lib/types";
-import { is } from "../../lib/jsml/jsml.ts";
-import Component from "./Component.ts";
+import Component from "../Component.ts";
+import { Opt } from "../../../lib/types.ts";
+import Shader from "../../resource/shader/Shader.ts";
+import Mesh from "../../resource/mesh/Mesh.ts";
+import { is } from "../../../lib/jsml/jsml.ts";
+import { mainScene } from "../../main.ts";
+import MeshSource from "../../resource/mesh/MeshSource.ts";
+import ShaderSource from "../../resource/shader/ShaderSource.ts";
+import Renderer from "./Renderer.ts";
 
 
 
-export default class MeshRenderer extends Component {
+export default class MeshRenderer extends Component implements Renderer {
     private shader: Opt<Shader>;
     private meshes: Opt<Mesh[]>;
 
@@ -29,13 +30,23 @@ export default class MeshRenderer extends Component {
 
         const model = this.gameObject.transform.getMatrix();
         this.shader.setMat4("Model", model);
-        this.shader.setMat4("MVP", camera.createMVP(model));
+        this.shader.setMat4("MVP", camera.createMvp(model));
 
         for (const mesh of this.meshes) {
             mesh.bindMaterials(this.shader, "materials");
 
             mesh.bind();
             mesh.draw();
+        }
+    }
+
+    public delete() {
+        if (!is(this.meshes)) {
+            return;
+        }
+
+        for (const mesh of this.meshes) {
+            mesh.delete();
         }
     }
 

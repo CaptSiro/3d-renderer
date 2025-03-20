@@ -6,20 +6,17 @@ import MaterialSource from "../../material/MaterialSource.ts";
 import Path from "../../Path.ts";
 import { is } from "../../../../lib/jsml/jsml.ts";
 import { MTLFile } from "../../../../lib/MTLFile.ts";
-import { int } from "../../../types.ts";
+import { int, Vec3 } from "../../../types.ts";
+import { LAYOUT_INDEX, LAYOUT_NORMAL3, LAYOUT_TEX_COORD2, LAYOUT_VERTEX3, MAX_MATERIALS } from "../../../webgl.ts";
+import BoundingBox from "../../../primitives/BoundingBox.ts";
 
 
-
-const VERTEX = 3;
-const NORMAL = 3;
-const TEXTURE_COORD = 2;
-const MATERIAL_INDEX = 1;
 
 const vertexLayout = new VertexLayout(
-    VERTEX,
-    NORMAL,
-    TEXTURE_COORD,
-    MATERIAL_INDEX,
+    LAYOUT_VERTEX3,
+    LAYOUT_NORMAL3,
+    LAYOUT_TEX_COORD2,
+    LAYOUT_INDEX,
 );
 
 
@@ -45,7 +42,7 @@ export default class ObjParser implements MeshFileParser {
             }
 
             for (const mat of new MTLFile(mtl).parse()) {
-                if (materialSources.size >= 32) {
+                if (materialSources.size >= MAX_MATERIALS) {
                     throw new Error("Object contains way to many materials");
                 }
 
@@ -60,6 +57,9 @@ export default class ObjParser implements MeshFileParser {
             const data = new Float32Array(3 * model.faces.length * vertexLayout.getTotal());
             let dataIndex = 0;
 
+            const low: Vec3 = glm.vec3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+            const high: Vec3 = glm.vec3(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+
             for (const face of model.faces) {
                 if (face.vertices.length !== 3) {
                     throw new Error("Object must have 3 vertexes per face. No more no less");
@@ -72,6 +72,14 @@ export default class ObjParser implements MeshFileParser {
                     data[dataIndex++] = v.x;
                     data[dataIndex++] = v.y;
                     data[dataIndex++] = v.z;
+
+                    low.x = Math.min(low.x, v.x);
+                    low.y = Math.min(low.y, v.y);
+                    low.z = Math.min(low.z, v.z);
+
+                    high.x = Math.max(high.x, v.x);
+                    high.y = Math.max(high.y, v.y);
+                    high.z = Math.max(high.z, v.z);
 
                     const n = model.vertexNormals[vertex.vertexNormalIndex - 1];
                     data[dataIndex++] = n.x;
@@ -91,7 +99,8 @@ export default class ObjParser implements MeshFileParser {
                 model.faces.length,
                 vertexLayout,
                 materialSources,
-                materialIndexes
+                materialIndexes,
+                new BoundingBox(low, high)
             ));
         }
 

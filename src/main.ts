@@ -8,6 +8,7 @@ import Mathf from "./primitives/Mathf.ts";
 import { Quaternion } from "./primitives/Quaternion.ts";
 import Vector3 from "./primitives/Vector3.ts";
 import MaterialSource from "./resource/material/MaterialSource.ts";
+import { RayRenderer } from "./component/renderer/RayRenderer.ts";
 
 
 
@@ -17,29 +18,30 @@ declare global {
 
 
 
-const viewport = $<HTMLCanvasElement>("#viewport");
-if (!is(viewport)) {
+const _viewport = $<HTMLCanvasElement>("#viewport");
+if (!is(_viewport)) {
     throw new Error("Could not locate main viewport");
 }
 
+export const viewport = _viewport;
 export let projectionMatrix: Mat4;
 
 function resizeViewport() {
-    if (!is(viewport)) {
+    if (!is(_viewport)) {
         return;
     }
 
-    const rect = viewport.getBoundingClientRect();
-    viewport.width = Math.floor(rect.width);
-    viewport.height = Math.floor(rect.height);
+    const rect = _viewport.getBoundingClientRect();
+    _viewport.width = Math.floor(rect.width);
+    _viewport.height = Math.floor(rect.height);
 
-    gl.viewport(0, 0, viewport.width, viewport.height);
+    gl.viewport(0, 0, _viewport.width, _viewport.height);
 
     const aspectRatio = rect.width / rect.height;
     projectionMatrix = glm.perspective(glm.radians(35.0), aspectRatio, 0.1, 100);
 }
 
-const context = viewport?.getContext("webgl2");
+const context = _viewport?.getContext("webgl2");
 if (!is(context)) {
     throw new Error("Could not load WebGL context");
 }
@@ -61,6 +63,11 @@ const defaultCameraObject = new GameObject(
 mainScene.setMainCamera(
     defaultCameraObject.addComponent(Camera)
 );
+
+
+
+const rayGameObject = new GameObject("ray", mainScene);
+const ray = rayGameObject.addComponent(RayRenderer);
 
 
 
@@ -145,19 +152,22 @@ async function render() {
 }
 
 window.addEventListener("click", async () => {
-    await viewport.requestPointerLock();
-    viewport.focus();
+    await _viewport.requestPointerLock();
+    _viewport.focus();
 });
 
 let yaw: float = 0;
 let pitch: float = 0;
-viewport.addEventListener("pointermove", event => {
-    if (document.pointerLockElement !== viewport) {
+_viewport.addEventListener("pointermove", event => {
+    const camera = mainScene.getMainCamera();
+    if (!is(camera)) {
         return;
     }
 
-    const camera = mainScene.getMainCamera();
-    if (!is(camera)) {
+    if (document.pointerLockElement !== _viewport) {
+        const mouseRay = camera.screenPositionToWorldRay(glm.vec2(event.clientX, event.clientY));
+        ray.setRay(mouseRay.getStart(), mouseRay.getDirection());
+        ray.setColor(glm.vec3(1.0, 0.3, 0.3));
         return;
     }
 

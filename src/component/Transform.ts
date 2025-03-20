@@ -6,14 +6,14 @@ import Vector3 from "../primitives/Vector3.ts";
 
 
 export default class Transform {
-    private matrix: Opt<Mat4>;
+    private _matrix: Opt<Mat4>;
 
     constructor(
         private position: Vec3 = glm.vec3(0, 0, 0),
         private rotation: Quat = glm.quat(glm.vec3(0, 0, 0)),
         private scale: Vec3 = glm.vec3(1, 1, 1)
     ) {
-        this.matrix = undefined;
+        this._matrix = undefined;
     }
 
 
@@ -23,7 +23,7 @@ export default class Transform {
     }
 
     public setPosition(position: Vec3): Transform {
-        this.matrix = undefined;
+        this._matrix = undefined;
         this.position = position;
         return this;
     }
@@ -33,7 +33,7 @@ export default class Transform {
     }
 
     public setRotation(rotation: Quat): Transform {
-        this.matrix = undefined;
+        this._matrix = undefined;
         this.rotation = rotation;
         return this;
     }
@@ -43,21 +43,21 @@ export default class Transform {
     }
 
     public setScale(scale: Vec3): Transform {
-        this.matrix = undefined;
+        this._matrix = undefined;
         this.scale = scale;
         return this;
     }
 
     public getMatrix(): Mat4 {
-        if (is(this.matrix)) {
-            return this.matrix;
+        if (is(this._matrix)) {
+            return this._matrix;
         }
 
         const matrix = glm.translate(this.position)
             ["*"] (glm.toMat4(this.rotation))
             ["*"] (glm.scale(this.scale));
 
-        this.matrix = matrix;
+        this._matrix = matrix;
         return matrix;
     }
 

@@ -1,9 +1,9 @@
 import Transform from "../component/Transform.ts";
 import Component from "../component/Component.ts";
-import MeshRenderer from "../component/MeshRenderer.ts";
 import Scene from "./Scene.ts";
 import { Opt } from "../../lib/types";
 import { is } from "../../lib/jsml/jsml.ts";
+import Renderer, { isRenderer } from "../component/renderer/Renderer.ts";
 
 
 
@@ -11,7 +11,7 @@ export default class GameObject {
     private isActive: boolean;
     private readonly components: Map<string, Component>;
     private readonly _transform: Transform;
-    private renderer: Opt<MeshRenderer>;
+    private renderer: Opt<Renderer>;
 
 
 
@@ -50,6 +50,16 @@ export default class GameObject {
         this.renderer?.draw();
     }
 
+    public delete(): void {
+        this.setActive(false);
+
+        for (const [_, component] of this.components) {
+            component.delete();
+        }
+
+        this.scene.deleteGameObject(this);
+    }
+
 
 
     public setActive(isActive: boolean): void {
@@ -72,9 +82,9 @@ export default class GameObject {
         return this._name;
     }
 
-    public addComponent<C extends Component, Constructor extends new () => C>(componentClass: Constructor): C {
+    public addComponent<T extends new () => Component>(componentClass: T): InstanceType<T> {
         const component = new componentClass();
-        if (component instanceof MeshRenderer) {
+        if (isRenderer(component)) {
             this.renderer = component;
         }
 
@@ -82,10 +92,10 @@ export default class GameObject {
         this.components.set(componentClass.name, component);
 
         component.awake();
-        return component;
+        return component as InstanceType<T>;
     }
 
-    public getComponent<C extends Component, Constructor extends new () => C>(componentClass: Constructor): Opt<C> {
-        return this.components.get(componentClass.name) as Opt<C>;
+    public getComponent<T extends new () => Component>(componentClass: T): Opt<InstanceType<T>> {
+        return this.components.get(componentClass.name) as Opt<InstanceType<T>>;
     }
 }
