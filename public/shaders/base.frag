@@ -34,7 +34,8 @@ out vec4 OutColor;
 
 void main()
 {
-    int materialIndex = int(MaterialIndex);
+    int materialIndex = int(round(MaterialIndex));
+
     vec3 ambient = materials[materialIndex].ambient * light.ambient;
 
     vec3 norm = normalize(Normal);
