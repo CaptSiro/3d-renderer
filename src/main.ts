@@ -10,6 +10,7 @@ import { RayRenderer } from "./component/renderer/RayRenderer.ts";
 import { Opt } from "../lib/types.ts";
 import { window_alert } from "../lib/window.ts";
 import Movement from "./scripts/Movement.ts";
+import Mathf from "./primitives/Mathf.ts";
 
 
 
@@ -97,7 +98,6 @@ async function init() {
     teapot.transform
         .setPosition(glm.vec3(-1, 0, 3))
         .setScale(glm.vec3(0.5, 0.5, 0.5));
-
 }
 
 export let time: number = 0;
@@ -192,9 +192,15 @@ window.addEventListener("keydown", event => {
 
 
 
+let frame = 1;
+let frameStart = 0;
+let u = 0;
+let r = 0;
+let fps = 0;
 const stats = $('.stats');
 const statsUpdate = $('.stats .update');
 const statsRender = $('.stats .render');
+const statsFps = $('.stats .fps');
 function frameCallback(): void {
     const hideStats = !(keyboard["f3"]?.pressedToggle ?? false);
     stats?.classList.toggle('hide', hideStats);
@@ -202,20 +208,38 @@ function frameCallback(): void {
     const startUpdate = Date.now();
     update()
         .then(async () => {
-            if (is(statsUpdate) && !hideStats) {
-                statsUpdate.textContent = 'update: ' + Math.round(Date.now() - startUpdate) + "ms";
+            const postUpdate = Date.now();
+            const renderStats = postUpdate - frameStart >= 1000 && !hideStats;
+            u += Math.round(postUpdate - startUpdate);
+
+            if (is(statsUpdate) && renderStats) {
+                statsUpdate.textContent = 'update: ' + Mathf.round(u / frame, 2) + "ms";
             }
 
-            const startRender = Date.now();
+            const startRender = postUpdate;
             await render();
+            const postRender = Date.now();
+            r += Math.round(postRender - startRender);
+            fps += Math.round(1000 / Math.round(postRender - startUpdate));
 
-            if (is(statsRender) && !hideStats) {
-                statsRender.textContent = 'render: ' + Math.round(Date.now() - startRender) + "ms";
+            if (is(statsRender) && renderStats) {
+                statsRender.textContent = 'render: ' + Mathf.round(r / frame, 2) + "ms";
             }
 
+            if (is(statsFps) && renderStats) {
+                statsFps.textContent = Mathf.round(fps / frame, 2)  + " fps";
+            }
+
+            if (postUpdate - frameStart >= 1000) {
+                frameStart = postRender;
+                frame = u = r = fps = 0;
+            }
+
+            frame++;
             requestAnimationFrame(frameCallback);
         });
 }
 
-init().then();
-requestAnimationFrame(frameCallback);
+init().then(() => {
+    frameCallback();
+});

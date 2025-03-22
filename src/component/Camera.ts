@@ -1,5 +1,5 @@
 import Component from "./Component.ts";
-import { float, Mat4, Vec2, Vec3 } from "../types";
+import { Mat4, Vec2, Vec3 } from "../types";
 import { projectionMatrix, viewport } from "../main.ts";
 import Ray from "../primitives/Ray.ts";
 import { Opt } from "../../lib/types.ts";
