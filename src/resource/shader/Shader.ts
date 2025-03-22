@@ -16,7 +16,7 @@ export default class Shader {
         Shader.create
     );
 
-    public static create(source: ShaderSource): Shader {
+    private static create(source: ShaderSource): Shader {
         const vertex = Shader.compile(gl.VERTEX_SHADER, source.getVertexCode());
         if (!is(vertex)) {
             throw new Error("Shader compilation error");
@@ -122,7 +122,7 @@ export default class Shader {
     private unbindCallback: ShaderCallback;
     private uniforms: Map<string, WebGLUniformLocation | null>;
 
-    constructor(
+    private constructor(
         private program: WebGLProgram,
     ) {
         this.uniforms = new Map<string, WebGLUniformLocation>();

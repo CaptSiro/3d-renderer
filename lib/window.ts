@@ -225,7 +225,7 @@ export function window_init(element: HTMLElement): void {
 
 
 
-type WindowSettings = {
+export type WindowSettings = {
     isDraggable?: boolean,
     isMinimizable?: boolean,
     isResizable?: boolean,

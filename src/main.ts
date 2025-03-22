@@ -62,6 +62,10 @@ const defaultCameraObject = new GameObject(
     mainScene
 );
 
+defaultCameraObject.transform
+    .setRotation(Quaternion.eulerDegrees(15, 0, 0))
+    .setPosition(glm.vec3(0, 1, 0));
+
 mainScene.setMainCamera(
     defaultCameraObject.addComponent(Camera)
 );
@@ -81,6 +85,8 @@ async function init() {
     gl.depthFunc(gl.LEQUAL);
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.BACK);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
     const suzanne = await mainScene.loadGameObject("suzanne", Path.from("/models/Suzanne.obj"));
     suzanne.transform
@@ -192,7 +198,7 @@ viewport.addEventListener("click", async () => {
 });
 
 let yaw: float = 0;
-let pitch: float = 0;
+let pitch: float = 15;
 _viewport.addEventListener("pointermove", event => {
     const camera = mainScene.getMainCamera();
     if (!is(camera)) {

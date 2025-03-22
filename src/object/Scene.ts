@@ -5,6 +5,7 @@ import Path from "../resource/Path.ts";
 import MeshSource from "../resource/mesh/MeshSource.ts";
 import ShaderSource from "../resource/shader/ShaderSource.ts";
 import MeshRenderer from "../component/renderer/MeshRenderer.ts";
+import { is } from "../../lib/jsml/jsml.ts";
 
 
 
@@ -25,6 +26,13 @@ export default class Scene {
     }
 
     public render(): void {
+        const camera = this.getMainCamera();
+        if (!is(camera)) {
+            return;
+        }
+
+        camera.preRender();
+
         for (const gameObject of this.gameObjects.values()) {
             gameObject.render();
         }
