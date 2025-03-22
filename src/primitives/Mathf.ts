@@ -1,4 +1,4 @@
-import { float } from "../types.ts";
+import { float, int } from "../types.ts";
 
 
 
@@ -13,5 +13,14 @@ export default class Mathf {
         }
 
         return x;
+    }
+
+    public static round(x: float, precision: int): float {
+        if (precision < 1) {
+            return Math.round(x);
+        }
+
+        const m = Math.pow(10, precision);
+        return Math.round(x * m) / m;
     }
 }

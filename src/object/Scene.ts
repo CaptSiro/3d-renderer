@@ -20,7 +20,13 @@ export default class Scene {
 
 
     public update(): void {
+        this.mainCamera?.gameObject.update();
+
         for (const gameObject of this.gameObjects.values()) {
+            if (gameObject === this.mainCamera?.gameObject) {
+                continue;
+            }
+
             gameObject.update();
         }
     }

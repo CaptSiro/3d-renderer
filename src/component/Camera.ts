@@ -9,9 +9,6 @@ import { is } from "../../lib/jsml/jsml.ts";
 
 
 export default class Camera extends Component {
-    public speed: float = 2;
-    public sensitivity: float = 0.05;
-
     public renderGrid: boolean = true;
     private _gridRenderer: Opt<GridRenderer>;
 

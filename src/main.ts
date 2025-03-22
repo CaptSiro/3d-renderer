@@ -1,16 +1,15 @@
 import { $, is } from "../lib/jsml/jsml.ts";
 import Path from "./resource/Path.ts";
-import { float, Mat4 } from "./types";
+import { Mat4 } from "./types";
 import Scene from "./object/Scene.ts";
 import GameObject from "./object/GameObject.ts";
 import Camera from "./component/Camera.ts";
-import Mathf from "./primitives/Mathf.ts";
 import { Quaternion } from "./primitives/Quaternion.ts";
-import Vector3 from "./primitives/Vector3.ts";
 import MaterialSource from "./resource/material/MaterialSource.ts";
 import { RayRenderer } from "./component/renderer/RayRenderer.ts";
 import { Opt } from "../lib/types.ts";
 import { window_alert } from "../lib/window.ts";
+import Movement from "./scripts/Movement.ts";
 
 
 
@@ -70,11 +69,12 @@ mainScene.setMainCamera(
     defaultCameraObject.addComponent(Camera)
 );
 
+defaultCameraObject.addComponent(Movement);
+
 
 
 const rayGameObject = new GameObject("ray", mainScene);
-// const ray =
-    rayGameObject.addComponent(RayRenderer);
+const ray = rayGameObject.addComponent(RayRenderer);
 
 
 
@@ -91,7 +91,7 @@ async function init() {
     const suzanne = await mainScene.loadGameObject("suzanne", Path.from("/models/Suzanne.obj"));
     suzanne.transform
         .setPosition(glm.vec3(1, 0, 3))
-        .setRotation(Quaternion.eulerDegrees(-30, 180, 60));
+        .setRotation(Quaternion.eulerDegrees(-50, 180, 60));
 
     const teapot = await mainScene.loadGameObject("teapot", Path.from("/models/Cube.obj"));
     teapot.transform
@@ -133,40 +133,6 @@ async function update() {
     deltaTime = now - time;
     time = now;
 
-    const camera = mainScene.getMainCamera();
-    if (!is(camera)) {
-        return;
-    }
-
-    const cameraSpeed = camera.speed * deltaTime;
-    const cameraTransform = camera.transform;
-    const forward = glm.normalize(cameraTransform.getForward());
-    const up = glm.normalize(cameraTransform.getUp());
-
-    if (keyboard["w"]?.held) {
-        camera.position ["+="] (forward ["*"] (cameraSpeed));
-    }
-
-    if (keyboard["s"]?.held) {
-        camera.position ["-="] (forward ["*"] (cameraSpeed));
-    }
-
-    if (keyboard["a"]?.held) {
-        camera.position ["-="] (glm.normalize(glm.cross(forward, Vector3.UP)) ["*"] (cameraSpeed));
-    }
-
-    if (keyboard["d"]?.held) {
-        camera.position ["+="] (glm.normalize(glm.cross(forward, Vector3.UP)) ["*"] (cameraSpeed));
-    }
-
-    if (keyboard[" "]?.held) {
-        camera.position ["+="] (up ["*"] (cameraSpeed));
-    }
-
-    if (keyboard["shift"]?.held) {
-        camera.position ["-="] (up ["*"] (cameraSpeed));
-    }
-
     mainScene.update();
 }
 
@@ -195,31 +161,6 @@ viewport.addEventListener("click", async () => {
 
     await _viewport.requestPointerLock();
     _viewport.focus();
-});
-
-let yaw: float = 0;
-let pitch: float = 15;
-_viewport.addEventListener("pointermove", event => {
-    const camera = mainScene.getMainCamera();
-    if (!is(camera)) {
-        return;
-    }
-
-    if (document.pointerLockElement !== _viewport) {
-        return;
-    }
-
-    const offsetX = -event.movementX * camera.sensitivity;
-    const offsetY = event.movementY * camera.sensitivity;
-
-    yaw += offsetX;
-    pitch += offsetY;
-
-    pitch = Mathf.clamp(pitch, -90, 90);
-
-    camera.transform.setRotation(
-        Quaternion.euler(glm.radians(pitch), glm.radians(yaw), 0)
-    );
 });
 
 window.addEventListener("keyup", event => {
