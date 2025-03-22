@@ -59,16 +59,16 @@ export function $$(query: string, root: HTMLElement|Document = document): NodeLi
     return root.querySelectorAll(query);
 }
 
-export function is<T>(x: T|null|undefined): x is T {
-    return x !== undefined && x !== null;
+export function is<T>(variable: T|null|undefined): variable is T {
+    return variable !== undefined && variable !== null;
 }
 
-export function assert<T>(x: Opt<T>): T {
-    if (!is(x)) {
+export function assert<T>(variable: Opt<T>): T {
+    if (!is(variable)) {
         throw new Error("Is-Assertion failed x does not have defined value");
     }
 
-    return x;
+    return variable;
 }
 
 export function Icon(nf: string): HTMLElement {

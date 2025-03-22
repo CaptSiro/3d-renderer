@@ -210,7 +210,7 @@ export function window_init(element: HTMLElement): void {
     minimize.classList.remove('hide');
     maximize.classList.add('hide');
 
-    minimize.addEventListener('click', event => {
+    minimize.addEventListener('click', () => {
         window_minimize(element);
         minimize.classList.add('hide');
         maximize.classList.remove('hide');
