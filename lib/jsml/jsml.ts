@@ -22,21 +22,23 @@ export const _ = undefined;
 
 
 const jsml = new Proxy({}, {
-    get(_, tag) {
-        return (props: Props, content: Content) => {
+    get(_, tag: keyof HTMLElementTagNameMap) {
+        return (props: Props | string, content: Content) => {
             if (props instanceof HTMLElement) {
                 console.error(`Can not use HTMLElement as options. Caught at: ${String(tag)}`);
                 return document.createElement(String(tag));
             }
 
-            const element = document.createElement(tag as keyof HTMLElementTagNameMap);
+            const element = document.createElement(tag);
 
-            if (props !== undefined && "class" in props) {
+            if (typeof props === "string") {
+                element.className = String(props);
+            } else if (props !== undefined && "class" in props) {
                 element.className = String(props.class);
+                delete props.class;
             }
 
             addProps(element, props);
-
             addContent(element, content);
 
             return element;
@@ -68,3 +70,8 @@ export function assert<T>(x: Opt<T>): T {
 
     return x;
 }
+
+export function Icon(nf: string): HTMLElement {
+    return jsml.i('nf ' + nf);
+}
+

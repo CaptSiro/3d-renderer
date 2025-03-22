@@ -10,6 +10,7 @@ import Vector3 from "./primitives/Vector3.ts";
 import MaterialSource from "./resource/material/MaterialSource.ts";
 import { RayRenderer } from "./component/renderer/RayRenderer.ts";
 import { Opt } from "../lib/types.ts";
+import { window_alert } from "../lib/window.ts";
 
 
 
@@ -169,7 +170,7 @@ async function render() {
     mainScene.render();
 }
 
-window.addEventListener("click", async () => {
+viewport.addEventListener("click", async () => {
     // const camera = mainScene.getMainCamera();
     // if (is(camera)) {
     //     const mouseRay = camera.screenPositionToWorldRay(glm.vec2(event.clientX, event.clientY));
@@ -216,24 +217,55 @@ _viewport.addEventListener("pointermove", event => {
 });
 
 window.addEventListener("keyup", event => {
+    if (event.key !== "F5") {
+        event.preventDefault();
+    }
+
+    if (event.key.toLowerCase() === 's' && event.ctrlKey) {
+        window_alert("Saved", { isDraggable: true, isMinimizable: true }).then();
+    }
+
     const key = getKey(event.key.toLowerCase());
     key.held = false;
+    key.pressedToggle = !key.pressedToggle;
 });
 
 window.addEventListener("keydown", event => {
+    if (event.key !== "F5") {
+        event.preventDefault();
+    }
+
+    if (event.key.toLowerCase() === 's' && event.ctrlKey) {
+        return;
+    }
+
     const key = getKey(event.key.toLowerCase());
     key.held = true;
 });
 
-window.addEventListener("keypress", event => {
-    const key = getKey(event.key.toLowerCase());
-    key.pressedToggle = !key.pressedToggle;
-});
 
-function frameCallback() {
+
+const stats = $('.stats');
+const statsUpdate = $('.stats .update');
+const statsRender = $('.stats .render');
+function frameCallback(): void {
+    const hideStats = !(keyboard["f3"]?.pressedToggle ?? false);
+    stats?.classList.toggle('hide', hideStats);
+
+    const startUpdate = Date.now();
     update()
         .then(async () => {
+            if (is(statsUpdate) && !hideStats) {
+                statsUpdate.textContent = 'update: ' + Math.round(Date.now() - startUpdate) + "ms";
+            }
+
+            const startRender = Date.now();
             await render();
+
+            if (is(statsRender) && !hideStats) {
+                statsRender.textContent = 'render: ' + Math.round(Date.now() - startRender) + "ms";
+            }
+
             requestAnimationFrame(frameCallback);
         });
 }

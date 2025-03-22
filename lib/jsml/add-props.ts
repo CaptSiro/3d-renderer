@@ -4,7 +4,11 @@ import { createCSSString } from "./create-css-string.js";
 
 
 
-export default function addProps(element: HTMLElement, props: Props): void {
+export default function addProps(element: HTMLElement, props: Props | string): void {
+    if (typeof props === "string") {
+        return;
+    }
+
     if (props === undefined) {
         return;
     }
