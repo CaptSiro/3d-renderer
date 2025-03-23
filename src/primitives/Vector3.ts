@@ -1,4 +1,5 @@
-import { Vec3 } from "../types.ts";
+import { float, Vec3 } from "../types.ts";
+import SkyRenderer from "../component/renderer/SkyRenderer.ts";
 
 
 
@@ -36,5 +37,13 @@ export default class Vector3 {
         return a.x === b.x
             && a.y === b.y
             && a.z === b.z;
+    }
+
+    public static rgb(red: float, green: float, blue: float): Vec3 {
+        return glm.vec3(
+            red / 255,
+            green / 255,
+            blue / 255,
+        );
     }
 }

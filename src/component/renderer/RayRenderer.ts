@@ -15,7 +15,7 @@ import BoundingBox from "../../primitives/BoundingBox.ts";
 export class RayRenderer extends Component implements Renderer {
     private ray: Ray = new Ray(
         glm.vec3(0, 0, 0),
-        glm.vec3(1, 1, 1),
+        glm.vec3(0, 1, 0),
     );
 
     private color: Vec3 = glm.vec3(1, 1, 1);

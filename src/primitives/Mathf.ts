@@ -1,4 +1,4 @@
-import { float, int } from "../types.ts";
+import { float, int, Vec3 } from "../types.ts";
 
 
 
@@ -22,5 +22,21 @@ export default class Mathf {
 
         const m = Math.pow(10, precision);
         return Math.round(x * m) / m;
+    }
+
+    public static normalize(a: float, b: float, x: float): float {
+        return (x - a) / (b - a);
+    }
+
+    public static lerp(a: float, b: float, t: float): float {
+        return a + (b - a) * t;
+    }
+
+    public static lerpColor(a: Vec3, b: Vec3, t: float): Vec3 {
+        return glm.vec3(
+            Mathf.lerp(a.x, b.x, t),
+            Mathf.lerp(a.y, b.y, t),
+            Mathf.lerp(a.z, b.z, t),
+        );
     }
 }

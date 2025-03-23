@@ -1,0 +1,187 @@
+import Component from "../Component.ts";
+import { Opt } from "../../../lib/types.ts";
+import Shader from "../../resource/shader/Shader.ts";
+import Transform from "../Transform.ts";
+import ShaderSource from "../../resource/shader/ShaderSource.ts";
+import { deltaTime, gl, mainScene } from "../../main.ts";
+import { is } from "../../../lib/jsml/jsml.ts";
+import { float, int, Vec3 } from "../../types.ts";
+import Vector3 from "../../primitives/Vector3.ts";
+import Mathf from "../../primitives/Mathf.ts";
+
+
+
+export type Light = {
+    ambient: Vec3,
+    diffuse: Vec3,
+    specular: Vec3,
+};
+
+export default class SkyRenderer extends Component {
+    private _target: Opt<Transform>;
+    private _shader: Opt<Shader>;
+
+    public dayDuration: float = 30;
+    public timeOfTheDay: float = 0;
+
+    public cubeSize: float = 100;
+    public atmosphereHeight: float = 100;
+
+    public wavelengths: Vec3 = glm.vec3(700, 530, 440);
+    public scatteringStrength: float = 1;
+
+    public atmosphereFalloff: float = 4.3;
+
+    public lightPoints: int = 6;
+    public opticalDepthPoints: int = 6;
+
+
+
+    private lightDescriptions: (Light & { time: float })[] = [
+        {
+            time: 0,
+            ambient: Vector3.rgb(255, 147, 41),
+            diffuse: Vector3.rgb(255, 147, 41),
+            specular: Vector3.rgb(255, 255, 255)
+        },
+        {
+            time: 0.125,
+            ambient: Vector3.rgb(255, 230, 200),
+            diffuse: Vector3.rgb(255, 230, 200),
+            specular: Vector3.rgb(255, 255, 245)
+        },
+        {
+            time: 0.25,
+            ambient: Vector3.rgb(255, 255, 255),
+            diffuse: Vector3.rgb(255, 255, 255),
+            specular: Vector3.rgb(255, 255, 255)
+        },
+        {
+            time: 0.375,
+            ambient: Vector3.rgb(255, 230, 200),
+            diffuse: Vector3.rgb(255, 230, 200),
+            specular: Vector3.rgb(255, 255, 245)
+        },
+        {
+            time: 0.5,
+            ambient: Vector3.rgb(255, 147, 41),
+            diffuse: Vector3.rgb(255, 147, 41),
+            specular: Vector3.rgb(255, 255, 255)
+        },
+        {
+            time: 0.625,
+            ambient: Vector3.rgb(30, 30, 40),
+            diffuse: Vector3.rgb(20, 20, 30),
+            specular: Vector3.rgb(50, 50, 60)
+        },
+        {
+            time: 0.75,
+            ambient: Vector3.rgb(5, 5, 15),
+            diffuse: Vector3.rgb(2, 2, 8),
+            specular: Vector3.rgb(10, 10, 20)
+        },
+        {
+            time: 0.875,
+            ambient: Vector3.rgb(10, 10, 20),
+            diffuse: Vector3.rgb(5, 5, 10),
+            specular: Vector3.rgb(20, 20, 30)
+        },
+    ];
+
+
+
+    public update(): void {
+        this.timeOfTheDay += deltaTime / this.dayDuration;
+        if (this.timeOfTheDay >= 1) {
+            this.timeOfTheDay -= 1;
+        }
+    }
+
+    public render(): void {
+        const camera = mainScene.getMainCamera();
+        if (!is(camera) || !is(this._shader) || !is(this._target)) {
+            return;
+        }
+
+        this._shader.bind();
+
+        // Vertex
+        this._shader.setMat4("VP", camera.vp);
+        this._shader.setVec3("TargetPosition", this._target.getPosition());
+        this._shader.setFloat("CubeSize", this.cubeSize);
+
+        // Fragment
+        this._shader.setVec3("CameraPosition", camera.position);
+        this._shader.setVec3("SunPosition", this.getSunPosition());
+        this._shader.setVec3("Scattering", this.getInverseWavelengths());
+        this._shader.setFloat("AtmosphereHeight", this.atmosphereHeight);
+        this._shader.setFloat("DensityFalloff", this.atmosphereFalloff);
+        this._shader.setInt("LightPoints", this.lightPoints);
+        this._shader.setInt("OpticalDepthPoints", this.opticalDepthPoints);
+
+        gl.drawArrays(gl.TRIANGLES, 0, 36);
+    }
+
+    public getSunPosition(): Vec3 {
+        return glm.vec3(
+            0,
+            Math.sin(this.timeOfTheDay * 2 * Math.PI) * this.atmosphereHeight,
+            Math.cos(this.timeOfTheDay * 2 * Math.PI) * this.atmosphereHeight
+        );
+    }
+
+    public getSunLight(): Light {
+        const current = this.timeOfTheDay;
+        let lower: int = this.lightDescriptions.length - 1;
+        let upper: int = 0;
+
+        for (let j = 0; j < this.lightDescriptions.length; j++) {
+            const light = this.lightDescriptions[j];
+
+            if (light.time > current) {
+                lower = j - 1;
+                upper = j;
+                break;
+            }
+        }
+
+        if (lower >= this.lightDescriptions.length) {
+            lower -= this.lightDescriptions.length;
+        }
+
+        if (upper >= this.lightDescriptions.length) {
+            upper -= this.lightDescriptions.length;
+        }
+
+        if (lower === upper) {
+            return this.lightDescriptions[lower];
+        }
+
+        const lowerLight = this.lightDescriptions[lower];
+        const upperLight = this.lightDescriptions[upper];
+        const t = (upper < lower)
+            ? Mathf.normalize(lowerLight.time, 1.0, current)
+            : Mathf.normalize(lowerLight.time, upperLight.time, current);
+
+        return {
+            ambient: Mathf.lerpColor(lowerLight.ambient, upperLight.ambient, t),
+            diffuse: Mathf.lerpColor(lowerLight.diffuse, upperLight.diffuse, t),
+            specular: Mathf.lerpColor(lowerLight.specular, upperLight.specular, t),
+        };
+    }
+
+    private getInverseWavelengths(): Vec3 {
+        return glm.vec3(
+            Math.pow(180 / this.wavelengths.x, 4) * this.scatteringStrength,
+            Math.pow(180 / this.wavelengths.y, 4) * this.scatteringStrength,
+            Math.pow(180 / this.wavelengths.z, 4) * this.scatteringStrength,
+        );
+    }
+
+    public async init(target: Transform): Promise<void> {
+        this._target = target;
+        this._shader = await Shader.load(
+            await ShaderSource.loadShader("sky")
+        );
+    }
+}

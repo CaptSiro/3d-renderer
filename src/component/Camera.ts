@@ -5,12 +5,14 @@ import Ray from "../primitives/Ray.ts";
 import { Opt } from "../../lib/types.ts";
 import GridRenderer from "./renderer/GridRenderer.ts";
 import { is } from "../../lib/jsml/jsml.ts";
+import SkyRenderer from "./renderer/SkyRenderer.ts";
 
 
 
 export default class Camera extends Component {
     public renderGrid: boolean = true;
     private _gridRenderer: Opt<GridRenderer>;
+    private _skyRenderer: Opt<SkyRenderer>;
 
     private _view: Mat4 = undefined;
     private _vp: Mat4 = undefined
@@ -25,7 +27,19 @@ export default class Camera extends Component {
         this.updateView();
     }
 
-    public preRender(): void {
+
+
+    private preRenderSky(): void {
+        if (!is(this._skyRenderer)) {
+            this._skyRenderer = this.gameObject.addComponent(SkyRenderer);
+            this._skyRenderer.init(this.transform).then();
+            return;
+        }
+
+        this._skyRenderer.render();
+    }
+
+    private preRenderGrid(): void {
         if (!this.renderGrid) {
             return;
         }
@@ -37,6 +51,11 @@ export default class Camera extends Component {
         }
 
         this._gridRenderer.render();
+    }
+
+    public preRender(): void {
+        this.preRenderSky();
+        this.preRenderGrid();
     }
 
 

@@ -8,7 +8,7 @@ import Vector3 from "../primitives/Vector3.ts";
 
 
 export default class Movement extends Component {
-    public speed: float = 2;
+    public speed: float = 10;
     public sensitivity: float = 0.05;
 
     public yaw: float = 0;

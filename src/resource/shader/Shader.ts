@@ -181,6 +181,10 @@ export default class Shader {
         gl.uniform1f(this.getUniformLocation(uniform), float);
     }
 
+    public setInt(uniform: string, int: GLint) {
+        gl.uniform1i(this.getUniformLocation(uniform), int);
+    }
+
     public setVec3(uniform: string, vector: Vec3) {
         gl.uniform3f(this.getUniformLocation(uniform), vector.x, vector.y, vector.z);
     }

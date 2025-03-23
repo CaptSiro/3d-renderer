@@ -9,6 +9,7 @@ import ShaderSource from "../../resource/shader/ShaderSource.ts";
 import Renderer from "./Renderer.ts";
 import BoundingBox from "../../primitives/BoundingBox.ts";
 import BoundingBoxRenderer from "./BoundingBoxRenderer.ts";
+import SkyRenderer from "./SkyRenderer.ts";
 
 
 
@@ -91,10 +92,21 @@ export default class MeshRenderer extends Component implements Renderer {
 
             shader.setVec3("ViewPosition", camera.position);
 
-            shader.setVec3("light.position", glm.vec3(0, 2, 0));
-            shader.setVec3("light.ambient", glm.vec3(0.3, 0.3, 0.35));
-            shader.setVec3("light.diffuse", glm.vec3(1.0, 1.0, 0.9));
-            shader.setVec3("light.specular", glm.vec3(1.0, 1.0, 1.0));
+            const sky = camera.gameObject.getComponent(SkyRenderer);
+            if (!is(sky)) {
+                shader.setVec3("light.position", glm.vec3(0, 2, 0));
+                shader.setVec3("light.ambient", glm.vec3(0.3, 0.3, 0.35));
+                shader.setVec3("light.diffuse", glm.vec3(1.0, 1.0, 0.9));
+                shader.setVec3("light.specular", glm.vec3(1.0, 1.0, 1.0));
+                return;
+            }
+
+            shader.setVec3("light.position", sky.getSunPosition());
+
+            const light = sky.getSunLight();
+            shader.setVec3("light.ambient", light.ambient);
+            shader.setVec3("light.diffuse", light.diffuse);
+            shader.setVec3("light.specular", light.specular);
         });
 
         this._meshes = meshes;

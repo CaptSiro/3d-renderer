@@ -11,6 +11,7 @@ import { Opt } from "../lib/types.ts";
 import { window_alert } from "../lib/window.ts";
 import Movement from "./scripts/Movement.ts";
 import Mathf from "./primitives/Mathf.ts";
+import Sun from "./scripts/Sun.ts";
 
 
 
@@ -40,7 +41,7 @@ function resizeViewport() {
     gl.viewport(0, 0, _viewport.width, _viewport.height);
 
     const aspectRatio = rect.width / rect.height;
-    projectionMatrix = glm.perspective(glm.radians(35.0), aspectRatio, 0.1, 100);
+    projectionMatrix = glm.perspective(glm.radians(35.0), aspectRatio, 0.1, 250);
 }
 
 const context = _viewport?.getContext("webgl2");
@@ -91,12 +92,13 @@ async function init() {
 
     const suzanne = await mainScene.loadGameObject("suzanne", Path.from("/models/Suzanne.obj"));
     suzanne.transform
-        .setPosition(glm.vec3(1, 0, 3))
+        .setPosition(glm.vec3(3, 0, 3))
         .setRotation(Quaternion.eulerDegrees(-50, 180, 60));
 
     const teapot = await mainScene.loadGameObject("teapot", Path.from("/models/Cube.obj"));
+    teapot.addComponent(Sun);
     teapot.transform
-        .setPosition(glm.vec3(-1, 0, 3))
+        .setPosition(glm.vec3(0.0, 5.0, 5.0))
         .setScale(glm.vec3(0.5, 0.5, 0.5));
 }
 
