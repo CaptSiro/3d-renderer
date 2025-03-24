@@ -12,10 +12,26 @@
     <main>
         <canvas id="viewport"></canvas>
 
+        <div class="time-controls">
+            <button class="play">
+                <i class="nf nf-md-play"></i>
+            </button>
+            
+            <button class="pause">
+                <i class="nf nf-md-pause"></i>
+            </button>
+            
+            <label class="time-input">
+                <code>[Time]:</code>
+                <input type="range" min="0" max="1" step="0.01">
+            </label>
+        </div>
+
         <div class="stats hide">
             <code class="fps">0 fps</code>
             <code class="update">update: 0</code>
             <code class="render">render: 0</code>
+            <code class="day-time">day-time: 0</code>
         </div>
     </main>
 

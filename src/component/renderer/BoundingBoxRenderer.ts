@@ -1,5 +1,5 @@
 import Component from "../Component.ts";
-import { gl, mainScene } from "../../main.ts";
+import { gl } from "../../main.ts";
 import BoundingBox from "../../primitives/BoundingBox.ts";
 import { Opt } from "../../../lib/types.ts";
 import { deleteBuffer, deleteVertexArray, lineVertexLayout } from "../../webgl.ts";
@@ -36,7 +36,7 @@ export default class BoundingBoxRenderer extends Component {
             return;
         }
 
-        const camera = mainScene.getMainCamera();
+        const camera = this.scene.getActiveCamera();
         if (!is(camera)) {
             return;
         }

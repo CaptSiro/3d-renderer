@@ -3,11 +3,12 @@ import { Opt } from "../../../lib/types.ts";
 import Shader from "../../resource/shader/Shader.ts";
 import Transform from "../Transform.ts";
 import ShaderSource from "../../resource/shader/ShaderSource.ts";
-import { deltaTime, gl, mainScene } from "../../main.ts";
+import { gl } from "../../main.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
 import { float, int, Vec3 } from "../../types.ts";
 import Vector3 from "../../primitives/Vector3.ts";
 import Mathf from "../../primitives/Mathf.ts";
+import Time from "../../object/Time.ts";
 
 
 
@@ -17,14 +18,19 @@ export type Light = {
     specular: Vec3,
 };
 
+export type SolarPath = (time: Time, sky: SkyRenderer) => Vec3;
+
+export const defaultSolarPath: SolarPath = (time, sky) => glm.vec3(
+    0,
+    Math.sin(time.getDayTime() * 2 * Math.PI) * sky.atmosphereHeight * 2,
+    Math.cos(time.getDayTime() * 2 * Math.PI) * sky.atmosphereHeight * 2
+);
+
 export default class SkyRenderer extends Component {
     private _target: Opt<Transform>;
     private _shader: Opt<Shader>;
 
-    public dayDuration: float = 30;
-    public timeOfTheDay: float = 0;
-
-    public cubeSize: float = 100;
+    public cubeSize: float = 250;
     public atmosphereHeight: float = 100;
 
     public wavelengths: Vec3 = glm.vec3(700, 530, 440);
@@ -37,15 +43,25 @@ export default class SkyRenderer extends Component {
 
 
 
+    private _solarPath: SolarPath = defaultSolarPath;
+
+
+
     private lightDescriptions: (Light & { time: float })[] = [
         {
             time: 0,
+            ambient: Vector3.rgb(10, 10, 20),
+            diffuse: Vector3.rgb(5, 5, 10),
+            specular: Vector3.rgb(20, 20, 30)
+        },
+        {
+            time: 0.05,
             ambient: Vector3.rgb(255, 147, 41),
             diffuse: Vector3.rgb(255, 147, 41),
             specular: Vector3.rgb(255, 255, 255)
         },
         {
-            time: 0.125,
+            time: 0.100,
             ambient: Vector3.rgb(255, 230, 200),
             diffuse: Vector3.rgb(255, 230, 200),
             specular: Vector3.rgb(255, 255, 245)
@@ -63,13 +79,13 @@ export default class SkyRenderer extends Component {
             specular: Vector3.rgb(255, 255, 245)
         },
         {
-            time: 0.5,
+            time: 0.450,
             ambient: Vector3.rgb(255, 147, 41),
             diffuse: Vector3.rgb(255, 147, 41),
             specular: Vector3.rgb(255, 255, 255)
         },
         {
-            time: 0.625,
+            time: 0.5,
             ambient: Vector3.rgb(30, 30, 40),
             diffuse: Vector3.rgb(20, 20, 30),
             specular: Vector3.rgb(50, 50, 60)
@@ -80,25 +96,12 @@ export default class SkyRenderer extends Component {
             diffuse: Vector3.rgb(2, 2, 8),
             specular: Vector3.rgb(10, 10, 20)
         },
-        {
-            time: 0.875,
-            ambient: Vector3.rgb(10, 10, 20),
-            diffuse: Vector3.rgb(5, 5, 10),
-            specular: Vector3.rgb(20, 20, 30)
-        },
     ];
 
 
 
-    public update(): void {
-        this.timeOfTheDay += deltaTime / this.dayDuration;
-        if (this.timeOfTheDay >= 1) {
-            this.timeOfTheDay -= 1;
-        }
-    }
-
     public render(): void {
-        const camera = mainScene.getMainCamera();
+        const camera = this.scene.getActiveCamera();
         if (!is(camera) || !is(this._shader) || !is(this._target)) {
             return;
         }
@@ -122,16 +125,16 @@ export default class SkyRenderer extends Component {
         gl.drawArrays(gl.TRIANGLES, 0, 36);
     }
 
+    public setSunPosition(path: SolarPath): void {
+        this._solarPath = path;
+    }
+
     public getSunPosition(): Vec3 {
-        return glm.vec3(
-            0,
-            Math.sin(this.timeOfTheDay * 2 * Math.PI) * this.atmosphereHeight,
-            Math.cos(this.timeOfTheDay * 2 * Math.PI) * this.atmosphereHeight
-        );
+        return this._solarPath(this.scene.getTime(), this);
     }
 
     public getSunLight(): Light {
-        const current = this.timeOfTheDay;
+        const current = this.scene.getTime().getDayTime();
         let lower: int = this.lightDescriptions.length - 1;
         let upper: int = 0;
 

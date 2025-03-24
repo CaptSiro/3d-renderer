@@ -41,7 +41,7 @@ function resizeViewport() {
     gl.viewport(0, 0, _viewport.width, _viewport.height);
 
     const aspectRatio = rect.width / rect.height;
-    projectionMatrix = glm.perspective(glm.radians(35.0), aspectRatio, 0.1, 250);
+    projectionMatrix = glm.perspective(glm.radians(35.0), aspectRatio, 0.1, 500);
 }
 
 const context = _viewport?.getContext("webgl2");
@@ -58,16 +58,13 @@ window.addEventListener("resize", resizeViewport);
 
 export let mainScene: Scene = new Scene();
 
-const defaultCameraObject = new GameObject(
-    "default_camera",
-    mainScene
-);
+const defaultCameraObject = new GameObject("default_camera");
 
 defaultCameraObject.transform
     .setRotation(Quaternion.eulerDegrees(15, 0, 0))
     .setPosition(glm.vec3(0, 1, 0));
 
-mainScene.setMainCamera(
+mainScene.setActiveCamera(
     defaultCameraObject.addComponent(Camera)
 );
 
@@ -75,7 +72,7 @@ defaultCameraObject.addComponent(Movement);
 
 
 
-const rayGameObject = new GameObject("ray", mainScene);
+const rayGameObject = new GameObject("ray");
 const ray = rayGameObject.addComponent(RayRenderer);
 
 
@@ -92,7 +89,7 @@ async function init() {
 
     const suzanne = await mainScene.loadGameObject("suzanne", Path.from("/models/Suzanne.obj"));
     suzanne.transform
-        .setPosition(glm.vec3(3, 0, 3))
+        .setPosition(glm.vec3(1, 0, 3))
         .setRotation(Quaternion.eulerDegrees(-50, 180, 60));
 
     const teapot = await mainScene.loadGameObject("teapot", Path.from("/models/Cube.obj"));
@@ -194,6 +191,57 @@ window.addEventListener("keydown", event => {
 
 
 
+const play = $(".play");
+const pause = $(".pause");
+const timeInput = $<HTMLInputElement>(".time-input > input");
+
+if (is(timeInput)) {
+    timeInput.value = String(0.25);
+    timeInput.addEventListener("input", () => {
+        mainScene
+            .getTime()
+            .setDayTime(Number(timeInput.value));
+    });
+
+    timeInput.addEventListener("pointerdown", event => {
+        timeInput.setPointerCapture(event.pointerId);
+        pause?.click();
+    });
+
+    timeInput.addEventListener("pointerup", event => {
+        timeInput.releasePointerCapture(event.pointerId);
+        play?.click();
+    });
+}
+
+if (is(play) && is(pause)) {
+    let timeScale = mainScene.getTime().scale;
+    play.classList.add("hide");
+
+    play.addEventListener("click", () => {
+        pause.classList.remove("hide");
+        play.classList.add("hide");
+        mainScene.getTime().scale = timeScale;
+    });
+
+    pause.addEventListener("click", () => {
+        play.classList.remove("hide");
+        pause.classList.add("hide");
+
+        timeScale = mainScene.getTime().scale;
+        mainScene.getTime().scale = 0;
+    });
+
+    pause.click();
+    mainScene.getTime().setDayTime(0.25);
+}
+
+
+
+export function areStatsHidden(): boolean {
+    return !(keyboard["f3"]?.pressedToggle ?? false);
+}
+
 let frame = 1;
 let frameStart = 0;
 let u = 0;
@@ -204,14 +252,14 @@ const statsUpdate = $('.stats .update');
 const statsRender = $('.stats .render');
 const statsFps = $('.stats .fps');
 function frameCallback(): void {
-    const hideStats = !(keyboard["f3"]?.pressedToggle ?? false);
-    stats?.classList.toggle('hide', hideStats);
+    const statsHidden = !(keyboard["f3"]?.pressedToggle ?? false);
+    stats?.classList.toggle('hide', statsHidden);
 
     const startUpdate = Date.now();
     update()
         .then(async () => {
             const postUpdate = Date.now();
-            const renderStats = postUpdate - frameStart >= 1000 && !hideStats;
+            const renderStats = postUpdate - frameStart >= 1000 && !statsHidden;
             u += Math.round(postUpdate - startUpdate);
 
             if (is(statsUpdate) && renderStats) {

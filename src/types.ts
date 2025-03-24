@@ -1,4 +1,5 @@
 export type float = number;
+export type float01 = float;
 export type int = number;
 
 export type Vec2 = {
@@ -35,3 +36,7 @@ export type Rgb = {
     green: number,
     blue: number
 };
+
+
+
+export type Predicate<T> = (x: T) => boolean;

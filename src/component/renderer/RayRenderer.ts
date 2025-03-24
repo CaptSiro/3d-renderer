@@ -1,7 +1,7 @@
 import Component from "../Component.ts";
 import Renderer from "./Renderer.ts";
 import Ray from "../../primitives/Ray.ts";
-import { gl, mainScene } from "../../main.ts";
+import { gl } from "../../main.ts";
 import { Vec3 } from "../../types.ts";
 import Shader from "../../resource/shader/Shader.ts";
 import { Opt } from "../../../lib/types.ts";
@@ -83,7 +83,7 @@ export class RayRenderer extends Component implements Renderer {
             return;
         }
 
-        const camera = mainScene.getMainCamera();
+        const camera = this.scene.getActiveCamera();
         if (!is(camera)) {
             return;
         }

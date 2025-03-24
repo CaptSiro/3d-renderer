@@ -1,5 +1,4 @@
 import { float, Vec3 } from "../types.ts";
-import SkyRenderer from "../component/renderer/SkyRenderer.ts";
 
 
 

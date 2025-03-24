@@ -1,5 +1,6 @@
 import GameObject from "../object/GameObject.ts";
 import Transform from "./Transform.ts";
+import Scene from "../object/Scene.ts";
 
 
 
@@ -20,8 +21,15 @@ export default class Component {
     }
 
     get transform(): Transform {
-        return (this._gameObject as GameObject).transform;
+        return this.gameObject.transform;
     }
+
+    get scene(): Scene {
+        return this.gameObject.getScene();
+    }
+
+
+
 
     public awake(): void {}
 

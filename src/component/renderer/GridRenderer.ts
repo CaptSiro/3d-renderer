@@ -3,7 +3,7 @@ import { Opt } from "../../../lib/types.ts";
 import Shader from "../../resource/shader/Shader.ts";
 import Transform from "../Transform.ts";
 import ShaderSource from "../../resource/shader/ShaderSource.ts";
-import { gl, mainScene } from "../../main.ts";
+import { gl } from "../../main.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
 import { float, Vec3 } from "../../types.ts";
 
@@ -23,7 +23,7 @@ export default class GridRenderer extends Component {
 
 
     public render(): void {
-        const camera = mainScene.getMainCamera();
+        const camera = this.scene.getActiveCamera();
         if (!is(camera) || !is(this._shader) || !is(this._target)) {
             return;
         }

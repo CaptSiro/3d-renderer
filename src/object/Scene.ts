@@ -6,24 +6,29 @@ import MeshSource from "../resource/mesh/MeshSource.ts";
 import ShaderSource from "../resource/shader/ShaderSource.ts";
 import MeshRenderer from "../component/renderer/MeshRenderer.ts";
 import { is } from "../../lib/jsml/jsml.ts";
+import Time from "./Time.ts";
+import { Predicate } from "../types.ts";
 
 
 
 export default class Scene {
-    private readonly gameObjects: Map<string, GameObject>;
-    private mainCamera: Opt<Camera>;
+    private readonly _gameObjects: GameObject[];
+    private readonly _time: Time;
+    private _activeCamera: Opt<Camera>;
 
     constructor() {
-        this.gameObjects = new Map<string, GameObject>();
+        this._gameObjects = [];
+        this._time = new Time();
     }
 
 
 
     public update(): void {
-        this.mainCamera?.gameObject.update();
+        this._time.update();
+        this._activeCamera?.gameObject.update();
 
-        for (const gameObject of this.gameObjects.values()) {
-            if (gameObject === this.mainCamera?.gameObject) {
+        for (const gameObject of this._gameObjects.values()) {
+            if (gameObject === this._activeCamera?.gameObject) {
                 continue;
             }
 
@@ -32,42 +37,52 @@ export default class Scene {
     }
 
     public render(): void {
-        const camera = this.getMainCamera();
+        const camera = this.getActiveCamera();
         if (!is(camera)) {
             return;
         }
 
         camera.preRender();
 
-        for (const gameObject of this.gameObjects.values()) {
+        for (const gameObject of this._gameObjects.values()) {
             gameObject.render();
         }
     }
 
 
 
-    public addGameObject(gameObject: GameObject): void {
-        this.gameObjects.set(gameObject.name, gameObject);
+    public getTime(): Time {
+        return this._time;
     }
 
-    public deleteGameObject(gameObject: GameObject): void {
-        this.gameObjects.delete(gameObject.name);
+    public addGameObject(gameObject: GameObject): void {
+        this._gameObjects.push(gameObject);
+    }
+
+    public deleteGameObject(predicate: Predicate<GameObject>): boolean {
+        const i = this._gameObjects.findIndex(predicate);
+        if (i < 0) {
+            return false;
+        }
+
+        this._gameObjects.splice(i, 1);
+        return true;
     }
 
     public getGameObjects(): MapIterator<GameObject> {
-        return this.gameObjects.values();
+        return this._gameObjects.values();
     }
 
-    public getMainCamera(): Opt<Camera> {
-        return this.mainCamera;
+    public getActiveCamera(): Opt<Camera> {
+        return this._activeCamera;
     }
 
-    public setMainCamera(camera: Camera): void {
-        this.mainCamera = camera;
+    public setActiveCamera(camera: Camera): void {
+        this._activeCamera = camera;
     }
 
     public async loadGameObject(name: string, path: Path): Promise<GameObject> {
-        const gameObject = new GameObject(name, this);
+        const gameObject = new GameObject(name, undefined, this);
 
         const meshSources = await MeshSource.load(path);
         const shaderSource = await ShaderSource.load(

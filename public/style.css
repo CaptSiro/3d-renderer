@@ -52,6 +52,30 @@ main,
     display: none !important;
 }
 
+.time-controls {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    translate: -50% 0;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7);
+    text-align: left;
+    display: flex;
+    gap: 8px;
+    padding: 4px;
+    align-items: center;
+}
+
+.time-controls .time-input {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.time-controls .time-input code {
+    height: min-content;
+}
+
 .stats {
     min-width: 200px;
     position: fixed;

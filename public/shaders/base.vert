@@ -21,7 +21,7 @@ void main()
 {
     gl_Position = MVP * vec4(aPosition, 1.0f);
     FragmentPosition = vec3(Model * vec4(aPosition, 1.0));
-    Normal = mat3(transpose(inverse(Model))) * aNormal;
+    Normal = transpose(inverse(mat3(Model))) * aNormal;
     TextureCoords = aTextureCoords;
     MaterialIndex = aMaterialIndex;
 }

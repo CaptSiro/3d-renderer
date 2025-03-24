@@ -3,7 +3,7 @@ import { Opt } from "../../../lib/types.ts";
 import Shader from "../../resource/shader/Shader.ts";
 import Mesh from "../../resource/mesh/Mesh.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
-import { keyboard, mainScene } from "../../main.ts";
+import { keyboard } from "../../main.ts";
 import MeshSource from "../../resource/mesh/MeshSource.ts";
 import ShaderSource from "../../resource/shader/ShaderSource.ts";
 import Renderer from "./Renderer.ts";
@@ -27,7 +27,7 @@ export default class MeshRenderer extends Component implements Renderer {
             return;
         }
 
-        const camera = mainScene.getMainCamera();
+        const camera = this.scene.getActiveCamera();
         if (!is(camera)) {
             return;
         }
@@ -85,7 +85,7 @@ export default class MeshRenderer extends Component implements Renderer {
         const shader = await Shader.load(shaderSource);
 
         shader.onBind(() => {
-            const camera = mainScene.getMainCamera();
+            const camera = this.scene.getActiveCamera();
             if (!is(camera)) {
                 return;
             }

@@ -1,5 +1,4 @@
 import Component from "../component/Component.ts";
-import { mainScene, time } from "../main.ts";
 import { is } from "../../lib/jsml/jsml.ts";
 import SkyRenderer from "../component/renderer/SkyRenderer.ts";
 
@@ -7,7 +6,7 @@ import SkyRenderer from "../component/renderer/SkyRenderer.ts";
 
 export default class Sun extends Component {
     public update() {
-        const camera = mainScene.getMainCamera();
+        const camera = this.scene.getActiveCamera();
         if (!is(camera)) {
             return;
         }
@@ -17,6 +16,8 @@ export default class Sun extends Component {
             return;
         }
 
-        this.transform.setPosition(sky.getSunPosition());
+        this.transform.setPosition(
+            sky.getSunPosition()
+        );
     }
 }
