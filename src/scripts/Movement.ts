@@ -2,25 +2,25 @@ import Component from "../component/Component.ts";
 import Mathf from "../primitives/Mathf.ts";
 import { Quaternion } from "../primitives/Quaternion.ts";
 import { deltaTime, keyboard, viewport } from "../main.ts";
-import * as t from "../types.ts";
 import Vector3 from "../primitives/Vector3.ts";
 import { editor } from "../editor/Editor.ts";
 import NumberEditor from "../editor/NumberEditor.ts";
+import type { float, Vec3 } from "../types.ts";
 
 
 
 export default class Movement extends Component {
     @editor(NumberEditor)
-    public speed: t.float = 5;
+    public speed: float = 5;
 
     @editor(NumberEditor)
-    public sensitivity: t.float = 0.05;
+    public sensitivity: float = 0.05;
 
     @editor(NumberEditor)
-    public yaw: t.float = 0;
+    public yaw: float = 0;
 
     @editor(NumberEditor)
-    public pitch: t.float = 15;
+    public pitch: float = 15;
 
 
 
@@ -48,7 +48,7 @@ export default class Movement extends Component {
         });
     }
 
-    private getForward(): t.Vec3 {
+    private getForward(): Vec3 {
         const forward = this.transform.getForward();
         return glm.normalize(glm.vec3(forward.x, 0, forward.z));
     }

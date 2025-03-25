@@ -41,10 +41,10 @@ export default class SkyRenderer extends Component {
     @editor(Vec3Editor)
     public wavelengths: Vec3 = glm.vec3(700, 530, 440);
     @editor(NumberEditor)
-    public scatteringStrength: float = 1;
+    public scatteringStrength: float = 0.4;
 
     @editor(NumberEditor)
-    public atmosphereFalloff: float = 4.3;
+    public atmosphereFalloff: float = 0.2;
 
     @editor(NumberEditor)
     public lightPoints: int = 6;
