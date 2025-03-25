@@ -6,13 +6,13 @@ import { deleteBuffer, deleteVertexArray, lineVertexLayout } from "../../webgl.t
 import ShaderSource from "../../resource/shader/ShaderSource.ts";
 import Shader from "../../resource/shader/Shader.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
-import type { Vec3 } from "../../types.ts";
+import Color from "../../primitives/Color.ts";
 import { editor } from "../../editor/Editor.ts";
-import Vec3Editor from "../../editor/Vec3Editor.ts";
+import ColorEditor from "../../editor/ColorEditor.ts";
 
 
 
-const boundingBoxColor = glm.vec3(0.5, 1, 0.5);
+const boundingBoxColor: Color = Color.vec3(0.5, 1, 0.5);
 
 export default class BoundingBoxRenderer extends Component {
     private _vao: Opt<WebGLVertexArrayObject>;
@@ -20,8 +20,8 @@ export default class BoundingBoxRenderer extends Component {
     private _ebo: Opt<WebGLBuffer>;
     private _shader: Opt<Shader>;
 
-    @editor(Vec3Editor)
-    public color: Vec3 = boundingBoxColor;
+    @editor(ColorEditor)
+    public color: Color = boundingBoxColor;
 
 
 
@@ -47,7 +47,7 @@ export default class BoundingBoxRenderer extends Component {
         this._shader.bind();
 
         this._shader.setMat4("MVP", camera.createMvp(this.gameObject.transform.getMatrix()));
-        this._shader.setVec3("Color", this.color);
+        this._shader.setVec3("Color", this.color.vec3);
 
         gl.bindVertexArray(this._vao);
         gl.bindBuffer(gl.ARRAY_BUFFER, this._vbo);

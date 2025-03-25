@@ -45,13 +45,8 @@ export default class MeshRenderer extends Component implements Renderer {
             mesh.draw();
         }
 
-        if (!keyboard["f"]?.pressedToggle || !is(this._boundingBox)) {
+        if (!keyboard["f"]?.pressedToggle || !is(this._boundingBox) || !is(this._boundingBoxRenderer)) {
             return;
-        }
-
-        if (!is(this._boundingBoxRenderer)) {
-            this._boundingBoxRenderer = this.gameObject.addComponent(BoundingBoxRenderer);
-            this._boundingBoxRenderer.init(this._boundingBox).then();
         }
 
         this._boundingBoxRenderer.draw();
@@ -112,5 +107,7 @@ export default class MeshRenderer extends Component implements Renderer {
         this._meshes = meshes;
         this._shader = shader;
         this._boundingBox = boundingBox;
+        this._boundingBoxRenderer = this.gameObject.addComponent(BoundingBoxRenderer);
+        await this._boundingBoxRenderer.init(this._boundingBox);
     }
 }

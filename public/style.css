@@ -20,10 +20,10 @@
     --accent-2: #c75c38;
     --accent-3: #d17147;
 
-    --border-radius: 8px;
-    --border-radius-smaller: 4px;
-    --gap: 16px;
-    --gap-smaller: 8px;
+    --border-radius: 0;
+    --border-radius-smaller: 0;
+    --gap: 8px;
+    --gap-smaller: 4px;
 }
 
 * {
@@ -47,6 +47,23 @@ main,
     width: 100%;
     height: 100%;
 }
+
+
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--accent-0);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-2);
+}
+
+
 
 .hide {
     display: none !important;
@@ -196,6 +213,9 @@ input[type="range"]::-moz-range-thumb {
     align-items: center;
     user-select: none;
     background-color: var(--window-container-1);
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 .window.draggable .head:hover {
@@ -316,12 +336,10 @@ input[type="range"]::-moz-range-thumb {
 
 input[type="radio"],
 input[type="checkbox"] {
-    position: relative;
-
+    z-index: 0;
     appearance: none;
     background-color: var(--form-container-0);
     margin: 0 !important;
-
     font: inherit;
     color: var(--form-text-0);
     width: 1.15em;
@@ -364,7 +382,7 @@ input[type="radio"]:after {
 input {
     border-radius: var(--form-border-radius);
     border: unset;
-    padding: 8px;
+    padding: calc(1rem / 4);
     background-color: var(--form-container-0);
     color: var(--form-text-0);
     border: 2px solid var(--form-container-3);
@@ -520,11 +538,12 @@ input.form-invalid {
     gap: var(--form-gap);
     padding: 16px 0;
     overflow: auto;
+    font-size: 14px;
 }
 
 .editor-content h3 {
     text-align: left;
-    padding: 0 var(--gap);
+    padding: var(--gap-smaller) var(--gap);
 }
 
 .editor-content .component-content {
@@ -553,10 +572,11 @@ input.form-invalid {
 .editor-container label,
 .editor-container span {
     text-align: left;
+    user-select: none;
 }
 
 .editor-container > input:not([type=checkbox]) {
-    width: 200px;
+    width: 150px;
 }
 
 .editor-container .vec3 {
@@ -577,4 +597,11 @@ input.form-invalid {
 
 .editor-container .vec3 > div input {
     width: min(100px, 100%);
+}
+
+::-webkit-outer-spin-button,
+::-webkit-inner-spin-button {
+    -moz-appearance: textfield;
+    -webkit-appearance: none;
+    margin: 0;
 }

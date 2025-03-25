@@ -5,10 +5,11 @@ import Transform from "../Transform.ts";
 import ShaderSource from "../../resource/shader/ShaderSource.ts";
 import { gl } from "../../main.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
-import type { float, Vec3 } from "../../types.ts";
+import type { float } from "../../types.ts";
 import { editor } from "../../editor/Editor.ts";
 import NumberEditor from "../../editor/NumberEditor.ts";
-import Vec3Editor from "../../editor/Vec3Editor.ts";
+import Color from "../../primitives/Color.ts";
+import ColorEditor from "../../editor/ColorEditor.ts";
 
 
 
@@ -25,11 +26,11 @@ export default class GridRenderer extends Component {
     @editor(NumberEditor)
     public cellGap: float = 2;
 
-    @editor(Vec3Editor)
-    public lineColorThick: Vec3 = glm.vec3(0.5, 0.5, 0.5);
+    @editor(ColorEditor)
+    public lineColorThick: Color = Color.vec3(0.5, 0.5, 0.5);
 
-    @editor(Vec3Editor)
-    public lineColorThin: Vec3 = glm.vec3(0.3, 0.3, 0.3);
+    @editor(ColorEditor)
+    public lineColorThin: Color = Color.vec3(0.3, 0.3, 0.3);
 
 
 
@@ -51,8 +52,8 @@ export default class GridRenderer extends Component {
         // Fragment
         this._shader.setFloat("CellSize", this.cellSize);
         this._shader.setFloat("CellGap", this.cellGap);
-        this._shader.setVec3("LineColorThick", this.lineColorThick);
-        this._shader.setVec3("LineColorThin", this.lineColorThin);
+        this._shader.setVec3("LineColorThick", this.lineColorThick.vec3);
+        this._shader.setVec3("LineColorThin", this.lineColorThin.vec3);
         this._shader.setVec3("CameraPosition", camera.position);
 
         gl.drawArrays(gl.TRIANGLES, 0, 6);

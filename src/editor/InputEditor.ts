@@ -6,6 +6,31 @@ import { Opt } from "../../lib/types.ts";
 
 
 export default abstract class InputEditor<T> extends Editor<T> {
+    public static enableNumberScrolling(label: HTMLElement, input: HTMLInputElement, strength: number = 0.1): void {
+        let isScrolling = false;
+
+        label.addEventListener("pointerdown", async event => {
+            isScrolling = true;
+            label.setPointerCapture(event.pointerId);
+        });
+
+        label.addEventListener("pointerup", event => {
+            isScrolling = false;
+            label.releasePointerCapture(event.pointerId);
+        });
+
+        label.addEventListener("pointermove", event => {
+            if (!isScrolling) {
+                return;
+            }
+
+            input.value = String(Number(input.value) + event.movementX * strength);
+            input.dispatchEvent(new Event("input"));
+        });
+    }
+
+
+
     protected getType(): string {
         return "text";
     }
@@ -28,15 +53,20 @@ export default abstract class InputEditor<T> extends Editor<T> {
         const input = jsml.input({
             type: this.getType(),
             id,
-            value: this.value,
+            value: String(this.value),
             onInput: () => this.saveValue(
                 this.parseValue(input.value)
             )
         });
         this.input = input;
 
+        const label = jsml.label({ for: id }, this.getLabel());
+        if (input.type === "number") {
+            InputEditor.enableNumberScrolling(label, input);
+        }
+
         const container = this.container([
-            jsml.label({ for: id }, this.getLabel()),
+            label,
             input
         ]);
 

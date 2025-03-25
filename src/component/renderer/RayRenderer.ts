@@ -9,8 +9,9 @@ import ShaderSource from "../../resource/shader/ShaderSource.ts";
 import Path from "../../resource/Path.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
 import BoundingBox from "../../primitives/BoundingBox.ts";
+import Color from "../../primitives/Color.ts";
+import ColorEditor from "../../editor/ColorEditor.ts";
 import { editor } from "../../editor/Editor.ts";
-import Vec3Editor from "../../editor/Vec3Editor.ts";
 
 
 
@@ -20,8 +21,8 @@ export class RayRenderer extends Component implements Renderer {
         glm.vec3(0, 1, 0),
     );
 
-    @editor(Vec3Editor)
-    private color: Vec3 = glm.vec3(1, 1, 1);
+    @editor(ColorEditor)
+    private color: Color = Color.vec3(1, 1, 1);
 
     private _vao: Opt<WebGLVertexArrayObject>;
     private _vbo: Opt<WebGLBuffer>;
@@ -94,7 +95,7 @@ export class RayRenderer extends Component implements Renderer {
         this._shader.bind();
 
         this._shader.setMat4("MVP", camera.createMvp(this.transform.getMatrix()));
-        this._shader.setVec3("Color", this.color);
+        this._shader.setVec3("Color", this.color.vec3);
 
         gl.bindVertexArray(this._vao);
         gl.drawArrays(gl.LINES, 0, 2);
@@ -114,7 +115,7 @@ export class RayRenderer extends Component implements Renderer {
         this.updateVbo();
     }
 
-    public setColor(color: Vec3): void {
+    public setColor(color: Color): void {
         this.color = color;
     }
 }

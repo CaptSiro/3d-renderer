@@ -11,7 +11,7 @@ import NumberEditor from "../editor/NumberEditor.ts";
 
 export default class Movement extends Component {
     @editor(NumberEditor)
-    public speed: t.float = 10;
+    public speed: t.float = 5;
 
     @editor(NumberEditor)
     public sensitivity: t.float = 0.05;
@@ -40,7 +40,7 @@ export default class Movement extends Component {
             this.yaw += offsetX;
             this.pitch += offsetY;
 
-            this.pitch = Mathf.clamp(this.pitch, -90, 90);
+            this.pitch = Mathf.clamp(this.pitch, -89.5, 89.5);
 
             this.transform.setRotation(
                 Quaternion.euler(glm.radians(this.pitch), glm.radians(this.yaw), 0)
@@ -50,11 +50,6 @@ export default class Movement extends Component {
 
     private getForward(): t.Vec3 {
         const forward = this.transform.getForward();
-        if (forward.x <= 0.001 && forward.z <= 0.001) {
-            const up = this.transform.getUp();
-            return glm.normalize(glm.vec3(up.x, 0, up.z));
-        }
-
         return glm.normalize(glm.vec3(forward.x, 0, forward.z));
     }
 
