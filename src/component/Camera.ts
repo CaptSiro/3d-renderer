@@ -6,10 +6,13 @@ import { Opt } from "../../lib/types.ts";
 import GridRenderer from "./renderer/GridRenderer.ts";
 import { is } from "../../lib/jsml/jsml.ts";
 import SkyRenderer from "./renderer/SkyRenderer.ts";
+import { editor } from "../editor/Editor.ts";
+import BooleanEditor from "../editor/BooleanEditor.ts";
 
 
 
 export default class Camera extends Component {
+    @editor(BooleanEditor)
     public renderGrid: boolean = true;
     private _gridRenderer: Opt<GridRenderer>;
     private _skyRenderer: Opt<SkyRenderer>;

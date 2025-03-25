@@ -2,13 +2,15 @@ import Component from "../Component.ts";
 import Renderer from "./Renderer.ts";
 import Ray from "../../primitives/Ray.ts";
 import { gl } from "../../main.ts";
-import { Vec3 } from "../../types.ts";
+import type { Vec3 } from "../../types.ts";
 import Shader from "../../resource/shader/Shader.ts";
 import { Opt } from "../../../lib/types.ts";
 import ShaderSource from "../../resource/shader/ShaderSource.ts";
 import Path from "../../resource/Path.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
 import BoundingBox from "../../primitives/BoundingBox.ts";
+import { editor } from "../../editor/Editor.ts";
+import Vec3Editor from "../../editor/Vec3Editor.ts";
 
 
 
@@ -18,6 +20,7 @@ export class RayRenderer extends Component implements Renderer {
         glm.vec3(0, 1, 0),
     );
 
+    @editor(Vec3Editor)
     private color: Vec3 = glm.vec3(1, 1, 1);
 
     private _vao: Opt<WebGLVertexArrayObject>;

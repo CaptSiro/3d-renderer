@@ -5,10 +5,13 @@ import Transform from "../Transform.ts";
 import ShaderSource from "../../resource/shader/ShaderSource.ts";
 import { gl } from "../../main.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
-import { float, int, Vec3 } from "../../types.ts";
+import type { float, int, Vec3 } from "../../types.ts";
 import Vector3 from "../../primitives/Vector3.ts";
 import Mathf from "../../primitives/Mathf.ts";
 import Time from "../../object/Time.ts";
+import { editor } from "../../editor/Editor.ts";
+import Vec3Editor from "../../editor/Vec3Editor.ts";
+import NumberEditor from "../../editor/NumberEditor.ts";
 
 
 
@@ -30,15 +33,22 @@ export default class SkyRenderer extends Component {
     private _target: Opt<Transform>;
     private _shader: Opt<Shader>;
 
+    @editor(NumberEditor)
     public cubeSize: float = 250;
+    @editor(NumberEditor)
     public atmosphereHeight: float = 100;
 
+    @editor(Vec3Editor)
     public wavelengths: Vec3 = glm.vec3(700, 530, 440);
+    @editor(NumberEditor)
     public scatteringStrength: float = 1;
 
+    @editor(NumberEditor)
     public atmosphereFalloff: float = 4.3;
 
+    @editor(NumberEditor)
     public lightPoints: int = 6;
+    @editor(NumberEditor)
     public opticalDepthPoints: int = 6;
 
 

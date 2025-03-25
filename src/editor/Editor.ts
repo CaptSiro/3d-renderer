@@ -1,8 +1,12 @@
-import jsml, { $, _, Content, is } from "../../lib/jsml/jsml.ts";
+import jsml, { _, Content, is } from "../../lib/jsml/jsml.ts";
 import "reflect-metadata"
-import GameObject from "../object/GameObject.ts";
 import { Opt } from "../../lib/types.ts";
-import { window_create } from "../../lib/window.ts";
+import {
+    EVENT_WINDOW_CLOSED,
+    EVENT_WINDOW_MAXIMIZED,
+    EVENT_WINDOW_MINIMIZED,
+    EVENT_WINDOW_OPENED,
+} from "../../lib/window.ts";
 import Component from "../component/Component.ts";
 
 
@@ -13,76 +17,59 @@ export function editor<T extends typeof Editor<any>>(editorClass: T) {
     return Reflect.metadata(editorSymbol, editorClass);
 }
 
-export function getEditor(target: any, property: string): Opt<Editor<unknown>> {
+export function getEditor(editorWindow: HTMLElement, target: any, property: string): Opt<Editor<unknown>> {
     const editorClass = Reflect.getMetadata(editorSymbol, target, property);
     if (editorClass === undefined) {
         return undefined;
     }
 
-    return new editorClass(target, property, target[property]);
+    return new editorClass(editorWindow, target, property, target[property]);
 }
 
 
 
+const EDITOR_UPDATE_INTERVAL = 500;
+
 export default abstract class Editor<T> {
-    public static createWindow(gameObject: GameObject): HTMLDivElement {
-        const id = gameObject.getId();
-        const window = $<HTMLDivElement>("#" + id);
-        if (is(window)) {
-            return window;
-        }
-
-        const title = gameObject.name;
-        const content = jsml.div("editor-content");
-
-        for (const [name, component] of gameObject.getComponents()) {
-            const componentContent = jsml.div("component-content");
-
-            for (const key of Object.keys(component)) {
-                const editor = getEditor(component, key);
-                if (!is(editor)) {
-                    continue;
-                }
-
-                componentContent.append(editor.html());
-            }
-
-            content.append(
-                jsml.div("component", [
-                    jsml.h3(_, name),
-                    componentContent
-                ])
-            );
-        }
-
-        const w = window_create(
-            title,
-            content,
-            {
-                isDraggable: true,
-                isMinimizable: true,
-                isResizable: true
-            }
-        );
-
-        w.id = id;
-        w.addEventListener("keydown", event => event.stopPropagation());
-        w.addEventListener("keyup", event => event.stopPropagation());
-        w.addEventListener("keypress", event => event.stopPropagation());
-
-        return w;
-    }
-
-
+    protected id: Opt<number>;
 
     constructor(
+        protected editorWindow: HTMLElement,
         protected target: unknown,
         protected name: string,
         protected value: T
     ) {
+        this.editorWindow.addEventListener(EVENT_WINDOW_OPENED, this.startUpdate.bind(this));
+        this.editorWindow.addEventListener(EVENT_WINDOW_MAXIMIZED, this.startUpdate.bind(this));
+        this.editorWindow.addEventListener(EVENT_WINDOW_CLOSED, this.stopUpdate.bind(this));
+        this.editorWindow.addEventListener(EVENT_WINDOW_MINIMIZED, this.stopUpdate.bind(this));
     }
 
 
+
+    private startUpdate(): void {
+        if (is(this.id)) {
+            return;
+        }
+
+        this.id = setInterval(this.update.bind(this), EDITOR_UPDATE_INTERVAL);
+    }
+
+    public update(): void {}
+
+    private stopUpdate(): void {
+        if (!is(this.id)) {
+            return;
+        }
+
+        clearInterval(this.id);
+    }
+
+
+
+    protected readValue(): T {
+        return (this.target as any)[this.name];
+    }
 
     protected saveValue(value: T): void {
         const old = (this.target as any)[this.name];

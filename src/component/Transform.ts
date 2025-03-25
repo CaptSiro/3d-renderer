@@ -32,7 +32,9 @@ export default class Transform {
 
     public setPosition(position: Vec3): Transform {
         this.unsetMatrix();
-        this.position = position;
+        this.position.x = position.x;
+        this.position.y = position.y;
+        this.position.z = position.z;
         return this;
     }
 
@@ -42,7 +44,10 @@ export default class Transform {
 
     public setRotation(rotation: Quat): Transform {
         this.unsetMatrix();
-        this.rotation = rotation;
+        this.rotation.x = rotation.x;
+        this.rotation.y = rotation.y;
+        this.rotation.z = rotation.z;
+        this.rotation.w = rotation.w;
         return this;
     }
 
@@ -52,7 +57,9 @@ export default class Transform {
 
     public setScale(scale: Vec3): Transform {
         this.unsetMatrix();
-        this.scale = scale;
+        this.scale.x = scale.x;
+        this.scale.y = scale.y;
+        this.scale.z = scale.z;
         return this;
     }
 
@@ -90,15 +97,13 @@ export default class Transform {
     }
 
     public rotate(axis: Vec3, angleRadians: float): void {
-        this.unsetMatrix();
-
         // https://stackoverflow.com/a/66054048
         const norm = glm.normalize(axis);
 
         const w = glm.cos(angleRadians / 2);
         const v = glm.sin(angleRadians / 2);
 
-        this.rotation = glm.quat(w, norm ["*"] (v));
+        this.setRotation(glm.quat(w, norm ["*"] (v)));
     }
 
     public rotateDegrees(axis: Vec3, angleDegrees: float): void {

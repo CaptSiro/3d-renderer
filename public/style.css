@@ -184,6 +184,8 @@ input[type="range"]::-moz-range-thumb {
     translate: -50% -50%;
     background-color: var(--window-container-0);
     border: 2px solid var(--window-accent-0);
+    max-height: 80vh;
+    overflow: auto;
 }
 
 .window .head {
@@ -517,6 +519,12 @@ input.form-invalid {
     flex-direction: column;
     gap: var(--form-gap);
     padding: 16px 0;
+    overflow: auto;
+}
+
+.editor-content h3 {
+    text-align: left;
+    padding: 0 var(--gap);
 }
 
 .editor-content .component-content {
@@ -527,9 +535,13 @@ input.form-invalid {
 
 .editor-container {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     padding: calc(var(--form-gap) / 8) var(--form-gap);
-    gap: calc(var(--form-gap) / 4);
+    justify-content: space-between;
+}
+
+.editor-column {
+    flex-direction: column;
 }
 
 .editor-container.type-checkbox {
@@ -538,6 +550,31 @@ input.form-invalid {
     justify-content: flex-end;
 }
 
-.editor-container label {
+.editor-container label,
+.editor-container span {
     text-align: left;
+}
+
+.editor-container > input:not([type=checkbox]) {
+    width: 200px;
+}
+
+.editor-container .vec3 {
+    display: flex;
+    flex-direction: row;
+    width: 200px;
+    gap: calc(var(--gap) / 4);
+}
+
+.editor-container .vec3 > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: calc(var(--gap) / 4);
+    width: fit-content;
+}
+
+.editor-container .vec3 > div input {
+    width: min(100px, 100%);
 }

@@ -3,8 +3,10 @@ import jsml, { $, _, Icon, is } from "./jsml/jsml.ts";
 
 
 
-const EVENT_WINDOW_OPENED = 'windowOpened';
-const EVENT_WINDOW_CLOSED = 'windowClosed';
+export const EVENT_WINDOW_OPENED = 'windowOpened';
+export const EVENT_WINDOW_CLOSED = 'windowClosed';
+export const EVENT_WINDOW_MINIMIZED = 'windowMinimized';
+export const EVENT_WINDOW_MAXIMIZED = 'windowMaximized';
 
 
 
@@ -86,6 +88,7 @@ export function window_minimize(
 
     minimize.classList.add('hide');
     maximize.classList.remove('hide');
+    element.dispatchEvent(new CustomEvent(EVENT_WINDOW_MINIMIZED));
 }
 
 export function window_maximize(
@@ -121,6 +124,7 @@ export function window_maximize(
 
     maximize.classList.add('hide');
     minimize.classList.remove('hide');
+    element.dispatchEvent(new CustomEvent(EVENT_WINDOW_MAXIMIZED));
 }
 
 
@@ -137,8 +141,6 @@ export function window_close(element: HTMLElement) {
     element.classList.add('hide');
     windowOverlay?.appendChild(element);
     element.dispatchEvent(new CustomEvent(EVENT_WINDOW_CLOSED));
-
-    window.onbeforeunload = null;
 }
 
 export function window_requestAction(id: string, action: "close" | "open") {

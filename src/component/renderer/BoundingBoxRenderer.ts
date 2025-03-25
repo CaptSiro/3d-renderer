@@ -6,7 +6,9 @@ import { deleteBuffer, deleteVertexArray, lineVertexLayout } from "../../webgl.t
 import ShaderSource from "../../resource/shader/ShaderSource.ts";
 import Shader from "../../resource/shader/Shader.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
-import { Vec3 } from "../../types.ts";
+import type { Vec3 } from "../../types.ts";
+import { editor } from "../../editor/Editor.ts";
+import Vec3Editor from "../../editor/Vec3Editor.ts";
 
 
 
@@ -18,6 +20,7 @@ export default class BoundingBoxRenderer extends Component {
     private _ebo: Opt<WebGLBuffer>;
     private _shader: Opt<Shader>;
 
+    @editor(Vec3Editor)
     public color: Vec3 = boundingBoxColor;
 
 

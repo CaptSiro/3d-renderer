@@ -1,4 +1,4 @@
-import { $, assert, is } from "../lib/jsml/jsml.ts";
+import { $, is } from "../lib/jsml/jsml.ts";
 import Path from "./resource/Path.ts";
 import { Mat4 } from "./types";
 import Scene from "./object/Scene.ts";
@@ -12,9 +12,6 @@ import { window_alert, window_open } from "../lib/window.ts";
 import Movement from "./scripts/Movement.ts";
 import Mathf from "./primitives/Mathf.ts";
 import Sun from "./scripts/Sun.ts";
-import Dummy from "./scripts/Dummy.ts";
-import BoundingBoxRenderer from "./component/renderer/BoundingBoxRenderer.ts";
-import Editor from "./editor/Editor.ts";
 
 
 
@@ -95,8 +92,6 @@ async function init() {
         .setPosition(glm.vec3(1, 0, 3))
         .setRotation(Quaternion.eulerDegrees(-50, 180, 60));
 
-    suzanne.addComponent(Dummy);
-
     const teapot = await mainScene.loadGameObject("teapot", Path.from("/models/Cube.obj"));
     teapot.addComponent(Sun);
     teapot.transform
@@ -152,14 +147,15 @@ viewport.addEventListener("contextmenu", event => {
         return;
     }
 
+    event.preventDefault();
     const mouseRay = camera.screenPositionToWorldRay(glm.vec2(event.clientX, event.clientY));
     const hit = mouseRay.cast(mainScene);
     if (!is(hit)) {
+        window_open(camera.gameObject.getEditorWindow());
         return;
     }
 
-    window_open(Editor.createWindow(hit));
-    event.preventDefault();
+    window_open(hit.getEditorWindow());
 });
 
 viewport.addEventListener("click", async () => {

@@ -2,11 +2,14 @@ import Transform from "../component/Transform.ts";
 import Component from "../component/Component.ts";
 import Scene from "./Scene.ts";
 import { Opt } from "../../lib/types";
-import { is } from "../../lib/jsml/jsml.ts";
+import jsml, { $, _, is } from "../../lib/jsml/jsml.ts";
 import Renderer, { isRenderer } from "../component/renderer/Renderer.ts";
 import { mainScene } from "../main.ts";
 import { int, Predicate } from "../types.ts";
 import Counter from "../primitives/Counter.ts";
+import { window_create } from "../../lib/window.ts";
+import TransformEditor from "../editor/TransformEditor.ts";
+import { getEditor } from "../editor/Editor.ts";
 
 
 
@@ -122,5 +125,59 @@ export default class GameObject {
         }
 
         return null;
+    }
+
+
+    public getEditorWindow(): HTMLDivElement {
+        const id = this.getId();
+        const window = $<HTMLDivElement>("#" + id);
+        if (is(window)) {
+            return window;
+        }
+
+        const content = jsml.div("editor-content");
+        const w = window_create(
+            this.name,
+            content,
+            {
+                isDraggable: true,
+                isMinimizable: true,
+                isResizable: true,
+                width: "400px"
+            }
+        );
+
+        content.append(
+            new TransformEditor(w, this, "transform", this.transform)
+                .html()
+        );
+
+        for (const [name, component] of this.components) {
+            const componentContent = jsml.div("component-content");
+
+            for (const key of Object.keys(component)) {
+                const editor = getEditor(w, component, key);
+                if (!is(editor)) {
+                    continue;
+                }
+
+                componentContent.append(editor.html());
+            }
+
+            content.append(
+                jsml.div("component", [
+                    jsml.h3(_, name),
+                    componentContent
+                ])
+            );
+        }
+
+        w.id = id;
+
+        w.addEventListener("keydown", event => event.stopPropagation());
+        w.addEventListener("keyup", event => event.stopPropagation());
+        w.addEventListener("keypress", event => event.stopPropagation());
+
+        return w;
     }
 }

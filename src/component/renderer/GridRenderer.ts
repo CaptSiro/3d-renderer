@@ -5,7 +5,10 @@ import Transform from "../Transform.ts";
 import ShaderSource from "../../resource/shader/ShaderSource.ts";
 import { gl } from "../../main.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
-import { float, Vec3 } from "../../types.ts";
+import type { float, Vec3 } from "../../types.ts";
+import { editor } from "../../editor/Editor.ts";
+import NumberEditor from "../../editor/NumberEditor.ts";
+import Vec3Editor from "../../editor/Vec3Editor.ts";
 
 
 
@@ -13,11 +16,19 @@ export default class GridRenderer extends Component {
     private _target: Opt<Transform>;
     private _shader: Opt<Shader>;
 
+    @editor(NumberEditor)
     public gridSize: float = 100;
+
+    @editor(NumberEditor)
     public cellSize: float = 0.5;
+
+    @editor(NumberEditor)
     public cellGap: float = 2;
 
+    @editor(Vec3Editor)
     public lineColorThick: Vec3 = glm.vec3(0.5, 0.5, 0.5);
+
+    @editor(Vec3Editor)
     public lineColorThin: Vec3 = glm.vec3(0.3, 0.3, 0.3);
 
 
