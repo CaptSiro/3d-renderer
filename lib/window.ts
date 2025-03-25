@@ -38,6 +38,10 @@ export function window_open(element: HTMLElement): void {
         return;
     }
 
+    window_maximize(element);
+    element.style.left = "50%";
+    element.style.top = "50%";
+
     element.classList.remove('hide');
     element.dispatchEvent(new CustomEvent(EVENT_WINDOW_OPENED));
     windowOverlayActive?.appendChild(element);
@@ -49,7 +53,11 @@ function window_move(element: HTMLElement, x: number, y: number): void {
 }
 
 
-export function window_minimize(element: HTMLElement): void {
+export function window_minimize(
+    element: HTMLElement,
+    maximize: Opt<HTMLElement> = undefined,
+    minimize: Opt<HTMLElement> = undefined
+): void {
     if (!isWindowModuleLoaded) {
         queue.push({
             fn: window_minimize,
@@ -68,9 +76,23 @@ export function window_minimize(element: HTMLElement): void {
     const after = element.getBoundingClientRect();
 
     window_move(element, rect.x + after.width / 2, rect.y + after.height / 2);
+
+    minimize ??= $('.minimize', element);
+    maximize ??= $('.maximize', element);
+
+    if (!is(minimize) || !is(maximize)) {
+        return;
+    }
+
+    minimize.classList.add('hide');
+    maximize.classList.remove('hide');
 }
 
-export function window_maximize(element: HTMLElement): void {
+export function window_maximize(
+    element: HTMLElement,
+    maximize: Opt<HTMLElement> = undefined,
+    minimize: Opt<HTMLElement> = undefined
+): void {
     if (!isWindowModuleLoaded) {
         queue.push({
             fn: window_minimize,
@@ -89,6 +111,16 @@ export function window_maximize(element: HTMLElement): void {
     const after = element.getBoundingClientRect();
 
     window_move(element, rect.x + after.width / 2, rect.y + after.height / 2);
+
+    minimize ??= $('.minimize', element);
+    maximize ??= $('.maximize', element);
+
+    if (!is(minimize) || !is(maximize)) {
+        return;
+    }
+
+    maximize.classList.add('hide');
+    minimize.classList.remove('hide');
 }
 
 
@@ -211,15 +243,11 @@ export function window_init(element: HTMLElement): void {
     maximize.classList.add('hide');
 
     minimize.addEventListener('click', () => {
-        window_minimize(element);
-        minimize.classList.add('hide');
-        maximize.classList.remove('hide');
+        window_minimize(element, maximize, minimize);
     });
 
     maximize.addEventListener('click', () => {
-        window_maximize(element);
-        minimize.classList.remove('hide');
-        maximize.classList.add('hide');
+        window_maximize(element, maximize, minimize);
     });
 }
 
@@ -229,6 +257,8 @@ export type WindowSettings = {
     isDraggable?: boolean,
     isMinimizable?: boolean,
     isResizable?: boolean,
+    width?: string,
+    height?: string,
 }
 
 export function window_create(title: string, content: any, settings: WindowSettings = {}): HTMLDivElement {
@@ -252,6 +282,9 @@ export function window_create(title: string, content: any, settings: WindowSetti
         ]),
         jsml.div("content", content)
     ]);
+
+    w.style.width = settings.width ?? "300px";
+    w.style.height = settings.height ?? "unset";
 
     if (settings.isDraggable === true) {
         w.dataset.windowDraggable = "true";

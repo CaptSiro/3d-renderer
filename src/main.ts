@@ -1,4 +1,4 @@
-import { $, is } from "../lib/jsml/jsml.ts";
+import { $, assert, is } from "../lib/jsml/jsml.ts";
 import Path from "./resource/Path.ts";
 import { Mat4 } from "./types";
 import Scene from "./object/Scene.ts";
@@ -8,10 +8,13 @@ import { Quaternion } from "./primitives/Quaternion.ts";
 import MaterialSource from "./resource/material/MaterialSource.ts";
 import { RayRenderer } from "./component/renderer/RayRenderer.ts";
 import { Opt } from "../lib/types.ts";
-import { window_alert } from "../lib/window.ts";
+import { window_alert, window_open } from "../lib/window.ts";
 import Movement from "./scripts/Movement.ts";
 import Mathf from "./primitives/Mathf.ts";
 import Sun from "./scripts/Sun.ts";
+import Dummy from "./scripts/Dummy.ts";
+import BoundingBoxRenderer from "./component/renderer/BoundingBoxRenderer.ts";
+import Editor from "./editor/Editor.ts";
 
 
 
@@ -92,6 +95,8 @@ async function init() {
         .setPosition(glm.vec3(1, 0, 3))
         .setRotation(Quaternion.eulerDegrees(-50, 180, 60));
 
+    suzanne.addComponent(Dummy);
+
     const teapot = await mainScene.loadGameObject("teapot", Path.from("/models/Cube.obj"));
     teapot.addComponent(Sun);
     teapot.transform
@@ -141,23 +146,23 @@ async function render() {
     mainScene.render();
 }
 
-viewport.addEventListener("click", async () => {
-    // const camera = mainScene.getMainCamera();
-    // if (is(camera)) {
-    //     const mouseRay = camera.screenPositionToWorldRay(glm.vec2(event.clientX, event.clientY));
-    //     ray.setRay(mouseRay.getStart(), mouseRay.getDirection());
-    //     ray.setColor(glm.vec3(1.0, 0.3, 0.3));
-    //
-    //     const hit = mouseRay.cast(mainScene);
-    //     if (!is(hit)) {
-    //         console.log('Ray did not hit anything');
-    //     } else {
-    //         const bb = assert(hit.getComponent(BoundingBoxRenderer));
-    //         bb.color = glm.vec3(0.3, 0.3, 1.0);
-    //         console.log('Hit ', hit.name);
-    //     }
-    // }
+viewport.addEventListener("contextmenu", event => {
+    const camera = mainScene.getActiveCamera();
+    if (!is(camera)) {
+        return;
+    }
 
+    const mouseRay = camera.screenPositionToWorldRay(glm.vec2(event.clientX, event.clientY));
+    const hit = mouseRay.cast(mainScene);
+    if (!is(hit)) {
+        return;
+    }
+
+    window_open(Editor.createWindow(hit));
+    event.preventDefault();
+});
+
+viewport.addEventListener("click", async () => {
     await _viewport.requestPointerLock();
     _viewport.focus();
 });
@@ -228,7 +233,10 @@ if (is(play) && is(pause)) {
         play.classList.remove("hide");
         pause.classList.add("hide");
 
-        timeScale = mainScene.getTime().scale;
+        if (timeScale > 0.000001 && mainScene.getTime().scale > 0.000001) {
+            timeScale = mainScene.getTime().scale;
+        }
+
         mainScene.getTime().scale = 0;
     });
 
@@ -238,12 +246,13 @@ if (is(play) && is(pause)) {
 
 
 
-export function areStatsHidden(): boolean {
-    return !(keyboard["f3"]?.pressedToggle ?? false);
-}
-
 let frame = 1;
 let frameStart = 0;
+
+export function areStatsHidden(): boolean {
+    return !(keyboard["f3"]?.pressedToggle ?? false) || Date.now() - frameStart < 1000;
+}
+
 let u = 0;
 let r = 0;
 let fps = 0;

@@ -73,6 +73,10 @@ export default class GameObject {
 
 
 
+    public getId(): string {
+        return this._name + '-' + this._id;
+    }
+
     public setActive(isActive: boolean): void {
         this.isActive = isActive;
     }
@@ -104,6 +108,10 @@ export default class GameObject {
 
     public getComponent<T extends new () => Component>(componentClass: T): Opt<InstanceType<T>> {
         return this.components.get(componentClass.name) as Opt<InstanceType<T>>;
+    }
+
+    public getComponents(): Map<string, Component> {
+        return this.components;
     }
 
     public findComponent(predicate: Predicate<Component>): Opt<Component> {
