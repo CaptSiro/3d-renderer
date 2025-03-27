@@ -88,8 +88,8 @@ export default class Transform {
         return this.rotation ["*"] (Vector3.FORWARD);
     }
 
-    public getRight(): Vec3 {
-        return this.rotation ["*"] (Vector3.RIGHT);
+    public getLeft(): Vec3 {
+        return this.rotation ["*"] (Vector3.LEFT);
     }
 
     public getUp(): Vec3 {

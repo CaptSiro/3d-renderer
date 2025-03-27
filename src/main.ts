@@ -1,4 +1,4 @@
-import { $, is } from "../lib/jsml/jsml.ts";
+import { $, assert, is } from "../lib/jsml/jsml.ts";
 import Path from "./resource/Path.ts";
 import { Mat4 } from "./types";
 import Scene from "./object/Scene.ts";
@@ -6,14 +6,12 @@ import GameObject from "./object/GameObject.ts";
 import Camera from "./component/Camera.ts";
 import { Quaternion } from "./primitives/Quaternion.ts";
 import MaterialSource from "./resource/material/MaterialSource.ts";
-import { RayRenderer } from "./component/renderer/RayRenderer.ts";
-import { Opt } from "../lib/types.ts";
-import { window_alert, window_open } from "../lib/window.ts";
+import { window_open } from "../lib/window.ts";
 import Movement from "./scripts/Movement.ts";
 import Mathf from "./primitives/Mathf.ts";
 import Sun from "./scripts/Sun.ts";
-
-
+import Keyboard from "./input/Keyboard.ts";
+import State from "./object/State.ts";
 
 declare global {
     const glm: any;
@@ -73,6 +71,20 @@ defaultCameraObject.addComponent(Movement);
 
 
 async function init() {
+    Keyboard.init();
+    Keyboard.register({
+        key: "F3",
+        onPress: () => State.isStatisticScreenOpened = !State.isStatisticScreenOpened,
+        preventDefault: true,
+        stopPropagation: true
+    });
+    Keyboard.register({
+        key: "f",
+        onPress: () => State.isBoundingBoxRenderingEnabled = !State.isBoundingBoxRenderingEnabled,
+        preventDefault: true,
+    });
+
+
     await MaterialSource.load(MaterialSource.getDefaultMaterial());
 
     gl.enable(gl.DEPTH_TEST);
@@ -94,47 +106,18 @@ async function init() {
         .setScale(glm.vec3(0.5, 0.5, 0.5));
 }
 
-export let time: number = 0;
-export let deltaTime: number = 0;
-
-
-
-type Key = {
-    pressedToggle: boolean,
-    held: boolean
-};
-
-export const keyboard: Record<string, Opt<Key>> = {}
-
-function getKey(key: string): Key {
-    if (is(keyboard[key])) {
-        return keyboard[key];
-    }
-
-    const k = {
-        pressedToggle: false,
-        held: false
-    };
-
-    keyboard[key] = k;
-    return k;
-}
-
 
 
 async function update() {
-    const now = Date.now() / 1000;
-    deltaTime = now - time;
-    time = now;
-
     mainScene.update();
 }
 
 async function render() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
     mainScene.render();
 }
+
+
 
 viewport.addEventListener("contextmenu", event => {
     const camera = mainScene.getActiveCamera();
@@ -156,33 +139,6 @@ viewport.addEventListener("contextmenu", event => {
 viewport.addEventListener("click", async () => {
     await _viewport.requestPointerLock();
     _viewport.focus();
-});
-
-window.addEventListener("keyup", event => {
-    if (event.key !== "F5") {
-        event.preventDefault();
-    }
-
-    if (event.key.toLowerCase() === 's' && event.ctrlKey) {
-        window_alert("Saved", { isDraggable: true, isMinimizable: true }).then();
-    }
-
-    const key = getKey(event.key.toLowerCase());
-    key.held = false;
-    key.pressedToggle = !key.pressedToggle;
-});
-
-window.addEventListener("keydown", event => {
-    if (event.key !== "F5") {
-        event.preventDefault();
-    }
-
-    if (event.key.toLowerCase() === 's' && event.ctrlKey) {
-        return;
-    }
-
-    const key = getKey(event.key.toLowerCase());
-    key.held = true;
 });
 
 
@@ -241,7 +197,7 @@ let frame = 1;
 let frameStart = 0;
 
 export function areStatsHidden(): boolean {
-    return !(keyboard["f3"]?.pressedToggle ?? false) || Date.now() - frameStart < 1000;
+    return State.isStatisticScreenOpened || Date.now() - frameStart < 1000;
 }
 
 let u = 0;
@@ -252,7 +208,7 @@ const statsUpdate = $('.stats .update');
 const statsRender = $('.stats .render');
 const statsFps = $('.stats .fps');
 function frameCallback(): void {
-    const statsHidden = !(keyboard["f3"]?.pressedToggle ?? false);
+    const statsHidden = !State.isStatisticScreenOpened;
     stats?.classList.toggle('hide', statsHidden);
 
     const startUpdate = Date.now();

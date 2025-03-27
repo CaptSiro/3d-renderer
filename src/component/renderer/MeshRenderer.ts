@@ -3,13 +3,13 @@ import { Opt } from "../../../lib/types.ts";
 import Shader from "../../resource/shader/Shader.ts";
 import Mesh from "../../resource/mesh/Mesh.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
-import { keyboard } from "../../main.ts";
 import MeshSource from "../../resource/mesh/MeshSource.ts";
 import ShaderSource from "../../resource/shader/ShaderSource.ts";
 import Renderer from "./Renderer.ts";
 import BoundingBox from "../../primitives/BoundingBox.ts";
 import BoundingBoxRenderer from "./BoundingBoxRenderer.ts";
 import SkyRenderer from "./SkyRenderer.ts";
+import State from "../../object/State.ts";
 
 
 
@@ -45,7 +45,7 @@ export default class MeshRenderer extends Component implements Renderer {
             mesh.draw();
         }
 
-        if (!keyboard["f"]?.pressedToggle || !is(this._boundingBox) || !is(this._boundingBoxRenderer)) {
+        if (!State.isBoundingBoxRenderingEnabled || !is(this._boundingBox) || !is(this._boundingBoxRenderer)) {
             return;
         }
 

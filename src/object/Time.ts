@@ -14,15 +14,17 @@ export default class Time {
     private _deltaTime: float = 0;
     private _systemTime: float = 0;
     private _dayTime: float = 0;
+    private _dayDeltaTime: float = 0;
 
 
 
     public update(): void {
         const now = Date.now() / 1000;
 
-        this._deltaTime = (now - this._systemTime) * this.scale;
+        this._deltaTime = now - this._systemTime;
 
-        this._dayTime += this._deltaTime / this.dayDuration;
+        this._dayDeltaTime = this._deltaTime * this.scale;
+        this._dayTime += this._dayDeltaTime / this.dayDuration;
         this._dayTime -= Math.floor(this._dayTime);
 
         this._systemTime = now;
@@ -42,6 +44,10 @@ export default class Time {
 
     public getDeltaTime(): float {
         return this._deltaTime;
+    }
+
+    public getDayDeltaTime(): float {
+        return this._dayDeltaTime;
     }
 
     public getSystemTime(): float {

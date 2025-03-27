@@ -1,15 +1,19 @@
 import Component from "../component/Component.ts";
 import Mathf from "../primitives/Mathf.ts";
 import { Quaternion } from "../primitives/Quaternion.ts";
-import { deltaTime, keyboard, viewport } from "../main.ts";
-import Vector3 from "../primitives/Vector3.ts";
+import { viewport } from "../main.ts";
 import { editor } from "../editor/Editor.ts";
 import NumberEditor from "../editor/NumberEditor.ts";
 import type { float, Vec3 } from "../types.ts";
+import BooleanEditor from "../editor/BooleanEditor.ts";
+import Keyboard from "../input/Keyboard.ts";
 
 
 
 export default class Movement extends Component {
+    @editor(BooleanEditor)
+    private isLocked: boolean = false;
+
     @editor(NumberEditor)
     public speed: float = 5;
 
@@ -31,7 +35,7 @@ export default class Movement extends Component {
         );
 
         viewport.addEventListener("pointermove", event => {
-            if (document.pointerLockElement !== viewport) {
+            if (document.pointerLockElement !== viewport || this.isLocked) {
                 return;
             }
 
@@ -55,44 +59,24 @@ export default class Movement extends Component {
     }
 
     public update() {
-        const speed = this.speed * deltaTime;
-        const forward = this.getForward();
-        const up = Vector3.UP;
-
-        if (keyboard["w"]?.held) {
-            this.transform.setPosition(
-                this.transform.getPosition() ["+"] (forward ["*"] (speed))
-            );
+        if (this.isLocked) {
+            return;
         }
 
-        if (keyboard["s"]?.held) {
-            this.transform.setPosition(
-                this.transform.getPosition() ["-"] (forward ["*"] (speed))
-            );
-        }
+        const speed = this.speed * this.scene.getTime().getDeltaTime();
+        const direction = Quaternion.eulerDegrees(0, this.yaw, 0) ["*"] (Keyboard.getMovementVector());
+        this.transform.setPosition(
+            this.transform.getPosition() ["+"] (direction ["*"] (speed))
+        );
+    }
 
-        if (keyboard["a"]?.held) {
-            this.transform.setPosition(
-                this.transform.getPosition() ["-"] (glm.normalize(glm.cross(forward, Vector3.UP)) ["*"] (speed))
-            );
-        }
 
-        if (keyboard["d"]?.held) {
-            this.transform.setPosition(
-                this.transform.getPosition() ["+"] (glm.normalize(glm.cross(forward, Vector3.UP)) ["*"] (speed))
-            );
-        }
 
-        if (keyboard[" "]?.held) {
-            this.transform.setPosition(
-                this.transform.getPosition() ["+"] (up ["*"] (speed))
-            );
-        }
+    public lock(): void {
+        this.isLocked = true;
+    }
 
-        if (keyboard["shift"]?.held) {
-            this.transform.setPosition(
-                this.transform.getPosition() ["-"] (up ["*"] (speed))
-            );
-        }
+    public unlock(): void {
+        this.isLocked = false;
     }
 }

@@ -7,7 +7,7 @@ export default class Vector3 {
     public static MAX: Vec3 = glm.vec3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
 
     public static FORWARD: Vec3 = glm.vec3(0, 0, 1);
-    public static RIGHT: Vec3 = glm.vec3(1, 0, 0);
+    public static LEFT: Vec3 = glm.vec3(1, 0, 0);
     public static UP: Vec3 = glm.vec3(0, 1, 0);
 
     public static X: Vec3 = glm.vec3(1, 0, 0);
