@@ -12,6 +12,7 @@ import Time from "../../object/Time.ts";
 import { editor } from "../../editor/Editor.ts";
 import Vec3Editor from "../../editor/Vec3Editor.ts";
 import NumberEditor from "../../editor/NumberEditor.ts";
+import CpuSkyRenderer from "./CpuSkyRenderer.ts";
 
 
 
@@ -107,6 +108,12 @@ export default class SkyRenderer extends Component {
             specular: Vector3.rgb(10, 10, 20)
         },
     ];
+
+
+
+    public awake(): void {
+        this.gameObject.addComponent(CpuSkyRenderer);
+    }
 
 
 

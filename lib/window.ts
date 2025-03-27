@@ -3,6 +3,8 @@ import jsml, { $, _, Icon, is } from "./jsml/jsml.ts";
 
 
 
+export type ModalWindow = HTMLDivElement;
+
 export const EVENT_WINDOW_OPENED = 'windowOpened';
 export const EVENT_WINDOW_CLOSED = 'windowClosed';
 export const EVENT_WINDOW_MINIMIZED = 'windowMinimized';
@@ -49,6 +51,10 @@ export function window_open(element: HTMLElement): void {
     windowOverlayActive?.appendChild(element);
 }
 
+export function window_isOpened(element: ModalWindow): boolean {
+    return !element.classList.contains("hide");
+}
+
 function window_move(element: HTMLElement, x: number, y: number): void {
     element.style.left = String(x / window.innerWidth * 100) + "%";
     element.style.top = String(y / window.innerHeight * 100) + "%";
@@ -75,6 +81,7 @@ export function window_minimize(
 
     const rect = element.getBoundingClientRect();
     content.classList.add('hide');
+    element.style.height = "unset";
     const after = element.getBoundingClientRect();
 
     window_move(element, rect.x + after.width / 2, rect.y + after.height / 2);
@@ -111,6 +118,7 @@ export function window_maximize(
 
     const rect = element.getBoundingClientRect();
     content.classList.remove('hide');
+    element.style.height = element.dataset.height ?? "unset";
     const after = element.getBoundingClientRect();
 
     window_move(element, rect.x + after.width / 2, rect.y + after.height / 2);
@@ -285,8 +293,8 @@ export function window_create(title: string, content: any, settings: WindowSetti
         jsml.div("content", content)
     ]);
 
-    w.style.width = settings.width ?? "300px";
-    w.style.height = settings.height ?? "unset";
+    w.dataset.width = w.style.width = settings.width ?? "300px";
+    w.dataset.height = w.style.height = settings.height ?? "unset";
 
     if (settings.isDraggable === true) {
         w.dataset.windowDraggable = "true";

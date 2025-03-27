@@ -20,7 +20,8 @@ export default class Movement extends Component {
     public yaw: float = 0;
 
     @editor(NumberEditor)
-    public pitch: float = 15;
+    // public pitch: float = 15;
+    public pitch: float = 0;
 
 
 

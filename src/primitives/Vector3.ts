@@ -32,6 +32,14 @@ export default class Vector3 {
         );
     }
 
+    public static exp(v: Vec3): Vec3 {
+        return glm.vec3(
+            Math.exp(v.x),
+            Math.exp(v.y),
+            Math.exp(v.z),
+        );
+    }
+
     public static equal(a: Vec3, b: Vec3): boolean {
         return a.x === b.x
             && a.y === b.y
@@ -44,5 +52,13 @@ export default class Vector3 {
             green / 255,
             blue / 255,
         );
+    }
+
+    public static log(v: Vec3): void {
+        console.log({
+            x: v.x,
+            y: v.y,
+            z: v.z
+        });
     }
 }

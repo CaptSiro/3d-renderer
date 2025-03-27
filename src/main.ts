@@ -61,7 +61,7 @@ export let mainScene: Scene = new Scene();
 const defaultCameraObject = new GameObject("default_camera");
 
 defaultCameraObject.transform
-    .setRotation(Quaternion.eulerDegrees(15, 0, 0))
+    // .setRotation(Quaternion.eulerDegrees(15, 0, 0))
     .setPosition(glm.vec3(0, 1, 0));
 
 mainScene.setActiveCamera(
@@ -69,11 +69,6 @@ mainScene.setActiveCamera(
 );
 
 defaultCameraObject.addComponent(Movement);
-
-
-
-const rayGameObject = new GameObject("ray");
-const ray = rayGameObject.addComponent(RayRenderer);
 
 
 

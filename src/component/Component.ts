@@ -1,10 +1,6 @@
 import GameObject from "../object/GameObject.ts";
 import Transform from "./Transform.ts";
 import Scene from "../object/Scene.ts";
-import jsml, { $, _, is } from "../../lib/jsml/jsml.ts";
-import { window_create } from "../../lib/window.ts";
-import TransformEditor from "../editor/TransformEditor.ts";
-import { getEditor } from "../editor/Editor.ts";
 
 
 

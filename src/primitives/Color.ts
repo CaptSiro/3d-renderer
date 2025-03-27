@@ -37,6 +37,14 @@ export default class Color {
         );
     }
 
+    public static fromVec3(v: Vec3): Color {
+        return new Color(
+            v.x * 255,
+            v.y * 255,
+            v.z * 255
+        );
+    }
+
 
 
     constructor(

@@ -118,4 +118,44 @@ export default class Ray {
 
         return closest;
     }
+
+    public intersectSphere(S: Vec3, r: float) {
+        const sphereToRayStart = this.start ["-"] (S);
+        const b = 2.0 * glm.dot(sphereToRayStart, this.direction);
+        const c = glm.dot(sphereToRayStart, sphereToRayStart) - r*r;
+        const d = b*b - 4.0 * c;
+
+        if (d < 0.0) {
+            return {
+                close: Number.MAX_VALUE,
+                distance: 0
+            };
+        }
+
+        const sqrtD = Math.sqrt(d);
+        const close = Math.max(0.0, (-b - sqrtD) / 2.0);
+        const far = (-b + sqrtD) / 2.0;
+
+        if (far < 0.0) {
+            return {
+                close: Number.MAX_VALUE,
+                distance: 0
+            };
+        }
+
+        return {
+            close,
+            distance: far - close
+        }
+    }
+
+    public intersectPlane(A: Vec3, n: Vec3) {
+        const angle = glm.dot(this.direction, n);
+        if (Math.abs(angle) < 0.0001) {
+            return Number.MAX_VALUE;
+        }
+
+        const d = -glm.dot(A, n);
+        return -(glm.dot(this.start, n) + d) / angle;
+    }
 }
