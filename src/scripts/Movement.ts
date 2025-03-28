@@ -53,11 +53,6 @@ export default class Movement extends Component {
         });
     }
 
-    private getForward(): Vec3 {
-        const forward = this.transform.getForward();
-        return glm.normalize(glm.vec3(forward.x, 0, forward.z));
-    }
-
     public update() {
         if (this.isLocked) {
             return;

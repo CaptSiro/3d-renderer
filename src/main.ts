@@ -1,4 +1,4 @@
-import { $, assert, is } from "../lib/jsml/jsml.ts";
+import { $, is } from "../lib/jsml/jsml.ts";
 import Path from "./resource/Path.ts";
 import { Mat4 } from "./types";
 import Scene from "./object/Scene.ts";
