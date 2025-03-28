@@ -7,11 +7,11 @@ import Camera from "./component/Camera.ts";
 import { Quaternion } from "./primitives/Quaternion.ts";
 import MaterialSource from "./resource/material/MaterialSource.ts";
 import { window_open } from "../lib/window.ts";
-import Movement from "./scripts/Movement.ts";
 import Mathf from "./primitives/Mathf.ts";
 import Sun from "./scripts/Sun.ts";
 import Keyboard from "./input/Keyboard.ts";
 import State from "./object/State.ts";
+import Movement from "./component/Movement.ts";
 
 declare global {
     const glm: any;
@@ -57,7 +57,6 @@ window.addEventListener("resize", resizeViewport);
 export let mainScene: Scene = new Scene();
 
 const defaultCameraObject = new GameObject("default_camera");
-
 defaultCameraObject.transform
     // .setRotation(Quaternion.eulerDegrees(15, 0, 0))
     .setPosition(glm.vec3(0, 1, 0));
@@ -75,6 +74,12 @@ async function init() {
     Keyboard.register({
         key: "F3",
         onPress: () => State.isStatisticScreenOpened = !State.isStatisticScreenOpened,
+        preventDefault: true,
+        stopPropagation: true
+    });
+    Keyboard.register({
+        key: "F1",
+        onPress: () => window_open(State.getEditorWindow()),
         preventDefault: true,
         stopPropagation: true
     });
@@ -104,6 +109,12 @@ async function init() {
     teapot.transform
         .setPosition(glm.vec3(0.0, 5.0, 5.0))
         .setScale(glm.vec3(0.5, 0.5, 0.5));
+
+    const cam2 = new GameObject("cam2");
+    cam2.transform
+        .setPosition(glm.vec3(-3, -1, 10));
+
+    cam2.addComponent(Camera);
 }
 
 
@@ -113,6 +124,8 @@ async function update() {
 }
 
 async function render() {
+    const c = 0.09019607843137255;
+    gl.clearColor(c, c, c, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     mainScene.render();
 }

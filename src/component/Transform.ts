@@ -80,7 +80,7 @@ export default class Transform {
             return this._inverseMatrix;
         }
 
-        this._inverseMatrix = glm.inverse(this._matrix);
+        this._inverseMatrix = glm.inverse(this.getMatrix());
         return this._inverseMatrix;
     }
 

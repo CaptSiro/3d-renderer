@@ -10,6 +10,7 @@ import BoundingBox from "../../primitives/BoundingBox.ts";
 import BoundingBoxRenderer from "./BoundingBoxRenderer.ts";
 import SkyRenderer from "./SkyRenderer.ts";
 import State from "../../object/State.ts";
+import Path from "../../resource/Path.ts";
 
 
 
@@ -109,5 +110,15 @@ export default class MeshRenderer extends Component implements Renderer {
         this._boundingBox = boundingBox;
         this._boundingBoxRenderer = this.gameObject.addComponent(BoundingBoxRenderer);
         await this._boundingBoxRenderer.init(this._boundingBox);
+    }
+
+    public async initFromModelFile(path: Path): Promise<void> {
+        const meshSources = await MeshSource.load(path);
+        const shaderSource = await ShaderSource.load(
+            Path.from("/shaders/base.vert"),
+            Path.from("/shaders/base.frag")
+        );
+
+        await this.init(meshSources, shaderSource);
     }
 }

@@ -12,4 +12,8 @@ export default class Counter {
     public increment(): int {
         return this.n++;
     }
+
+    public peek(): int {
+        return this.n;
+    }
 }

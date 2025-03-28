@@ -551,7 +551,8 @@ input.form-invalid {
     padding: var(--gap-smaller) var(--gap);
 }
 
-.editor-content .component {
+.editor-content .component:not(.no-hr) {
+    padding: 2px 0;
     border-top: 2px solid var(--container-1);
 }
 

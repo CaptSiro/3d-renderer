@@ -6,14 +6,19 @@ import { Opt } from "../../lib/types.ts";
 import GridRenderer from "./renderer/GridRenderer.ts";
 import { is } from "../../lib/jsml/jsml.ts";
 import SkyRenderer from "./renderer/SkyRenderer.ts";
-import { editor } from "../editor/Editor.ts";
-import BooleanEditor from "../editor/BooleanEditor.ts";
+import Counter from "../primitives/Counter.ts";
+import Keyboard from "../input/Keyboard.ts";
+import State from "../object/State.ts";
+import MeshRenderer from "./renderer/MeshRenderer.ts";
+import Path from "../resource/Path.ts";
 
 
 
 export default class Camera extends Component {
-    @editor(BooleanEditor)
-    public renderGrid: boolean = true;
+    private static keyCounter: Counter = new Counter(1);
+
+
+
     private _gridRenderer: Opt<GridRenderer>;
     private _skyRenderer: Opt<SkyRenderer>;
 
@@ -24,6 +29,33 @@ export default class Camera extends Component {
 
     public awake(): void {
         this.updateView();
+        this.assignKey();
+
+        this._skyRenderer = this.gameObject.addComponent(SkyRenderer);
+        this._skyRenderer.init(this.transform).then();
+
+        this._gridRenderer = this.gameObject.addComponent(GridRenderer);
+        this._gridRenderer.init(this.transform).then();
+
+        if (!this.gameObject.hasComponent(MeshRenderer)) {
+            const meshRenderer = this.gameObject.addComponent(MeshRenderer);
+            meshRenderer.initFromModelFile(Path.from("/models/camera.obj")).then();
+        }
+    }
+
+    private assignKey(): void {
+        if (Camera.keyCounter.peek() > 9) {
+            return;
+        }
+
+        Keyboard.register({
+            key: String(Camera.keyCounter.increment()),
+            onPress: () => {
+                if (State.doCameraSwitching) {
+                    this.scene.setActiveCamera(this);
+                }
+            }
+        });
     }
 
     public update(): void {
@@ -33,9 +65,11 @@ export default class Camera extends Component {
 
 
     private preRenderSky(): void {
+        if (!State.doRenderSky) {
+            return;
+        }
+
         if (!is(this._skyRenderer)) {
-            this._skyRenderer = this.gameObject.addComponent(SkyRenderer);
-            this._skyRenderer.init(this.transform).then();
             return;
         }
 
@@ -43,13 +77,11 @@ export default class Camera extends Component {
     }
 
     private preRenderGrid(): void {
-        if (!this.renderGrid) {
+        if (!State.doRenderGrid) {
             return;
         }
 
         if (!is(this._gridRenderer)) {
-            this._gridRenderer = this.gameObject.addComponent(GridRenderer);
-            this._gridRenderer.init(this.transform).then();
             return;
         }
 

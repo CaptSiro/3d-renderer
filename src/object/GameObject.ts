@@ -7,7 +7,7 @@ import Renderer, { isRenderer } from "../component/renderer/Renderer.ts";
 import { mainScene } from "../main.ts";
 import { int, Predicate } from "../types.ts";
 import Counter from "../primitives/Counter.ts";
-import { window_create } from "../../lib/window.ts";
+import { ModalWindow, window_create } from "../../lib/window.ts";
 import TransformEditor from "../editor/TransformEditor.ts";
 import { getEditor } from "../editor/Editor.ts";
 
@@ -50,7 +50,9 @@ export default class GameObject {
         }
 
         for (const component of this.components.values()) {
-            component.update();
+            if (component.isEnabled()) {
+                component.update();
+            }
         }
     }
 
@@ -113,6 +115,10 @@ export default class GameObject {
         return this.components.get(componentClass.name) as Opt<InstanceType<T>>;
     }
 
+    public hasComponent<T extends new () => Component>(componentClass: T): boolean {
+        return this.components.has(componentClass.name);
+    }
+
     public getComponents(): Map<string, Component> {
         return this.components;
     }
@@ -128,7 +134,7 @@ export default class GameObject {
     }
 
 
-    public getEditorWindow(): HTMLDivElement {
+    public getEditorWindow(): ModalWindow {
         const id = this.getId();
         const window = $<HTMLDivElement>("#" + id);
         if (is(window)) {

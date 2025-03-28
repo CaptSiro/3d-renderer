@@ -44,6 +44,10 @@ export default class ObjParser implements MeshFileParser {
 
         const models = [];
 
+        let vertexes = 0;
+        let normals = 0;
+        let textureCoords = 0;
+
         for (const model of description.models) {
             const data = new Float32Array(3 * model.faces.length * meshVertexLayout.getTotal());
             let dataIndex = 0;
@@ -59,7 +63,7 @@ export default class ObjParser implements MeshFileParser {
                 const materialIndex = materialIndexes.get(face.material) ?? 0;
 
                 for (const vertex of face.vertices) {
-                    const v = model.vertices[vertex.vertexIndex - 1];
+                    const v = model.vertices[vertex.vertexIndex - vertexes - 1];
                     data[dataIndex++] = v.x;
                     data[dataIndex++] = v.y;
                     data[dataIndex++] = v.z;
@@ -72,12 +76,12 @@ export default class ObjParser implements MeshFileParser {
                     high.y = Math.max(high.y, v.y);
                     high.z = Math.max(high.z, v.z);
 
-                    const n = model.vertexNormals[vertex.vertexNormalIndex - 1];
+                    const n = model.vertexNormals[vertex.vertexNormalIndex - normals - 1];
                     data[dataIndex++] = n.x;
                     data[dataIndex++] = n.y;
                     data[dataIndex++] = n.z;
 
-                    const t = model.textureCoords[vertex.textureCoordsIndex - 1];
+                    const t = model.textureCoords[vertex.textureCoordsIndex - textureCoords - 1];
                     data[dataIndex++] = t.u;
                     data[dataIndex++] = t.v;
 
@@ -93,6 +97,10 @@ export default class ObjParser implements MeshFileParser {
                 materialIndexes,
                 new BoundingBox(low, high)
             ));
+
+            vertexes += model.vertices.length;
+            normals += model.vertexNormals.length;
+            textureCoords += model.textureCoords.length;
         }
 
         return models;

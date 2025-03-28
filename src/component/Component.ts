@@ -1,16 +1,31 @@
 import GameObject from "../object/GameObject.ts";
 import Transform from "./Transform.ts";
 import Scene from "../object/Scene.ts";
+import { editor } from "../editor/Editor.ts";
+import BooleanEditor from "../editor/BooleanEditor.ts";
 
 
 
 export default class Component {
     private _gameObject: GameObject | any;
 
+    @editor(BooleanEditor)
+    private enable: boolean = true;
+
+
+
     constructor() {
     }
 
 
+
+    public setEnable(enable: boolean): void {
+        this.enable = enable;
+    }
+
+    public isEnabled(): boolean {
+        return this.enable;
+    }
 
     public bind(context: GameObject): void {
         this._gameObject = context;

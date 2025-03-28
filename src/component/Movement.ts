@@ -4,16 +4,13 @@ import { Quaternion } from "../primitives/Quaternion.ts";
 import { viewport } from "../main.ts";
 import { editor } from "../editor/Editor.ts";
 import NumberEditor from "../editor/NumberEditor.ts";
-import type { float, Vec3 } from "../types.ts";
+import type { float } from "../types.ts";
 import BooleanEditor from "../editor/BooleanEditor.ts";
 import Keyboard from "../input/Keyboard.ts";
 
 
 
 export default class Movement extends Component {
-    @editor(BooleanEditor)
-    private isLocked: boolean = false;
-
     @editor(NumberEditor)
     public speed: float = 5;
 
@@ -24,7 +21,6 @@ export default class Movement extends Component {
     public yaw: float = 0;
 
     @editor(NumberEditor)
-    // public pitch: float = 15;
     public pitch: float = 0;
 
 
@@ -35,7 +31,7 @@ export default class Movement extends Component {
         );
 
         viewport.addEventListener("pointermove", event => {
-            if (document.pointerLockElement !== viewport || this.isLocked) {
+            if (!this.isEnabled() || document.pointerLockElement !== viewport) {
                 return;
             }
 
@@ -54,24 +50,10 @@ export default class Movement extends Component {
     }
 
     public update() {
-        if (this.isLocked) {
-            return;
-        }
-
         const speed = this.speed * this.scene.getTime().getDeltaTime();
         const direction = Quaternion.eulerDegrees(0, this.yaw, 0) ["*"] (Keyboard.getMovementVector());
         this.transform.setPosition(
             this.transform.getPosition() ["+"] (direction ["*"] (speed))
         );
-    }
-
-
-
-    public lock(): void {
-        this.isLocked = true;
-    }
-
-    public unlock(): void {
-        this.isLocked = false;
     }
 }

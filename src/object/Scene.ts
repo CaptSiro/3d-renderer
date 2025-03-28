@@ -2,12 +2,11 @@ import GameObject from "./GameObject.ts";
 import Camera from "../component/Camera.ts";
 import { Opt } from "../../lib/types";
 import Path from "../resource/Path.ts";
-import MeshSource from "../resource/mesh/MeshSource.ts";
-import ShaderSource from "../resource/shader/ShaderSource.ts";
 import MeshRenderer from "../component/renderer/MeshRenderer.ts";
 import { is } from "../../lib/jsml/jsml.ts";
 import Time from "./Time.ts";
 import { Predicate } from "../types.ts";
+import Movement from "../component/Movement.ts";
 
 
 
@@ -45,6 +44,10 @@ export default class Scene {
         camera.preRender();
 
         for (const gameObject of this._gameObjects.values()) {
+            if (gameObject === this._activeCamera?.gameObject) {
+                continue;
+            }
+
             gameObject.render();
         }
     }
@@ -78,20 +81,24 @@ export default class Scene {
     }
 
     public setActiveCamera(camera: Camera): void {
+        const movement = this._activeCamera?.gameObject.getComponent(Movement);
+        if (is(movement)) {
+            movement.setEnable(false);
+        }
+
         this._activeCamera = camera;
+
+        const m = camera.gameObject.getComponent(Movement);
+        if (is(m)) {
+            m.setEnable(true);
+        }
     }
 
     public async loadGameObject(name: string, path: Path): Promise<GameObject> {
         const gameObject = new GameObject(name, undefined, this);
 
-        const meshSources = await MeshSource.load(path);
-        const shaderSource = await ShaderSource.load(
-            Path.from("/shaders/base.vert"),
-            Path.from("/shaders/base.frag")
-        );
-
         const meshRenderer = gameObject.addComponent(MeshRenderer);
-        await meshRenderer.init(meshSources, shaderSource);
+        await meshRenderer.initFromModelFile(path);
 
         return gameObject;
     }

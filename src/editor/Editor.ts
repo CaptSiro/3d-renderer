@@ -7,7 +7,6 @@ import {
     EVENT_WINDOW_MINIMIZED,
     EVENT_WINDOW_OPENED,
 } from "../../lib/window.ts";
-import Component from "../component/Component.ts";
 
 
 
@@ -72,10 +71,13 @@ export default abstract class Editor<T> {
     }
 
     protected saveValue(value: T): void {
-        const old = (this.target as any)[this.name];
-        (this.target as any)[this.name] = value;
-        if (this.target instanceof Component) {
-            this.target.onPropertyChange(this.name, old, value);
+        const target = this.target as any;
+
+        const old = target[this.name];
+        target[this.name] = value;
+
+        if (typeof target["onPropertyChange"] === "function") {
+            target.onPropertyChange(this.name, old, value);
         }
     }
 
