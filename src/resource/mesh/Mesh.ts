@@ -18,12 +18,14 @@ export default class Mesh {
     private readonly materials: Map<string, Material>;
     private readonly materialIndexes: Map<string, int>;
     private readonly boundingBox: BoundingBox;
+    private readonly name: string;
 
 
 
     constructor(
         source: MeshSource
     ) {
+        this.name = source.getName();
         this.boundingBox = source.getBoundingBox();
 
         this.materials = new Map<string, Material>();
@@ -101,6 +103,8 @@ export default class Mesh {
         );
 
         gl.bindVertexArray(null);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
     }
 
 

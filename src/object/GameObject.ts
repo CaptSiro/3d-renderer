@@ -10,6 +10,7 @@ import Counter from "../primitives/Counter.ts";
 import { ModalWindow, window_create } from "../../lib/window.ts";
 import TransformEditor from "../editor/TransformEditor.ts";
 import { getEditor } from "../editor/Editor.ts";
+import Path from "../resource/Path.ts";
 
 
 
@@ -132,6 +133,7 @@ export default class GameObject {
 
         return null;
     }
+
 
 
     public getEditorWindow(): ModalWindow {

@@ -7,6 +7,8 @@ import { is } from "../../lib/jsml/jsml.ts";
 import Time from "./Time.ts";
 import { Predicate } from "../types.ts";
 import Movement from "../component/Movement.ts";
+import MeshSource from "../resource/mesh/MeshSource.ts";
+import ShaderSource from "../resource/shader/ShaderSource.ts";
 
 
 
@@ -97,8 +99,27 @@ export default class Scene {
     public async loadGameObject(name: string, path: Path): Promise<GameObject> {
         const gameObject = new GameObject(name, undefined, this);
 
-        const meshRenderer = gameObject.addComponent(MeshRenderer);
-        await meshRenderer.initFromModelFile(path);
+        if (MeshSource.isMeshFile(path)) {
+            const meshSources = await MeshSource.load(path);
+            const shaderSource = await ShaderSource.loadShader("base");
+
+            const first = meshSources.shift();
+            if (!is(first)) {
+                return gameObject;
+            }
+
+            const meshRenderer = gameObject.addComponent(MeshRenderer);
+            await meshRenderer.init([first], shaderSource);
+
+            for (const meshSource of meshSources) {
+                const child = new GameObject(meshSource.getName(), undefined, this);
+                const meshRenderer = child.addComponent(MeshRenderer);
+                await meshRenderer.init([meshSource], shaderSource);
+                gameObject.transform.addChild(child);
+            }
+
+            return gameObject;
+        }
 
         return gameObject;
     }

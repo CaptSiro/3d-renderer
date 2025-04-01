@@ -2,6 +2,7 @@ import { float, Mat4, Quat, Vec3 } from "../types";
 import { is } from "../../lib/jsml/jsml.ts";
 import { Opt } from "../../lib/types";
 import Vector3 from "../primitives/Vector3.ts";
+import GameObject from "../object/GameObject.ts";
 
 
 
@@ -110,5 +111,13 @@ export default class Transform {
 
     public rotateDegrees(axis: Vec3, angleDegrees: float): void {
         this.rotate(axis, glm.radians(angleDegrees));
+    }
+
+    public addChildTransform(transform: Transform): void {
+        this._children.push(transform);
+    }
+
+    public addChild(gameObject: GameObject): void {
+        this.addChildTransform(gameObject.transform);
     }
 }

@@ -12,7 +12,6 @@ import Sun from "./scripts/Sun.ts";
 import Keyboard from "./input/Keyboard.ts";
 import State from "./object/State.ts";
 import Movement from "./component/Movement.ts";
-import MeshRenderer from "./component/renderer/MeshRenderer.ts";
 
 declare global {
     const glm: any;
@@ -59,7 +58,6 @@ export let mainScene: Scene = new Scene();
 
 const defaultCameraObject = new GameObject("default_camera");
 defaultCameraObject.transform
-    // .setRotation(Quaternion.eulerDegrees(15, 0, 0))
     .setPosition(glm.vec3(0, 1, 0));
 
 mainScene.setActiveCamera(
@@ -111,16 +109,17 @@ async function init() {
         .setPosition(glm.vec3(0.0, 5.0, 5.0))
         .setScale(glm.vec3(0.5, 0.5, 0.5));
 
-    const cam2 = new GameObject("cam2");
-    cam2.transform
-        .setPosition(glm.vec3(-3, -1, 10));
-
-    cam2.addComponent(Camera);
-
     const cube = await mainScene.loadGameObject("cube", Path.from("/models/Cube.obj"));
     cube.transform
         .setScale(glm.vec3(.25, .25, .25))
         .setPosition(glm.vec3(-1, .5, 3));
+
+    const cam2 = new GameObject("cam2");
+    cam2.transform
+        .setPosition(glm.vec3(-3, -1, 10));
+    cam2.addComponent(Camera);
+
+    console.log(mainScene);
 }
 
 

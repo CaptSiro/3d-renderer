@@ -1,8 +1,8 @@
 import Path from "../../../Path.ts";
-import MeshSource from "../../MeshSource.ts";
 import ParseContext from "./ParseContext.ts";
 import WavefrontMtlParser, { Mtl } from "./WavefrontMtlParser.ts";
 import { is } from "../../../../../lib/jsml/jsml.ts";
+import Arrays from "../../../../utils/Arrays.ts";
 
 
 
@@ -74,10 +74,6 @@ export default class WavefrontObjParser {
         }
     }
 
-    private getMaterialIndex(model: Obj): number {
-        return model.materialRanges.getCollection().length;
-    }
-
     private lookupVertex(model: Obj, vertex: string): number {
         const index = model.vertexToIndex.get(vertex);
         if (is(index)) {
@@ -88,14 +84,6 @@ export default class WavefrontObjParser {
         model.vertexToIndex.set(vertex, size);
 
         return size;
-    }
-
-    private map_mut(array: any[]): number[] {
-        for (let i = 0; i < array.length; i++) {
-            array[i] = parseFloat(array[i]);
-        }
-
-        return array;
     }
 
     private async processLine(line: string, context: ParseContext<Obj>, path: Path): Promise<void> {
@@ -116,13 +104,13 @@ export default class WavefrontObjParser {
         const model = context.getCurrent();
         switch (command) {
             case 'v':
-                this.vertexes.push(this.map_mut(segments));
+                this.vertexes.push(Arrays.mutateMap(segments, parseFloat));
                 break;
             case 'vn':
-                this.normals.push(this.map_mut(segments));
+                this.normals.push(Arrays.mutateMap(segments, parseFloat));
                 break;
             case 'vt':
-                this.textureCoords.push(this.map_mut(segments));
+                this.textureCoords.push(Arrays.mutateMap(segments, parseFloat));
                 break;
             case 'f':
                 context.markAsUpdated();

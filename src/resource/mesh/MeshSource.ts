@@ -1,5 +1,4 @@
 import Path from "../Path.ts";
-import ObjParser from "./parser/ObjParser.ts";
 import MeshFileParser from "./parser/MeshFileParser.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
 import VertexLayout from "./VertexLayout.ts";
@@ -16,6 +15,15 @@ const parsers: Record<string, MeshFileParser> = {
 };
 
 export default class MeshSource {
+    public static isMeshFile(file: Path): boolean {
+        const extension = file.getExtension();
+        if (!is(extension)) {
+            return false;
+        }
+
+        return extension in parsers;
+    }
+
     private static cache: ResourceCache<Path, MeshSource[]> = new ResourceCache(
         path => path.getLiteral(),
         MeshSource.create
@@ -66,6 +74,10 @@ export default class MeshSource {
 
     public getIndexes(): Uint32Array {
         return this.indexes;
+    }
+
+    public getName(): string {
+        return this.name;
     }
 
     public getData(): Float32Array {

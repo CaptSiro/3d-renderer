@@ -4,18 +4,16 @@ import MeshFileParser from "../MeshFileParser.ts";
 import WavefrontObjParser from "./WavefrontObjParser.ts";
 import MaterialSource from "../../../material/MaterialSource.ts";
 import { meshVertexLayout } from "../../../../webgl.ts";
-import Arrays from "../../../../utils/Arrays.ts";
 import { int } from "../../../../types.ts";
 import BoundingBox from "../../../../primitives/BoundingBox.ts";
 
 
 
-const parser = new WavefrontObjParser();
 const zero = [0, 0, 0];
 
 export default class ObjMesh implements MeshFileParser {
     async parse(path: Path, content: string): Promise<MeshSource[]> {
-        const description = await parser.parse(path, content);
+        const description = await new WavefrontObjParser().parse(path, content);
         const meshSources: MeshSource[] = new Array(description.models.length);
 
         const defaultMaterial = await MaterialSource.load(MaterialSource.getDefaultMaterial());
@@ -85,7 +83,8 @@ export default class ObjMesh implements MeshFileParser {
                 meshVertexLayout,
                 materialSources,
                 materialIndexes,
-                boundingBox
+                boundingBox,
+                model.name
             ).setIndexes(indexes);
         }
 

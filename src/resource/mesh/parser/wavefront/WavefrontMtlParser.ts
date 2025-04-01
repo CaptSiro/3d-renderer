@@ -1,6 +1,7 @@
 import Path from "../../../Path.ts";
 import ParseContext from "./ParseContext.ts";
 import { is } from "../../../../../lib/jsml/jsml.ts";
+import Arrays from "../../../../utils/Arrays.ts";
 
 
 
@@ -39,14 +40,6 @@ export default class WavefrontMtlParser {
         return context.getCollection();
     }
 
-    private map_mut(array: any[]): number[] {
-        for (let i = 0; i < array.length; i++) {
-            array[i] = parseFloat(array[i]);
-        }
-
-        return array;
-    }
-
     private processLine(line: string, context: ParseContext<Mtl>): void {
         const hashtag = line.indexOf('#');
         if (hashtag !== -1) {
@@ -73,7 +66,7 @@ export default class WavefrontMtlParser {
             case 'Ks':
             case 'Ke':
             case 'Tf':
-                context.set(command, this.map_mut(segments));
+                context.set(command, Arrays.mutateMap(segments, parseFloat));
                 break;
             case 'd':
             case 'Tr':
