@@ -12,6 +12,7 @@ import Sun from "./scripts/Sun.ts";
 import Keyboard from "./input/Keyboard.ts";
 import State from "./object/State.ts";
 import Movement from "./component/Movement.ts";
+import MeshRenderer from "./component/renderer/MeshRenderer.ts";
 
 declare global {
     const glm: any;
@@ -115,6 +116,11 @@ async function init() {
         .setPosition(glm.vec3(-3, -1, 10));
 
     cam2.addComponent(Camera);
+
+    const cube = await mainScene.loadGameObject("cube", Path.from("/models/Cube.obj"));
+    cube.transform
+        .setScale(glm.vec3(.25, .25, .25))
+        .setPosition(glm.vec3(-1, .5, 3));
 }
 
 

@@ -5,7 +5,6 @@ import { viewport } from "../main.ts";
 import { editor } from "../editor/Editor.ts";
 import NumberEditor from "../editor/NumberEditor.ts";
 import type { float } from "../types.ts";
-import BooleanEditor from "../editor/BooleanEditor.ts";
 import Keyboard from "../input/Keyboard.ts";
 
 

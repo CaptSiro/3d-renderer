@@ -33,7 +33,7 @@ export default class VertexLayout {
         return this.textureCoordFloats;
     }
 
-    public getTotal(): int {
+    public getTotalFloats(): int {
         return this.total;
     }
 }

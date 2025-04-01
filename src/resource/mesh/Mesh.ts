@@ -11,6 +11,8 @@ import BoundingBox from "../../primitives/BoundingBox.ts";
 export default class Mesh {
     private readonly vao: WebGLVertexArrayObject;
     private readonly vbo: WebGLBuffer;
+    private readonly ebo: WebGLBuffer | any;
+    private readonly hasEbo: boolean;
     private readonly vertexCount: number;
 
     private readonly materials: Map<string, Material>;
@@ -34,18 +36,26 @@ export default class Mesh {
         const data = source.getData();
 
         const vertexLayout = source.getVertexLayout();
-        this.vertexCount = Math.floor(data.length / vertexLayout.getTotal());
+        this.vertexCount = source.hasIndexes()
+            ? source.getFaceCount() * 3
+            : Math.floor(data.length / vertexLayout.getTotalFloats());
 
         this.vao = gl.createVertexArray();
-        this.vbo = gl.createBuffer();
-
         gl.bindVertexArray(this.vao);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
 
+        this.hasEbo = source.hasIndexes();
+        if (source.hasIndexes()) {
+            this.ebo = gl.createBuffer();
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ebo);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, source.getIndexes(), gl.STATIC_DRAW);
+        }
+
+        this.vbo = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
         gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
 
         let offset = 0;
-        const total = vertexLayout.getTotal() * FLOAT_SIZE;
+        const total = vertexLayout.getTotalFloats() * FLOAT_SIZE;
 
         gl.enableVertexAttribArray(0);
         gl.vertexAttribPointer(
@@ -100,7 +110,11 @@ export default class Mesh {
     }
 
     public draw(): void {
-        gl.drawArrays(gl.TRIANGLES, 0, this.vertexCount)
+        if (this.hasEbo) {
+            gl.drawElements(gl.TRIANGLES, this.vertexCount, gl.UNSIGNED_INT, 0);
+        } else {
+            gl.drawArrays(gl.TRIANGLES, 0, this.vertexCount);
+        }
     }
 
     public delete(): void {

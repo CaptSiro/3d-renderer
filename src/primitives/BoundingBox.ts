@@ -29,6 +29,40 @@ export default class BoundingBox {
 
 
 
+    public add(vertex: Vec3): void {
+        this.addVertex(
+            vertex.x,
+            vertex.y,
+            vertex.z
+        );
+    }
+
+    public addVertex(x: number, y: number, z: number): void {
+        if (this.low.x > x) {
+            this.low.x = x;
+        }
+
+        if (this.low.y > y) {
+            this.low.y = y;
+        }
+
+        if (this.low.z > z) {
+            this.low.z = z;
+        }
+
+        if (this.high.x < x) {
+            this.high.x = x;
+        }
+
+        if (this.high.y < y) {
+            this.high.y = y;
+        }
+
+        if (this.high.z < z) {
+            this.high.z = z;
+        }
+    }
+
     public getLow(): Vec3 {
         return this.low;
     }

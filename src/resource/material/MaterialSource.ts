@@ -3,6 +3,7 @@ import { float, Rgb } from "../../types";
 import ResourceCache from "../ResourceCache.ts";
 import { Opt } from "../../../lib/types.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
+import { Mtl } from "../mesh/parser/wavefront/WavefrontMtlParser.ts";
 
 
 
@@ -58,6 +59,25 @@ export default class MaterialSource {
             diffuse: MaterialSource.rgbToFloatArray(description.Kd),
             specular: MaterialSource.rgbToFloatArray(description.Ks),
             shininess: (description.Ns ?? 250) / 1000
+        });
+    }
+
+    public static fromMtlV2(description: Mtl): MaterialSource {
+        const ambient = description.Ka as number[];
+
+        if (is(description.Ke)) {
+            const emission = description.Ke as number[];
+
+            ambient[0] += emission[0];
+            ambient[1] += emission[1];
+            ambient[2] += emission[2];
+        }
+
+        return new MaterialSource({
+            ambient,
+            diffuse: description.Kd as number[],
+            specular: description.Ks as number[],
+            shininess: ((description.Ns as Opt<number>) ?? 250) / 1000
         });
     }
 

@@ -9,6 +9,7 @@ import { int, Vec3 } from "../../../types.ts";
 import BoundingBox from "../../../primitives/BoundingBox.ts";
 import Vector3 from "../../../primitives/Vector3.ts";
 import { MAX_MATERIALS, meshVertexLayout } from "../../../webgl.ts";
+import WavefrontObjParser from "./wavefront/WavefrontObjParser.ts";
 
 
 
@@ -18,6 +19,8 @@ export default class ObjParser implements MeshFileParser {
         const file = new OBJFile(content, 'model');
         const description = file.parse();
         const directory = path.getDirectory() ?? "/models";
+
+        console.log(await (new WavefrontObjParser().parse(path, content)))
 
         const defaultMaterial = await MaterialSource.load(MaterialSource.getDefaultMaterial());
         const materialSources = new Map<string, MaterialSource>();
@@ -49,7 +52,7 @@ export default class ObjParser implements MeshFileParser {
         let textureCoords = 0;
 
         for (const model of description.models) {
-            const data = new Float32Array(3 * model.faces.length * meshVertexLayout.getTotal());
+            const data = new Float32Array(3 * model.faces.length * meshVertexLayout.getTotalFloats());
             let dataIndex = 0;
 
             const low: Vec3 = Vector3.MAX;

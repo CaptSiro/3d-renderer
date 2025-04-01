@@ -42,7 +42,7 @@ export default class Ray {
     }
 
     public getData(): Float32Array {
-        const array = new Float32Array(lineVertexLayout.getTotal() * 2);
+        const array = new Float32Array(lineVertexLayout.getTotalFloats() * 2);
 
         let i = 0;
         array[i++] = this.start.x;

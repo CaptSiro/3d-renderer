@@ -8,6 +8,7 @@ import Vector3 from "../primitives/Vector3.ts";
 export default class Transform {
     private _matrix: Opt<Mat4>;
     private _inverseMatrix: Opt<Mat4>;
+    private _children: Transform[];
 
 
 
@@ -17,6 +18,7 @@ export default class Transform {
         private scale: Vec3 = glm.vec3(1, 1, 1)
     ) {
         this._matrix = undefined;
+        this._children = [];
     }
 
 

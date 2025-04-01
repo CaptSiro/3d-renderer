@@ -7,11 +7,12 @@ import ResourceCache from "../ResourceCache.ts";
 import MaterialSource from "../material/MaterialSource.ts";
 import { int } from "../../types.ts";
 import BoundingBox from "../../primitives/BoundingBox.ts";
+import ObjMesh from "./parser/wavefront/ObjMesh.ts";
 
 
 
 const parsers: Record<string, MeshFileParser> = {
-    "obj": new ObjParser()
+    "obj": new ObjMesh()
 };
 
 export default class MeshSource {
@@ -40,16 +41,32 @@ export default class MeshSource {
 
 
 
+    private indexes: Uint32Array | any;
+
     constructor(
         private data: Float32Array,
         private faceCount: number,
         private vertexLayout: VertexLayout,
         private materialSources: Map<string, MaterialSource>,
         private materialIndexes: Map<string, int>,
-        private boundingBox: BoundingBox
+        private boundingBox: BoundingBox,
+        private name: string = ''
     ) {}
 
 
+
+    public hasIndexes(): boolean {
+        return is(this.indexes);
+    }
+
+    public setIndexes(indexes: Uint32Array): MeshSource {
+        this.indexes = indexes;
+        return this;
+    }
+
+    public getIndexes(): Uint32Array {
+        return this.indexes;
+    }
 
     public getData(): Float32Array {
         return this.data;
@@ -74,4 +91,6 @@ export default class MeshSource {
     public getBoundingBox(): BoundingBox {
         return this.boundingBox;
     }
+
+
 }
