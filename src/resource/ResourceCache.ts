@@ -7,7 +7,7 @@ export default class ResourceCache<A, T> {
 
     constructor(
         private toKey: (arg: A) => string,
-        private builder: (arg: A) => T | Promise<T>
+        private builder: (arg: A) => Promise<T>
     ) {
         this.cache = new Map();
     }

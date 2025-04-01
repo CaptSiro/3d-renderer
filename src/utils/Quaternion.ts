@@ -1,10 +1,10 @@
 import { float, Quat, Vec3 } from "../types.ts";
-import Mathf from "./Mathf.ts";
+import MathLib from "./MathLib.ts";
 
 
 
-export class Quaternion {
-    public static euler(pitch: float, yaw: float, roll: float): Quat {
+export default class Quaternion {
+    public static fromEuler(pitch: float, yaw: float, roll: float): Quat {
         return glm.quat(glm.vec3(pitch, yaw, roll));
     }
 
@@ -31,9 +31,9 @@ export class Quaternion {
         const angleZ = Math.atan2(t3, t4);
 
         return glm.vec3(
-            Mathf.round(angleX, 5),
-            Mathf.round(angleY, 5),
-            Mathf.round(angleZ, 5)
+            MathLib.round(angleX, 5),
+            MathLib.round(angleY, 5),
+            MathLib.round(angleZ, 5)
         );
     }
 
@@ -43,7 +43,7 @@ export class Quaternion {
         return angles;
     }
 
-    public static eulerDegrees(pitch: float, yaw: float, roll: float): Quat {
+    public static fromEulerDegrees(pitch: float, yaw: float, roll: float): Quat {
         return glm.quat(glm.vec3(glm.radians(pitch), glm.radians(yaw), glm.radians(roll)));
     }
 }

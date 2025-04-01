@@ -2,7 +2,7 @@ import { float, int, Vec3 } from "../types.ts";
 
 
 
-export default class Mathf {
+export default class MathLib {
     public static clamp(x: float, min: float, max: float): float {
         if (x >= max) {
             return max;
@@ -34,9 +34,9 @@ export default class Mathf {
 
     public static lerpColor(a: Vec3, b: Vec3, t: float): Vec3 {
         return glm.vec3(
-            Mathf.lerp(a.x, b.x, t),
-            Mathf.lerp(a.y, b.y, t),
-            Mathf.lerp(a.z, b.z, t),
+            MathLib.lerp(a.x, b.x, t),
+            MathLib.lerp(a.y, b.y, t),
+            MathLib.lerp(a.z, b.z, t),
         );
     }
 }

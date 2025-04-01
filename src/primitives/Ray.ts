@@ -6,7 +6,7 @@ import GameObject from "../object/GameObject.ts";
 import { Opt } from "../../lib/types.ts";
 import MeshRenderer from "../component/renderer/MeshRenderer.ts";
 import { is } from "../../lib/jsml/jsml.ts";
-import Vector4 from "./Vector4.ts";
+import Vector4 from "../utils/Vector4.ts";
 
 
 

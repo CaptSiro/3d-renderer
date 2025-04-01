@@ -4,7 +4,7 @@ import Vec3Editor from "./Vec3Editor.ts";
 import { Opt } from "../../lib/types.ts";
 import { Vec3 } from "../types.ts";
 import jsml from "../../lib/jsml/jsml.ts";
-import { Quaternion } from "../primitives/Quaternion.ts";
+import Quaternion from "../utils/Quaternion.ts";
 
 
 
@@ -50,7 +50,7 @@ export default class TransformEditor extends Editor<Transform> {
 
         const rotation = new TransformVec3Editor(this.editorWindow, this.value, "rotation", Quaternion.toEulerDegrees(this.value.getRotation()));
         rotation.setGetter(() => Quaternion.toEulerDegrees(this.value.getRotation()));
-        rotation.setSetter((v) => this.value.setRotation(Quaternion.eulerDegrees(v.x, v.y, v.z)));
+        rotation.setSetter((v) => this.value.setRotation(Quaternion.fromEulerDegrees(v.x, v.y, v.z)));
         this.rotation = rotation;
 
         const scale = new TransformVec3Editor(this.editorWindow, this.value, "scale", this.value.getScale());

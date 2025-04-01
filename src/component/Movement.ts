@@ -1,11 +1,11 @@
 import Component from "../component/Component.ts";
-import Mathf from "../primitives/Mathf.ts";
-import { Quaternion } from "../primitives/Quaternion.ts";
 import { viewport } from "../main.ts";
 import { editor } from "../editor/Editor.ts";
 import NumberEditor from "../editor/NumberEditor.ts";
 import type { float } from "../types.ts";
 import Keyboard from "../input/Keyboard.ts";
+import Quaternion from "../utils/Quaternion.ts";
+import MathLib from "../utils/MathLib.ts";
 
 
 
@@ -26,7 +26,7 @@ export default class Movement extends Component {
 
     public awake() {
         this.transform.setRotation(
-            Quaternion.eulerDegrees(this.pitch, this.yaw, 0)
+            Quaternion.fromEulerDegrees(this.pitch, this.yaw, 0)
         );
 
         viewport.addEventListener("pointermove", event => {
@@ -40,17 +40,17 @@ export default class Movement extends Component {
             this.yaw += offsetX;
             this.pitch += offsetY;
 
-            this.pitch = Mathf.clamp(this.pitch, -89.5, 89.5);
+            this.pitch = MathLib.clamp(this.pitch, -89.5, 89.5);
 
             this.transform.setRotation(
-                Quaternion.euler(glm.radians(this.pitch), glm.radians(this.yaw), 0)
+                Quaternion.fromEuler(glm.radians(this.pitch), glm.radians(this.yaw), 0)
             );
         });
     }
 
     public update() {
         const speed = this.speed * this.scene.getTime().getDeltaTime();
-        const direction = Quaternion.eulerDegrees(0, this.yaw, 0) ["*"] (Keyboard.getMovementVector());
+        const direction = Quaternion.fromEulerDegrees(0, this.yaw, 0) ["*"] (Keyboard.getMovementVector());
         this.transform.setPosition(
             this.transform.getPosition() ["+"] (direction ["*"] (speed))
         );

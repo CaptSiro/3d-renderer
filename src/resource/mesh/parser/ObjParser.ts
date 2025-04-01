@@ -7,9 +7,9 @@ import { is } from "../../../../lib/jsml/jsml.ts";
 import { MTLFile } from "../../../../lib/MTLFile.ts";
 import { int, Vec3 } from "../../../types.ts";
 import BoundingBox from "../../../primitives/BoundingBox.ts";
-import Vector3 from "../../../primitives/Vector3.ts";
 import { MAX_MATERIALS, meshVertexLayout } from "../../../webgl.ts";
 import WavefrontObjParser from "./wavefront/WavefrontObjParser.ts";
+import Vector3 from "../../../utils/Vector3.ts";
 
 
 

@@ -1,7 +1,7 @@
 import { int, Vec3 } from "../types.ts";
-import Vector3 from "./Vector3.ts";
 import { LAYOUT_VERTEX3 } from "../webgl.ts";
 import { gl } from "../main.ts";
+import Vector3 from "../utils/Vector3.ts";
 
 
 

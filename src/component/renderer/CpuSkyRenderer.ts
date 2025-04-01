@@ -6,7 +6,6 @@ import NumberEditor from "../../editor/NumberEditor.ts";
 import SkyRenderer from "./SkyRenderer.ts";
 import jsml, { assert, is } from "../../../lib/jsml/jsml.ts";
 import Ray from "../../primitives/Ray.ts";
-import Vector3 from "../../primitives/Vector3.ts";
 import ColorEditor from "../../editor/ColorEditor.ts";
 import Color from "../../primitives/Color.ts";
 import Button from "../../editor/Button.ts";
@@ -14,6 +13,7 @@ import Vec3Editor from "../../editor/Vec3Editor.ts";
 import { ModalWindow, window_create, window_isOpened, window_maximize, window_open } from "../../../lib/window.ts";
 import GameObject from "../../object/GameObject.ts";
 import { RayRenderer } from "./RayRenderer.ts";
+import Vector3 from "../../utils/Vector3.ts";
 
 
 

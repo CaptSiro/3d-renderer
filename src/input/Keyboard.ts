@@ -1,6 +1,6 @@
 import { is } from "../../lib/jsml/jsml.ts";
 import { Vec3 } from "../types.ts";
-import Vector3 from "../primitives/Vector3.ts";
+import Vector3 from "../utils/Vector3.ts";
 
 
 

@@ -1,11 +1,11 @@
-import { Quaternion } from "../primitives/Quaternion.ts";
 import Vec3Editor from "./Vec3Editor.ts";
+import Quaternion from "../utils/Quaternion.ts";
 
 
 
 export default class QuatEditor extends Vec3Editor {
     public saveVector(): void {
-        this.saveValue(Quaternion.eulerDegrees(
+        this.saveValue(Quaternion.fromEulerDegrees(
             Number(this.x.value),
             Number(this.y.value),
             Number(this.z.value),

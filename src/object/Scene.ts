@@ -103,7 +103,7 @@ export default class Scene {
             const meshSources = await MeshSource.load(path);
             const shaderSource = await ShaderSource.loadShader("base");
 
-            const first = meshSources.shift();
+            const first = meshSources[0];
             if (!is(first)) {
                 return gameObject;
             }
@@ -111,10 +111,13 @@ export default class Scene {
             const meshRenderer = gameObject.addComponent(MeshRenderer);
             await meshRenderer.init([first], shaderSource);
 
-            for (const meshSource of meshSources) {
+            for (let i = 1; i < meshSources.length; i++) {
+                const meshSource = meshSources[i];
                 const child = new GameObject(meshSource.getName(), undefined, this);
+
                 const meshRenderer = child.addComponent(MeshRenderer);
                 await meshRenderer.init([meshSource], shaderSource);
+
                 gameObject.transform.addChild(child);
             }
 

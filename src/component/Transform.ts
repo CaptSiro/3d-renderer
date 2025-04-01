@@ -1,14 +1,17 @@
 import { float, Mat4, Quat, Vec3 } from "../types";
 import { is } from "../../lib/jsml/jsml.ts";
 import { Opt } from "../../lib/types";
-import Vector3 from "../primitives/Vector3.ts";
 import GameObject from "../object/GameObject.ts";
+import Vector3 from "../utils/Vector3.ts";
+import Matrix4 from "../utils/Matrix4.ts";
 
 
 
 export default class Transform {
     private _matrix: Opt<Mat4>;
     private _inverseMatrix: Opt<Mat4>;
+    
+    private _parent: Opt<Transform>;
     private _children: Transform[];
 
 
@@ -113,8 +116,21 @@ export default class Transform {
         this.rotate(axis, glm.radians(angleDegrees));
     }
 
+    public getParentMatrix(): Mat4 {
+        if (!is(this._parent)) {
+            return Matrix4.IDENTITY;
+        }
+
+        return this._parent.getParentMatrix() ["*"] (this.getMatrix());
+    }
+
+    public getParent(): Opt<Transform> {
+        return this._parent;
+    }
+
     public addChildTransform(transform: Transform): void {
         this._children.push(transform);
+        transform._parent = this;
     }
 
     public addChild(gameObject: GameObject): void {

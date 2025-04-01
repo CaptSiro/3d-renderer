@@ -1,7 +1,7 @@
 import { float, float01 } from "../types.ts";
 import { areStatsHidden } from "../main.ts";
 import { $, is } from "../../lib/jsml/jsml.ts";
-import Mathf from "../primitives/Mathf.ts";
+import MathLib from "../utils/MathLib.ts";
 
 
 
@@ -37,7 +37,7 @@ export default class Time {
             return;
         }
 
-        statsTime.textContent = "time-day: " + Mathf.round(this._dayTime, 3);
+        statsTime.textContent = "time-day: " + MathLib.round(this._dayTime, 3);
     }
 
 

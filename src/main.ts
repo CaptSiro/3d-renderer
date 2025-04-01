@@ -4,14 +4,15 @@ import { Mat4 } from "./types";
 import Scene from "./object/Scene.ts";
 import GameObject from "./object/GameObject.ts";
 import Camera from "./component/Camera.ts";
-import { Quaternion } from "./primitives/Quaternion.ts";
 import MaterialSource from "./resource/material/MaterialSource.ts";
 import { window_open } from "../lib/window.ts";
-import Mathf from "./primitives/Mathf.ts";
 import Sun from "./scripts/Sun.ts";
 import Keyboard from "./input/Keyboard.ts";
 import State from "./object/State.ts";
 import Movement from "./component/Movement.ts";
+import Quaternion from "./utils/Quaternion.ts";
+import MathLib from "./utils/MathLib.ts";
+import DebugLogger from "./component/DebugLogger.ts";
 
 declare global {
     const glm: any;
@@ -101,7 +102,7 @@ async function init() {
     const suzanne = await mainScene.loadGameObject("suzanne", Path.from("/models/Suzanne.obj"));
     suzanne.transform
         .setPosition(glm.vec3(1, 0, 3))
-        .setRotation(Quaternion.eulerDegrees(-50, 180, 60));
+        .setRotation(Quaternion.fromEulerDegrees(-50, 180, 60));
 
     const teapot = await mainScene.loadGameObject("teapot", Path.from("/models/Cube.obj"));
     teapot.addComponent(Sun);
@@ -109,17 +110,15 @@ async function init() {
         .setPosition(glm.vec3(0.0, 5.0, 5.0))
         .setScale(glm.vec3(0.5, 0.5, 0.5));
 
-    const cube = await mainScene.loadGameObject("cube", Path.from("/models/Cube.obj"));
+    const cube = await mainScene.loadGameObject("cube_001", Path.from("/models/Cube.obj"));
     cube.transform
-        .setScale(glm.vec3(.25, .25, .25))
-        .setPosition(glm.vec3(-1, .5, 3));
+        .setScale(glm.vec3(0.25, 0.25, 0.25))
+        .setPosition(glm.vec3(-1, -0.5, 3));
 
     const cam2 = new GameObject("cam2");
     cam2.transform
         .setPosition(glm.vec3(-3, -1, 10));
     cam2.addComponent(Camera);
-
-    console.log(mainScene);
 }
 
 
@@ -237,7 +236,7 @@ function frameCallback(): void {
             u += Math.round(postUpdate - startUpdate);
 
             if (is(statsUpdate) && renderStats) {
-                statsUpdate.textContent = 'update: ' + Mathf.round(u / frame, 2) + "ms";
+                statsUpdate.textContent = 'update: ' + MathLib.round(u / frame, 2) + "ms";
             }
 
             const startRender = postUpdate;
@@ -247,11 +246,11 @@ function frameCallback(): void {
             fps += Math.round(1000 / Math.round(postRender - startUpdate));
 
             if (is(statsRender) && renderStats) {
-                statsRender.textContent = 'render: ' + Mathf.round(r / frame, 2) + "ms";
+                statsRender.textContent = 'render: ' + MathLib.round(r / frame, 2) + "ms";
             }
 
             if (is(statsFps) && renderStats) {
-                statsFps.textContent = Mathf.round(fps / frame, 2)  + " fps";
+                statsFps.textContent = MathLib.round(fps / frame, 2)  + " fps";
             }
 
             if (postUpdate - frameStart >= 1000) {

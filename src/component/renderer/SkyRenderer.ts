@@ -6,13 +6,13 @@ import ShaderSource from "../../resource/shader/ShaderSource.ts";
 import { gl } from "../../main.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
 import type { float, int, Vec3 } from "../../types.ts";
-import Vector3 from "../../primitives/Vector3.ts";
-import Mathf from "../../primitives/Mathf.ts";
 import Time from "../../object/Time.ts";
 import { editor } from "../../editor/Editor.ts";
 import Vec3Editor from "../../editor/Vec3Editor.ts";
 import NumberEditor from "../../editor/NumberEditor.ts";
 import CpuSkyRenderer from "./CpuSkyRenderer.ts";
+import Vector3 from "../../utils/Vector3.ts";
+import MathLib from "../../utils/MathLib.ts";
 
 
 
@@ -180,13 +180,13 @@ export default class SkyRenderer extends Component {
         const lowerLight = this.lightDescriptions[lower];
         const upperLight = this.lightDescriptions[upper];
         const t = (upper < lower)
-            ? Mathf.normalize(lowerLight.time, 1.0, current)
-            : Mathf.normalize(lowerLight.time, upperLight.time, current);
+            ? MathLib.normalize(lowerLight.time, 1.0, current)
+            : MathLib.normalize(lowerLight.time, upperLight.time, current);
 
         return {
-            ambient: Mathf.lerpColor(lowerLight.ambient, upperLight.ambient, t),
-            diffuse: Mathf.lerpColor(lowerLight.diffuse, upperLight.diffuse, t),
-            specular: Mathf.lerpColor(lowerLight.specular, upperLight.specular, t),
+            ambient: MathLib.lerpColor(lowerLight.ambient, upperLight.ambient, t),
+            diffuse: MathLib.lerpColor(lowerLight.diffuse, upperLight.diffuse, t),
+            specular: MathLib.lerpColor(lowerLight.specular, upperLight.specular, t),
         };
     }
 
