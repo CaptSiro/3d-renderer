@@ -39,7 +39,7 @@ export default class Camera extends Component {
 
         if (!this.gameObject.hasComponent(MeshRenderer)) {
             const meshRenderer = this.gameObject.addComponent(MeshRenderer);
-            meshRenderer.initFromModelFile(Path.from("/models/camera.obj")).then();
+            meshRenderer.initFromModelFile(Path.from("/assets/models/camera.obj")).then();
         }
     }
 
@@ -97,10 +97,6 @@ export default class Camera extends Component {
 
     public get position(): Vec3 {
         return this.transform.getPosition();
-    }
-
-    public createMvp(model: Mat4): Mat4 {
-        return this._vp ["*"] (model);
     }
 
     public get vp(): Mat4 {

@@ -30,7 +30,7 @@ export default class MaterialSource {
     }
 
     public static getDefaultMaterial(): Path {
-        return Path.from("/materials/plastic-white.json");
+        return Path.from("/assets/materials/plastic-white.json");
     }
 
     private static rgbToFloatArray(rgb: Opt<Rgb>): float[] {

@@ -11,6 +11,7 @@ import BoundingBoxRenderer from "./BoundingBoxRenderer.ts";
 import SkyRenderer from "./SkyRenderer.ts";
 import State from "../../object/State.ts";
 import Path from "../../resource/Path.ts";
+import RenderingContext from "../../primitives/RenderingContext.ts";
 
 
 
@@ -23,7 +24,7 @@ export default class MeshRenderer extends Component implements Renderer {
 
 
     // Renderer
-    public draw(): void {
+    public draw(context: RenderingContext): void {
         if (!is(this._shader) || !is(this._meshes)) {
             return;
         }
@@ -35,9 +36,9 @@ export default class MeshRenderer extends Component implements Renderer {
 
         this._shader.bind();
 
-        const model = this.gameObject.transform.getMatrix();
+        const model = context.parentMatrix ["*"] (this.transform.getMatrix());
         this._shader.setMat4("Model", model);
-        this._shader.setMat4("MVP", camera.createMvp(model));
+        this._shader.setMat4("MVP", camera.vp ['*'] (model));
 
         for (const mesh of this._meshes) {
             mesh.bindMaterials(this._shader, "materials");
@@ -50,7 +51,7 @@ export default class MeshRenderer extends Component implements Renderer {
             return;
         }
 
-        this._boundingBoxRenderer.draw();
+        this._boundingBoxRenderer.draw(context);
     }
 
     public getBoundingBox(): Opt<BoundingBox> {
@@ -114,10 +115,7 @@ export default class MeshRenderer extends Component implements Renderer {
 
     public async initFromModelFile(path: Path): Promise<void> {
         const meshSources = await MeshSource.load(path);
-        const shaderSource = await ShaderSource.load(
-            Path.from("/shaders/base.vert"),
-            Path.from("/shaders/base.frag")
-        );
+        const shaderSource = await ShaderSource.loadShader("base");
 
         await this.init(meshSources, shaderSource);
     }

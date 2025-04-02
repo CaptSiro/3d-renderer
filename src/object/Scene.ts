@@ -9,6 +9,8 @@ import { Predicate } from "../types.ts";
 import Movement from "../component/Movement.ts";
 import MeshSource from "../resource/mesh/MeshSource.ts";
 import ShaderSource from "../resource/shader/ShaderSource.ts";
+import RenderingContext from "../primitives/RenderingContext.ts";
+import Matrix4 from "../utils/Matrix4.ts";
 
 
 
@@ -45,12 +47,17 @@ export default class Scene {
 
         camera.preRender();
 
+        const context = new RenderingContext(
+            Matrix4.IDENTITY,
+            camera
+        )
+
         for (const gameObject of this._gameObjects.values()) {
             if (gameObject === this._activeCamera?.gameObject) {
                 continue;
             }
 
-            gameObject.render();
+            gameObject.render(context);
         }
     }
 

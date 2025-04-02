@@ -8,11 +8,13 @@ import Matrix4 from "../utils/Matrix4.ts";
 
 
 export default class Transform {
+    private _gameObject: Opt<GameObject>;
+
     private _matrix: Opt<Mat4>;
     private _inverseMatrix: Opt<Mat4>;
     
     private _parent: Opt<Transform>;
-    private _children: Transform[];
+    private readonly _children: Transform[];
 
 
 
@@ -26,6 +28,14 @@ export default class Transform {
     }
 
 
+    
+    public bind(gameObject: GameObject) {
+        this._gameObject = gameObject;
+    }
+    
+    public get gameObject(): Opt<GameObject> {
+        return this._gameObject;
+    }
 
     private unsetMatrix(): void {
         this._matrix = undefined;
@@ -128,12 +138,17 @@ export default class Transform {
         return this._parent;
     }
 
+    public getChildren(): Transform[] {
+        return this._children;
+    }
+
     public addChildTransform(transform: Transform): void {
         this._children.push(transform);
         transform._parent = this;
     }
 
     public addChild(gameObject: GameObject): void {
+        gameObject.removeFromScene();
         this.addChildTransform(gameObject.transform);
     }
 }

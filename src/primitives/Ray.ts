@@ -7,8 +7,15 @@ import { Opt } from "../../lib/types.ts";
 import MeshRenderer from "../component/renderer/MeshRenderer.ts";
 import { is } from "../../lib/jsml/jsml.ts";
 import Vector4 from "../utils/Vector4.ts";
+import RayCastContext from "./RayCastContext.ts";
+import Matrix4 from "../utils/Matrix4.ts";
 
 
+
+export type RayCastResult = {
+    closest: Opt<GameObject>,
+    closestDistance: number
+};
 
 export default class Ray {
     constructor(
@@ -57,66 +64,117 @@ export default class Ray {
         return array;
     }
 
-    public cast(scene: Scene): Opt<GameObject> {
-        let closest: Opt<GameObject>;
-        let closestDistance: float = Number.POSITIVE_INFINITY;
+    private testGameObject(gameObject: GameObject, context: RayCastContext, closestDistance: number): number {
+        const meshRenderer = gameObject.getComponent(MeshRenderer);
+        if (!is(meshRenderer)) {
+            return Number.POSITIVE_INFINITY;
+        }
 
-        const start_w = Vector4.convertPoint3(this.start);
-        const direction_w = Vector4.convertVector3(this.direction);
+        const boundingBox = meshRenderer.getBoundingBox();
+        if (!is(boundingBox)) {
+            return Number.POSITIVE_INFINITY;
+        }
 
-        for (const gameObject of scene.getGameObjects()) {
-            const meshRenderer = gameObject.getComponent(MeshRenderer);
-            if (!is(meshRenderer)) {
+        const low = boundingBox.getLow();
+        const high = boundingBox.getHigh();
+
+        const modelToWorld = glm.inverse(context.parentMatrix ["*"] (gameObject.transform.getMatrix()));
+        const o: Vec4 = modelToWorld ["*"] (context.ray_w.start);
+        const r: Vec4 = modelToWorld ["*"] (context.ray_w.direction);
+
+        const tLow = glm.vec3(
+            (low.x - o.x) / r.x,
+            (low.y - o.y) / r.y,
+            (low.z - o.z) / r.z,
+        );
+
+        const tHigh = glm.vec3(
+            (high.x - o.x) / r.x,
+            (high.y - o.y) / r.y,
+            (high.z - o.z) / r.z,
+        );
+
+        const close = Math.max(
+            Math.min(tLow.x, tHigh.x),
+            Math.min(tLow.y, tHigh.y),
+            Math.min(tLow.z, tHigh.z),
+        );
+
+        const far = Math.min(
+            Math.max(tLow.x, tHigh.x),
+            Math.max(tLow.y, tHigh.y),
+            Math.max(tLow.z, tHigh.z),
+        );
+
+        if (!(close <= far && close >= 0)) {
+            return Number.POSITIVE_INFINITY;
+        }
+
+        return close;
+    }
+
+    private test(gameObject: GameObject, context: RayCastContext, closestDistance: number): RayCastResult {
+        let ret: RayCastResult = {
+            closest: undefined,
+            closestDistance
+        }
+
+        let distance = this.testGameObject(gameObject, context, closestDistance);
+
+        if (distance < closestDistance) {
+            ret.closest = gameObject;
+            ret.closestDistance = distance;
+        }
+
+        const children = gameObject.transform.getChildren();
+        if (children.length === 0) {
+            return ret;
+        }
+
+        const nextContext = new RayCastContext(
+            context.parentMatrix ["*"] (gameObject.transform.getMatrix()),
+            context.ray_w
+        );
+
+        for (const child of children) {
+            const go = child.gameObject;
+            if (!is(go)) {
                 continue;
             }
 
-            const boundingBox = meshRenderer.getBoundingBox();
-            if (!is(boundingBox)) {
-                continue;
-            }
+            const result = this.test(go, nextContext, ret.closestDistance);
 
-            const low = boundingBox.getLow();
-            const high = boundingBox.getHigh();
-
-            const modelToWorld = gameObject.transform.getInverseMatrix();
-            const o: Vec4 = modelToWorld ["*"] (start_w);
-            const r: Vec4 = modelToWorld ["*"] (direction_w);
-
-            const tLow = glm.vec3(
-                (low.x - o.x) / r.x,
-                (low.y - o.y) / r.y,
-                (low.z - o.z) / r.z,
-            );
-
-            const tHigh = glm.vec3(
-                (high.x - o.x) / r.x,
-                (high.y - o.y) / r.y,
-                (high.z - o.z) / r.z,
-            );
-
-            const close = Math.max(
-                Math.min(tLow.x, tHigh.x),
-                Math.min(tLow.y, tHigh.y),
-                Math.min(tLow.z, tHigh.z),
-            );
-
-            const far = Math.min(
-                Math.max(tLow.x, tHigh.x),
-                Math.max(tLow.y, tHigh.y),
-                Math.max(tLow.z, tHigh.z),
-            );
-
-            if (!(close <= far && close >= 0)) {
-                continue;
-            }
-
-            if (closestDistance > close) {
-                closest = gameObject;
-                closestDistance = close;
+            if (result.closestDistance < ret.closestDistance) {
+                ret = result;
             }
         }
 
-        return closest;
+        return ret;
+    }
+
+    public cast(scene: Scene): RayCastResult {
+        let ret: RayCastResult = {
+            closest: undefined,
+            closestDistance: Number.POSITIVE_INFINITY
+        }
+
+        const context = new RayCastContext(
+            Matrix4.IDENTITY,
+            {
+                start: Vector4.convertPoint3(this.start),
+                direction: Vector4.convertVector3(this.direction)
+            }
+        );
+
+        for (const gameObject of scene.getGameObjects()) {
+            const result = this.test(gameObject, context, ret.closestDistance);
+
+            if (result.closestDistance < ret.closestDistance) {
+                ret = result;
+            }
+        }
+
+        return ret;
     }
 
     public intersectSphere(S: Vec3, r: float) {

@@ -12,7 +12,6 @@ import State from "./object/State.ts";
 import Movement from "./component/Movement.ts";
 import Quaternion from "./utils/Quaternion.ts";
 import MathLib from "./utils/MathLib.ts";
-import DebugLogger from "./component/DebugLogger.ts";
 
 declare global {
     const glm: any;
@@ -99,21 +98,23 @@ async function init() {
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-    const suzanne = await mainScene.loadGameObject("suzanne", Path.from("/models/Suzanne.obj"));
+    const suzanne = await mainScene.loadGameObject("suzanne", Path.from("/assets/models/Suzanne.obj"));
     suzanne.transform
         .setPosition(glm.vec3(1, 0, 3))
         .setRotation(Quaternion.fromEulerDegrees(-50, 180, 60));
 
-    const teapot = await mainScene.loadGameObject("teapot", Path.from("/models/Cube.obj"));
+    const teapot = await mainScene.loadGameObject("teapot", Path.from("/assets/models/Cube.obj"));
     teapot.addComponent(Sun);
     teapot.transform
         .setPosition(glm.vec3(0.0, 5.0, 5.0))
         .setScale(glm.vec3(0.5, 0.5, 0.5));
 
-    const cube = await mainScene.loadGameObject("cube_001", Path.from("/models/Cube.obj"));
+    const cube = await mainScene.loadGameObject("cube_001", Path.from("/assets/models/Cube.obj"));
     cube.transform
         .setScale(glm.vec3(0.25, 0.25, 0.25))
         .setPosition(glm.vec3(-1, -0.5, 3));
+
+    suzanne.transform.addChild(cube);
 
     const cam2 = new GameObject("cam2");
     cam2.transform
@@ -145,12 +146,12 @@ viewport.addEventListener("contextmenu", event => {
     event.preventDefault();
     const mouseRay = camera.screenPositionToWorldRay(glm.vec2(event.clientX, event.clientY));
     const hit = mouseRay.cast(mainScene);
-    if (!is(hit)) {
+    if (!is(hit.closest)) {
         window_open(camera.gameObject.getEditorWindow());
         return;
     }
 
-    window_open(hit.getEditorWindow());
+    window_open(hit.closest.getEditorWindow());
 });
 
 viewport.addEventListener("click", async () => {

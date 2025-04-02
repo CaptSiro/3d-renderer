@@ -10,6 +10,7 @@ import Counter from "../primitives/Counter.ts";
 import { ModalWindow, window_create } from "../../lib/window.ts";
 import TransformEditor from "../editor/TransformEditor.ts";
 import { getEditor } from "../editor/Editor.ts";
+import RenderingContext from "../primitives/RenderingContext.ts";
 
 
 
@@ -38,6 +39,8 @@ export default class GameObject {
             ? transform
             : new Transform();
 
+        this._transform.bind(this);
+
         this._scene = scene ?? mainScene;
         this._scene.addGameObject(this);
     }
@@ -56,12 +59,26 @@ export default class GameObject {
         }
     }
 
-    public render(): void {
-        if (!this.isActive) {
+    public render(context: RenderingContext): void {
+        if (!this.isActive || this === context.camera.gameObject) {
             return;
         }
 
-        this.renderer?.draw();
+        this.renderer?.draw(context);
+
+        const children = this.transform.getChildren();
+        if (children.length === 0) {
+            return;
+        }
+
+        const nextContext = new RenderingContext(
+            context.parentMatrix ["*"] (this.transform.getMatrix()),
+            context.camera
+        );
+
+        for (const child of children) {
+            child.gameObject?.render(nextContext);
+        }
     }
 
     public delete(): void {
@@ -71,6 +88,10 @@ export default class GameObject {
             component.delete();
         }
 
+        this.removeFromScene();
+    }
+
+    public removeFromScene(): void {
         this._scene.deleteGameObject(
             x => x._id === this._id
         );

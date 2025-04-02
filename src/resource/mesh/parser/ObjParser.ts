@@ -20,8 +20,6 @@ export default class ObjParser implements MeshFileParser {
         const description = file.parse();
         const directory = path.getDirectory() ?? "/models";
 
-        console.log(await (new WavefrontObjParser().parse(path, content)))
-
         const defaultMaterial = await MaterialSource.load(MaterialSource.getDefaultMaterial());
         const materialSources = new Map<string, MaterialSource>();
         const materialIndexes = new Map<string, int>;

@@ -40,15 +40,11 @@ export default class MeshSource {
             throw new Error(`The file extension ${extension} is not supported`);
         }
 
-        const x = await parsers[extension].parse(path, await path.read());
-        console.log(x);
-        return x;
+        return await parsers[extension].parse(path, await path.read());
     }
 
     public static async load(path: Path): Promise<MeshSource[]> {
-        const x = await MeshSource.cache.get(path);
-        console.log('from cache', x);
-        return x;
+        return await MeshSource.cache.get(path);
     }
 
 

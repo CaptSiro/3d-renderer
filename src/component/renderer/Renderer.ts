@@ -1,5 +1,6 @@
 import BoundingBox from "../../primitives/BoundingBox.ts";
 import { Opt } from "../../../lib/types.ts";
+import RenderingContext from "../../primitives/RenderingContext.ts";
 
 
 
@@ -9,7 +10,7 @@ export function isRenderer(x: any): x is Renderer {
 }
 
 export default interface Renderer {
-    draw(): void;
+    draw(context: RenderingContext): void;
 
     getBoundingBox(): Opt<BoundingBox>;
 }

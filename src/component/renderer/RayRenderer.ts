@@ -12,6 +12,7 @@ import BoundingBox from "../../primitives/BoundingBox.ts";
 import Color from "../../primitives/Color.ts";
 import ColorEditor from "../../editor/ColorEditor.ts";
 import { editor } from "../../editor/Editor.ts";
+import RenderingContext from "../../primitives/RenderingContext.ts";
 
 
 
@@ -52,10 +53,7 @@ export class RayRenderer extends Component implements Renderer {
 
         gl.bindVertexArray(null);
 
-        ShaderSource.load(
-            Path.from("/shaders/ray.vert"),
-            Path.from("/shaders/ray.frag"),
-        ).then(source => {
+        ShaderSource.loadShader("ray").then(source => {
             Shader.load(source).then(shader => {
                 this._shader = shader;
             });
@@ -82,7 +80,7 @@ export class RayRenderer extends Component implements Renderer {
     }
 
     // Renderer
-    public draw(): void {
+    public draw(context: RenderingContext): void {
         if (!is(this._shader) || !is(this._vao)) {
             return;
         }
@@ -94,7 +92,8 @@ export class RayRenderer extends Component implements Renderer {
 
         this._shader.bind();
 
-        this._shader.setMat4("MVP", camera.createMvp(this.transform.getMatrix()));
+        const model = context.parentMatrix ["*"] (this.transform.getMatrix());
+        this._shader.setMat4("MVP", camera.vp ["*"] (model));
         this._shader.setVec3("Color", this.color.vec3);
 
         gl.bindVertexArray(this._vao);

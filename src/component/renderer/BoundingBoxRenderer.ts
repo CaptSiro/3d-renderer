@@ -9,6 +9,7 @@ import { is } from "../../../lib/jsml/jsml.ts";
 import Color from "../../primitives/Color.ts";
 import { editor } from "../../editor/Editor.ts";
 import ColorEditor from "../../editor/ColorEditor.ts";
+import RenderingContext from "../../primitives/RenderingContext.ts";
 
 
 
@@ -34,7 +35,7 @@ export default class BoundingBoxRenderer extends Component {
 
 
 
-    public draw() {
+    public draw(context: RenderingContext) {
         if (!is(this._vao) || !is(this._vbo) || !is(this._ebo) || !is(this._shader)) {
             return;
         }
@@ -46,7 +47,8 @@ export default class BoundingBoxRenderer extends Component {
 
         this._shader.bind();
 
-        this._shader.setMat4("MVP", camera.createMvp(this.gameObject.transform.getMatrix()));
+        const model = context.parentMatrix ["*"] (this.transform.getMatrix());
+        this._shader.setMat4("MVP", camera.vp ['*'] (model));
         this._shader.setVec3("Color", this.color.vec3);
 
         gl.bindVertexArray(this._vao);
