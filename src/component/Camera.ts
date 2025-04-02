@@ -51,7 +51,7 @@ export default class Camera extends Component {
         Keyboard.register({
             key: String(Camera.keyCounter.increment()),
             onPress: () => {
-                if (State.doCameraSwitching) {
+                if (this.scene.getSettings().doCameraSwitching) {
                     this.scene.setActiveCamera(this);
                 }
             }
@@ -65,7 +65,7 @@ export default class Camera extends Component {
 
 
     private preRenderSky(): void {
-        if (!State.doRenderSky) {
+        if (!this.scene.getSettings().doRenderSky) {
             return;
         }
 
@@ -77,7 +77,7 @@ export default class Camera extends Component {
     }
 
     private preRenderGrid(): void {
-        if (!State.doRenderGrid) {
+        if (!this.scene.getSettings().doRenderGrid) {
             return;
         }
 

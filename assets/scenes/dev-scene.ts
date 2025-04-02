@@ -4,6 +4,8 @@ import Quaternion from "../../src/utils/Quaternion";
 import Camera from "../../src/component/Camera";
 import Movement from "../../src/component/Movement";
 import Sun from "../scripts/Sun.ts";
+import LookAt from "../scripts/LookAt.ts";
+import { mainScene, pause } from "../../src/main.ts";
 
 
 
@@ -42,7 +44,12 @@ export default async function devScene_loader(): Promise<Scene> {
     cam1.transform
         .setPosition(glm.vec3(-3, 0.1, -1));
     cam1.addComponent(Camera);
-    cam1.transform.lookAtTransform(suzanne.transform);
+    const lookAt = cam1.addComponent(LookAt);
+    lookAt.setTarget(suzanne);
+
+    pause?.click();
+    devScene.getTime().setDayTime(0.25);
+    devScene.getTime().scale = 0;
 
     return devScene;
 }

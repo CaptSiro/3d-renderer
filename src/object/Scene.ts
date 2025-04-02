@@ -3,7 +3,7 @@ import Camera from "../component/Camera.ts";
 import { Opt } from "../../lib/types";
 import Path from "../resource/Path.ts";
 import MeshRenderer from "../component/renderer/MeshRenderer.ts";
-import { is } from "../../lib/jsml/jsml.ts";
+import jsml, { $, is } from "../../lib/jsml/jsml.ts";
 import Time from "./Time.ts";
 import { Predicate } from "../types.ts";
 import Movement from "../component/Movement.ts";
@@ -11,12 +11,16 @@ import MeshSource from "../resource/mesh/MeshSource.ts";
 import ShaderSource from "../resource/shader/ShaderSource.ts";
 import RenderingContext from "../primitives/RenderingContext.ts";
 import Matrix4 from "../utils/Matrix4.ts";
+import { ModalWindow, window_create } from "../../lib/window.ts";
+import { getEditor } from "../editor/Editor.ts";
+import SceneSettings from "./SceneSettings.ts";
 
 
 
 export default class Scene {
     private readonly _gameObjects: GameObject[];
     private readonly _time: Time;
+    private readonly _settings: SceneSettings;
     private _activeCamera: Opt<Camera>;
 
     constructor(
@@ -24,6 +28,7 @@ export default class Scene {
     ) {
         this._gameObjects = [];
         this._time = new Time();
+        this._settings = new SceneSettings();
     }
 
 
@@ -77,6 +82,10 @@ export default class Scene {
 
     public getTime(): Time {
         return this._time;
+    }
+
+    public getSettings(): SceneSettings {
+        return this._settings;
     }
 
     public addGameObject(gameObject: GameObject): void {
@@ -148,5 +157,52 @@ export default class Scene {
 
     public createGameObject(name: string): GameObject {
         return new GameObject(name, undefined, this);
+    }
+
+
+
+    public getSettingsEditorWindow(): ModalWindow {
+        const id = "__scene-settings__" + this._name;
+        const win = $<HTMLDivElement>("#" + id);
+        if (is(win)) {
+            return win;
+        }
+
+        const content = jsml.div("editor-content");
+        const w = window_create(
+            this._name + " settings",
+            content,
+            {
+                isDraggable: true,
+                isMinimizable: true,
+                isResizable: true,
+                width: "400px"
+            }
+        );
+
+        const componentContent = jsml.div("component-content");
+
+        for (const key of Object.keys(this._settings)) {
+            const editor = getEditor(w, this._settings, key);
+            if (!is(editor)) {
+                continue;
+            }
+
+            componentContent.append(editor.html());
+        }
+
+        content.append(
+            jsml.div("component no-hr", [
+                componentContent
+            ])
+        );
+
+        w.id = id;
+
+        w.addEventListener("keydown", event => event.stopPropagation());
+        w.addEventListener("keyup", event => event.stopPropagation());
+        w.addEventListener("keypress", event => event.stopPropagation());
+
+        return w;
     }
 }

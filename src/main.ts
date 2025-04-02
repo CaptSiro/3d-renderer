@@ -7,6 +7,7 @@ import Keyboard from "./input/Keyboard.ts";
 import State from "./object/State.ts";
 import MathLib from "./utils/MathLib.ts";
 import devScene_loader from "../assets/scenes/dev-scene.ts";
+import Movement from "./component/Movement.ts";
 
 declare global {
     const glm: any;
@@ -63,7 +64,7 @@ async function init() {
     });
     Keyboard.register({
         key: "F1",
-        onPress: () => window_open(State.getEditorWindow()),
+        onPress: () => window_open(mainScene.getSettingsEditorWindow()),
         preventDefault: true,
         stopPropagation: true
     });
@@ -120,14 +121,19 @@ viewport.addEventListener("contextmenu", event => {
 });
 
 viewport.addEventListener("click", async () => {
+    const camera = mainScene.getActiveCamera();
+    if (!is(camera) || !camera.gameObject.hasComponent(Movement)) {
+        return;
+    }
+
     await _viewport.requestPointerLock();
     _viewport.focus();
 });
 
 
 
-const play = $(".play");
-const pause = $(".pause");
+export const play = $(".play");
+export const pause = $(".pause");
 const timeInput = $<HTMLInputElement>(".time-input > input");
 
 if (is(timeInput)) {
