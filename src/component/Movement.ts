@@ -6,6 +6,7 @@ import type { float } from "../types.ts";
 import Keyboard from "../input/Keyboard.ts";
 import Quaternion from "../utils/Quaternion.ts";
 import MathLib from "../utils/MathLib.ts";
+import Vector3 from "../utils/Vector3.ts";
 
 
 

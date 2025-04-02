@@ -1,6 +1,6 @@
-import Component from "../component/Component.ts";
 import { is } from "../../lib/jsml/jsml.ts";
-import SkyRenderer from "../component/renderer/SkyRenderer.ts";
+import Component from "../../src/component/Component.ts";
+import SkyRenderer from "../../src/component/renderer/SkyRenderer.ts";
 
 
 

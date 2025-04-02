@@ -19,7 +19,9 @@ export default class Scene {
     private readonly _time: Time;
     private _activeCamera: Opt<Camera>;
 
-    constructor() {
+    constructor(
+        private _name: string = ''
+    ) {
         this._gameObjects = [];
         this._time = new Time();
     }
@@ -61,7 +63,17 @@ export default class Scene {
         }
     }
 
+    public delete(): void {
+        for (const gameObject of this._gameObjects) {
+            gameObject.delete();
+        }
+    }
 
+
+
+    public get name(): string {
+        return this._name;
+    }
 
     public getTime(): Time {
         return this._time;
@@ -132,5 +144,9 @@ export default class Scene {
         }
 
         return gameObject;
+    }
+
+    public createGameObject(name: string): GameObject {
+        return new GameObject(name, undefined, this);
     }
 }

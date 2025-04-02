@@ -6,12 +6,13 @@ import GameObject from "./object/GameObject.ts";
 import Camera from "./component/Camera.ts";
 import MaterialSource from "./resource/material/MaterialSource.ts";
 import { window_open } from "../lib/window.ts";
-import Sun from "./scripts/Sun.ts";
 import Keyboard from "./input/Keyboard.ts";
 import State from "./object/State.ts";
 import Movement from "./component/Movement.ts";
 import Quaternion from "./utils/Quaternion.ts";
 import MathLib from "./utils/MathLib.ts";
+import Sun from "../assets/scripts/Sun.ts";
+import devScene_loader from "../assets/scenes/dev-scene.ts";
 
 declare global {
     const glm: any;
@@ -54,17 +55,7 @@ window.addEventListener("resize", resizeViewport);
 
 
 
-export let mainScene: Scene = new Scene();
-
-const defaultCameraObject = new GameObject("default_camera");
-defaultCameraObject.transform
-    .setPosition(glm.vec3(0, 1, 0));
-
-mainScene.setActiveCamera(
-    defaultCameraObject.addComponent(Camera)
-);
-
-defaultCameraObject.addComponent(Movement);
+export let mainScene: Scene = new Scene('default_scene');
 
 
 
@@ -98,28 +89,8 @@ async function init() {
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-    const suzanne = await mainScene.loadGameObject("suzanne", Path.from("/assets/models/Suzanne.obj"));
-    suzanne.transform
-        .setPosition(glm.vec3(1, 0, 3))
-        .setRotation(Quaternion.fromEulerDegrees(-50, 180, 60));
-
-    const teapot = await mainScene.loadGameObject("teapot", Path.from("/assets/models/Cube.obj"));
-    teapot.addComponent(Sun);
-    teapot.transform
-        .setPosition(glm.vec3(0.0, 5.0, 5.0))
-        .setScale(glm.vec3(0.5, 0.5, 0.5));
-
-    const cube = await mainScene.loadGameObject("cube_001", Path.from("/assets/models/Cube.obj"));
-    cube.transform
-        .setScale(glm.vec3(0.25, 0.25, 0.25))
-        .setPosition(glm.vec3(-1, -0.5, 3));
-
-    suzanne.transform.addChild(cube);
-
-    const cam2 = new GameObject("cam2");
-    cam2.transform
-        .setPosition(glm.vec3(-3, -1, 10));
-    cam2.addComponent(Camera);
+    mainScene.delete();
+    mainScene = await devScene_loader();
 }
 
 

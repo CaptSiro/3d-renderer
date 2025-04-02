@@ -16,7 +16,7 @@ export default class Shader {
         Shader.create
     );
 
-    private static create(source: ShaderSource): Shader {
+    private static create(source: ShaderSource): Promise<Shader> {
         const vertex = Shader.compile(gl.VERTEX_SHADER, source.getVertexCode());
         if (!is(vertex)) {
             throw new Error("Shader compilation error");
@@ -36,7 +36,7 @@ export default class Shader {
             throw new Error("Shader program compilation error");
         }
 
-        return new Shader(program);
+        return Promise.resolve(new Shader(program));
     }
 
     public static async load(source: ShaderSource): Promise<Shader> {
@@ -142,9 +142,13 @@ export default class Shader {
         return this;
     }
 
-    public bind(): void {
+    /**
+     * @returns {boolean} Information whether the binding shader replaced another shader that was in use. Or in other
+     * words, has been just bound
+     */
+    public bind(): boolean {
         if (this === Shader.currentlyBound) {
-            return;
+            return false;
         }
 
         if (is(Shader.currentlyBound)) {
@@ -155,6 +159,7 @@ export default class Shader {
         gl.useProgram(this.program);
 
         this.bindCallback(this);
+        return true;
     }
 
     public getProgram(): WebGLProgram {

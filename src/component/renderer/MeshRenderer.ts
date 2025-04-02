@@ -20,6 +20,7 @@ export default class MeshRenderer extends Component implements Renderer {
     private _meshes: Opt<Mesh[]>;
     private _boundingBox: Opt<BoundingBox>;
     private _boundingBoxRenderer: Opt<BoundingBoxRenderer>;
+    private _timestamp: number = 0;
 
 
 
@@ -34,7 +35,9 @@ export default class MeshRenderer extends Component implements Renderer {
             return;
         }
 
-        this._shader.bind();
+        if (this._shader.bind() || this._timestamp !== this.scene.getTime().getSystemTime()) {
+            this.setSceneLight();
+        }
 
         const model = context.parentMatrix ["*"] (this.transform.getMatrix());
         this._shader.setMat4("Model", model);
@@ -52,6 +55,36 @@ export default class MeshRenderer extends Component implements Renderer {
         }
 
         this._boundingBoxRenderer.draw(context);
+    }
+
+    public setSceneLight() {
+        this._timestamp = this.scene.getTime().getSystemTime();
+        if (!is(this._shader)) {
+            return;
+        }
+
+        const camera = this.scene.getActiveCamera();
+        if (!is(camera)) {
+            return;
+        }
+
+        this._shader.setVec3("ViewPosition", camera.position);
+
+        const sky = camera.gameObject.getComponent(SkyRenderer);
+        if (!is(sky)) {
+            this._shader.setVec3("light.position", glm.vec3(0, 2, 0));
+            this._shader.setVec3("light.ambient", glm.vec3(0.3, 0.3, 0.35));
+            this._shader.setVec3("light.diffuse", glm.vec3(1.0, 1.0, 0.9));
+            this._shader.setVec3("light.specular", glm.vec3(1.0, 1.0, 1.0));
+            return;
+        }
+
+        this._shader.setVec3("light.position", sky.getSunPosition());
+
+        const light = sky.getSunLight();
+        this._shader.setVec3("light.ambient", light.ambient);
+        this._shader.setVec3("light.diffuse", light.diffuse);
+        this._shader.setVec3("light.specular", light.specular);
     }
 
     public getBoundingBox(): Opt<BoundingBox> {
@@ -80,31 +113,6 @@ export default class MeshRenderer extends Component implements Renderer {
         }
 
         const shader = await Shader.load(shaderSource);
-
-        shader.onBind(() => {
-            const camera = this.scene.getActiveCamera();
-            if (!is(camera)) {
-                return;
-            }
-
-            shader.setVec3("ViewPosition", camera.position);
-
-            const sky = camera.gameObject.getComponent(SkyRenderer);
-            if (!is(sky)) {
-                shader.setVec3("light.position", glm.vec3(0, 2, 0));
-                shader.setVec3("light.ambient", glm.vec3(0.3, 0.3, 0.35));
-                shader.setVec3("light.diffuse", glm.vec3(1.0, 1.0, 0.9));
-                shader.setVec3("light.specular", glm.vec3(1.0, 1.0, 1.0));
-                return;
-            }
-
-            shader.setVec3("light.position", sky.getSunPosition());
-
-            const light = sky.getSunLight();
-            shader.setVec3("light.ambient", light.ambient);
-            shader.setVec3("light.diffuse", light.diffuse);
-            shader.setVec3("light.specular", light.specular);
-        });
 
         this._meshes = meshes;
         this._shader = shader;
