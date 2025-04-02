@@ -42,6 +42,7 @@ export default async function devScene_loader(): Promise<Scene> {
     cam1.transform
         .setPosition(glm.vec3(-3, 0.1, -1));
     cam1.addComponent(Camera);
+    cam1.transform.lookAtTransform(suzanne.transform);
 
     return devScene;
 }

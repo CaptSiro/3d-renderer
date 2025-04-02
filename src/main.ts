@@ -1,17 +1,11 @@
 import { $, is } from "../lib/jsml/jsml.ts";
-import Path from "./resource/Path.ts";
 import { Mat4 } from "./types";
 import Scene from "./object/Scene.ts";
-import GameObject from "./object/GameObject.ts";
-import Camera from "./component/Camera.ts";
 import MaterialSource from "./resource/material/MaterialSource.ts";
 import { window_open } from "../lib/window.ts";
 import Keyboard from "./input/Keyboard.ts";
 import State from "./object/State.ts";
-import Movement from "./component/Movement.ts";
-import Quaternion from "./utils/Quaternion.ts";
 import MathLib from "./utils/MathLib.ts";
-import Sun from "../assets/scripts/Sun.ts";
 import devScene_loader from "../assets/scenes/dev-scene.ts";
 
 declare global {

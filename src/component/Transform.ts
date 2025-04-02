@@ -112,6 +112,29 @@ export default class Transform {
         return this.rotation ["*"] (Vector3.UP);
     }
 
+    public lookAtTransform(target: Transform, normalizedUp: Vec3 = Vector3.UP): void {
+        this.lookAt(target.position, normalizedUp);
+    }
+
+    public lookAt(target: Vec3, normalizedUp: Vec3 = Vector3.UP): void {
+        const forward = glm.normalize(target ['-'] (this.position));
+        if (Math.abs(glm.dot(forward, normalizedUp)) > 0.99999) {
+            normalizedUp = Vector3.LEFT;
+        }
+
+        const right = glm.normalize(glm.cross(normalizedUp, forward));
+        const newUp = glm.cross(forward, right);
+
+        const rotationMatrix = glm.mat4(
+            glm.vec4(right.x, right.y, right.z, 0),
+            glm.vec4(newUp.x, newUp.y, newUp.z, 0),
+            glm.vec4(forward.x, forward.y, forward.z, 0),
+            glm.vec4(0, 0, 0, 1)
+        );
+
+        this.setRotation(glm.quat(rotationMatrix));
+    }
+
     public rotate(axis: Vec3, angleRadians: float): void {
         // https://stackoverflow.com/a/66054048
         const norm = glm.normalize(axis);
@@ -125,6 +148,8 @@ export default class Transform {
     public rotateDegrees(axis: Vec3, angleDegrees: float): void {
         this.rotate(axis, glm.radians(angleDegrees));
     }
+
+
 
     public getParentMatrix(): Mat4 {
         if (!is(this._parent)) {
