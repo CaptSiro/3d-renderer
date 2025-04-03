@@ -35,7 +35,7 @@ export default class MeshRenderer extends Component implements Renderer {
             return;
         }
 
-        if (this._shader.bind() || this._timestamp !== this.scene.getTime().getSystemTime()) {
+        if (this._shader.bind() || this._timestamp !== this.scene.getTime().getSystemTimestamp()) {
             this.setSceneLight();
         }
 
@@ -58,7 +58,7 @@ export default class MeshRenderer extends Component implements Renderer {
     }
 
     public setSceneLight() {
-        this._timestamp = this.scene.getTime().getSystemTime();
+        this._timestamp = this.scene.getTime().getSystemTimestamp();
         if (!is(this._shader)) {
             return;
         }

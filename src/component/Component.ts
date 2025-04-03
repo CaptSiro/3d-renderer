@@ -50,6 +50,8 @@ export default class Component {
 
     public update(): void {}
 
+    public fixedUpdate(): void {}
+
     public delete(): void {}
 
     public onPropertyChange(property: string, oldValue: any, newValue: any): void {}

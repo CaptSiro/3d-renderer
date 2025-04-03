@@ -64,6 +64,7 @@ export default class MaterialSource {
 
     public static fromMtlV2(description: Mtl): MaterialSource {
         const ambient = description.Ka as number[];
+        const diffuse = description.Kd as number[];
 
         if (is(description.Ke)) {
             const emission = description.Ke as number[];
@@ -71,11 +72,15 @@ export default class MaterialSource {
             ambient[0] += emission[0];
             ambient[1] += emission[1];
             ambient[2] += emission[2];
+
+            ambient[0] *= diffuse[0];
+            ambient[1] *= diffuse[1];
+            ambient[2] *= diffuse[2];
         }
 
         return new MaterialSource({
             ambient,
-            diffuse: description.Kd as number[],
+            diffuse,
             specular: description.Ks as number[],
             shininess: ((description.Ns as Opt<number>) ?? 250) / 1000
         });

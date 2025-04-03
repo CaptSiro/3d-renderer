@@ -59,6 +59,18 @@ export default class GameObject {
         }
     }
 
+    public fixedUpdate(): void {
+        if (!this.isActive) {
+            return;
+        }
+
+        for (const component of this.components.values()) {
+            if (component.isEnabled()) {
+                component.fixedUpdate();
+            }
+        }
+    }
+
     public render(context: RenderingContext): void {
         if (!this.isActive || this === context.camera.gameObject) {
             return;

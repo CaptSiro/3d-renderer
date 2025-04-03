@@ -1,5 +1,5 @@
 import { $, is } from "../lib/jsml/jsml.ts";
-import { Mat4 } from "./types";
+import { Mat4, Vec3 } from "./types";
 import Scene from "./object/Scene.ts";
 import MaterialSource from "./resource/material/MaterialSource.ts";
 import { window_open } from "../lib/window.ts";
@@ -10,7 +10,13 @@ import devScene_loader from "../assets/scenes/dev-scene.ts";
 import Movement from "./component/Movement.ts";
 
 declare global {
-    const glm: any;
+    const glm: {
+        lookAt(...a: any[]): any,
+        vec3(...a: any[]): Vec3,
+        normalize(...a: any[]): any,
+        dot(...a: any[]): any,
+        cross(...a: any[]): any,
+    } | any;
 }
 
 

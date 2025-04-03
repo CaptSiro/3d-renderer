@@ -5,7 +5,8 @@ import Camera from "../../src/component/Camera";
 import Movement from "../../src/component/Movement";
 import Sun from "../scripts/Sun.ts";
 import LookAt from "../scripts/LookAt.ts";
-import { mainScene, pause } from "../../src/main.ts";
+import { pause } from "../../src/main.ts";
+import RigidBody from "../../src/component/RigidBody.ts";
 
 
 
@@ -14,7 +15,7 @@ export default async function devScene_loader(): Promise<Scene> {
 
     const cam0 = devScene.createGameObject('cam0');
     cam0.transform
-        .setPosition(glm.vec3(0, 1, 0));
+        .setPosition(glm.vec3(0, 0.2, -3));
 
     devScene.setActiveCamera(
         cam0.addComponent(Camera)
@@ -26,6 +27,7 @@ export default async function devScene_loader(): Promise<Scene> {
     suzanne.transform
         .setPosition(glm.vec3(1, 0, 3))
         .setRotation(Quaternion.fromEulerDegrees(-50, 180, 60));
+    suzanne.addComponent(RigidBody);
 
     const teapot = await devScene.loadGameObject("teapot", Path.from("/assets/models/Cube.obj"));
     teapot.addComponent(Sun);

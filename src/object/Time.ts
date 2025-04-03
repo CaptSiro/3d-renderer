@@ -12,22 +12,27 @@ export default class Time {
     public scale: float = 1;
 
     private _deltaTime: float = 0;
-    private _systemTime: float = 0;
+    private _systemTimestamp: float = 0;
     private _dayTime: float = 0;
     private _dayDeltaTime: float = 0;
 
 
 
+    public constructor(
+        public readonly fixedUpdateMilliseconds: number
+    ) {
+    }
+
     public update(): void {
         const now = Date.now() / 1000;
 
-        this._deltaTime = now - this._systemTime;
+        this._deltaTime = now - this._systemTimestamp;
 
         this._dayDeltaTime = this._deltaTime * this.scale;
         this._dayTime += this._dayDeltaTime / this.dayDuration;
         this._dayTime -= Math.floor(this._dayTime);
 
-        this._systemTime = now;
+        this._systemTimestamp = now;
 
         this.updateStats();
     }
@@ -50,8 +55,8 @@ export default class Time {
         return this._dayDeltaTime;
     }
 
-    public getSystemTime(): float {
-        return this._systemTime;
+    public getSystemTimestamp(): float {
+        return this._systemTimestamp;
     }
 
     public getDayTime(): float {
@@ -60,5 +65,9 @@ export default class Time {
 
     public setDayTime(time: float01): void {
         this._dayTime = time;
+    }
+
+    public getFixedDeltaTime(): float {
+        return this.fixedUpdateMilliseconds / 1000;
     }
 }

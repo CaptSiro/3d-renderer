@@ -5,7 +5,7 @@ import Path from "../resource/Path.ts";
 import MeshRenderer from "../component/renderer/MeshRenderer.ts";
 import jsml, { $, is } from "../../lib/jsml/jsml.ts";
 import Time from "./Time.ts";
-import { Predicate } from "../types.ts";
+import { float, Predicate } from "../types.ts";
 import Movement from "../component/Movement.ts";
 import MeshSource from "../resource/mesh/MeshSource.ts";
 import ShaderSource from "../resource/shader/ShaderSource.ts";
@@ -17,23 +17,35 @@ import SceneSettings from "./SceneSettings.ts";
 
 
 
+const FIXED_UPDATE_MILLISECONDS = 20;
+
 export default class Scene {
     private readonly _gameObjects: GameObject[];
     private readonly _time: Time;
     private readonly _settings: SceneSettings;
     private _activeCamera: Opt<Camera>;
 
+    private _physicsTimestamp: float;
+
+
+
     constructor(
         private _name: string = ''
     ) {
         this._gameObjects = [];
-        this._time = new Time();
+        this._time = new Time(FIXED_UPDATE_MILLISECONDS);
         this._settings = new SceneSettings();
+        this._physicsTimestamp = Date.now();
     }
 
 
 
     public update(): void {
+        while (this._physicsTimestamp < Date.now()) {
+            this.fixedUpdate();
+            this._physicsTimestamp += this._time.fixedUpdateMilliseconds;
+        }
+
         this._time.update();
         this._activeCamera?.gameObject.update();
 
@@ -43,6 +55,18 @@ export default class Scene {
             }
 
             gameObject.update();
+        }
+    }
+
+    public fixedUpdate(): void {
+        this._activeCamera?.gameObject.fixedUpdate();
+
+        for (const gameObject of this._gameObjects.values()) {
+            if (gameObject === this._activeCamera?.gameObject) {
+                continue;
+            }
+
+            gameObject.fixedUpdate();
         }
     }
 

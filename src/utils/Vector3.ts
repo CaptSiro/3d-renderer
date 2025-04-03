@@ -3,6 +3,8 @@ import { float, Vec3 } from "../types.ts";
 
 
 export default class Vector3 {
+    public static ZERO: Vec3 = glm.vec3(0, 0, 0);
+
     public static MIN: Vec3 = glm.vec3(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
     public static MAX: Vec3 = glm.vec3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
 

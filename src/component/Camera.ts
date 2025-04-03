@@ -8,7 +8,6 @@ import { is } from "../../lib/jsml/jsml.ts";
 import SkyRenderer from "./renderer/SkyRenderer.ts";
 import Counter from "../primitives/Counter.ts";
 import Keyboard from "../input/Keyboard.ts";
-import State from "../object/State.ts";
 import MeshRenderer from "./renderer/MeshRenderer.ts";
 import Path from "../resource/Path.ts";
 
