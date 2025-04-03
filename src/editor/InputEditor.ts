@@ -36,11 +36,12 @@ export default abstract class InputEditor<T> extends Editor<T> {
     }
 
     protected input: Opt<HTMLInputElement>;
+    protected inputFocused: boolean = false;
 
     protected abstract parseValue(value: string): T;
 
     public update(): void {
-        if (!is(this.input)) {
+        if (!is(this.input) || this.inputFocused) {
             return;
         }
 
@@ -56,7 +57,13 @@ export default abstract class InputEditor<T> extends Editor<T> {
             value: String(this.value),
             onInput: () => this.saveValue(
                 this.parseValue(input.value)
-            )
+            ),
+            onFocus: () => {
+                this.inputFocused = true;
+            },
+            onBlur: () => {
+                this.inputFocused = false;
+            }
         });
         this.input = input;
 

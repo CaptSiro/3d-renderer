@@ -21,23 +21,24 @@ export default class RigidBody extends Component {
     @editor(NumberEditor)
     public dragAngular: number = 0.05;
 
-    private _velocity: Vec3 = Vector3.ZERO;
-    private _velocityAngular: Vec3 = Vector3.ZERO;
+    private _velocity: Vec3 = Vector3.zero();
+    private _velocityAngular: Vec3 = Vector3.zero();
 
 
 
     @editor(Vec3Editor)
-    private velocity: Vec3 = Vector3.ZERO;
+    private velocity: Vec3 = Vector3.zero();
+
     @editor(Vec3Editor)
-    private velocityAngular: Vec3 = Vector3.ZERO;
+    private velocityAngular: Vec3 = Vector3.zero();
 
     private applyVelocity(): void {
-        this._velocity ['+='] (this.velocity);
-        this._velocityAngular ['+='] (this.velocityAngular);
+        this.addVelocity(this.velocity);
+        this.addVelocityAngular(this.velocityAngular);
     }
 
     @editor(Button)
-    private _addVelocity = this.applyVelocity;
+    private Add_Velocity = this.applyVelocity;
 
 
 
@@ -52,7 +53,7 @@ export default class RigidBody extends Component {
         this._velocity ['-='] (this._velocity ['*'] (this.drag));
 
         if (glm.dot(this._velocity, this._velocity) < 0.00001) {
-            this._velocity = Vector3.ZERO;
+            this._velocity = Vector3.zero();
         }
 
         const rotation = this.transform.getRotation();
@@ -74,15 +75,17 @@ export default class RigidBody extends Component {
         this._velocityAngular ['-='] (this._velocityAngular ['*'] (this.dragAngular));
 
         if (glm.dot(this._velocityAngular, this._velocityAngular) < 0.00001) {
-            this._velocityAngular = Vector3.ZERO;
+            this._velocityAngular = Vector3.zero();
         }
     }
 
     public addVelocity(velocity: Vec3): void {
+        Vector3.log(velocity);
         this._velocity ['+='] (velocity);
     }
 
     public addVelocityAngular(velocityAngular: Vec3): void {
+        Vector3.log(velocityAngular);
         this._velocityAngular ['+='] (velocityAngular);
     }
 }
