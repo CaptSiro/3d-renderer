@@ -9,7 +9,7 @@ import { int, Predicate } from "../types.ts";
 import Counter from "../primitives/Counter.ts";
 import { ModalWindow, window_create } from "../../lib/window.ts";
 import TransformEditor from "../editor/TransformEditor.ts";
-import { getEditor } from "../editor/Editor.ts";
+import Editor, { getEditor } from "../editor/Editor.ts";
 import RenderingContext from "../primitives/RenderingContext.ts";
 
 
@@ -212,12 +212,6 @@ export default class GameObject {
             );
         }
 
-        w.id = id;
-
-        w.addEventListener("keydown", event => event.stopPropagation());
-        w.addEventListener("keyup", event => event.stopPropagation());
-        w.addEventListener("keypress", event => event.stopPropagation());
-
-        return w;
+        return Editor.initWindow(w, id);
     }
 }

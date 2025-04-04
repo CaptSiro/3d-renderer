@@ -1,11 +1,11 @@
-import jsml, { _, Content, is } from "../../lib/jsml/jsml.ts";
+import jsml, { _, assert, Content, is } from "../../lib/jsml/jsml.ts";
 import "reflect-metadata"
 import { Opt } from "../../lib/types.ts";
 import {
     EVENT_WINDOW_CLOSED,
     EVENT_WINDOW_MAXIMIZED,
     EVENT_WINDOW_MINIMIZED,
-    EVENT_WINDOW_OPENED,
+    EVENT_WINDOW_OPENED, ModalWindow,
 } from "../../lib/window.ts";
 
 
@@ -30,7 +30,37 @@ export function getEditor(editorWindow: HTMLElement, target: any, property: stri
 const EDITOR_UPDATE_INTERVAL = 500;
 
 export default abstract class Editor<T> {
+    public static initWindow(w: ModalWindow, id: string): ModalWindow {
+        w.id = id;
+
+        w.addEventListener("keydown", event => event.stopPropagation());
+        w.addEventListener("keyup", event => event.stopPropagation());
+        w.addEventListener("keypress", event => event.stopPropagation());
+
+        w.addEventListener("pointerdown", () => {
+            const windows = Array.from(assert(w.parentElement).children) as HTMLElement[];
+
+            if (w.style.zIndex === String(windows.length + 1)) {
+                return;
+            }
+
+            windows.sort((a, b) => {
+                return Number(a.style.zIndex) - Number(b.style.zIndex);
+            });
+
+            for (let i = 0; i < windows.length; i++) {
+                windows[i].style.zIndex = String(i + 1);
+            }
+
+            w.style.zIndex = String(windows.length + 1);
+        });
+
+        return w;
+    }
+
     protected id: Opt<number>;
+
+
 
     constructor(
         protected editorWindow: HTMLElement,

@@ -16,7 +16,9 @@ export default class BooleanEditor extends Editor<boolean> {
 
         input.addEventListener(
             "input",
-            () => this.saveValue(Boolean(input.checked))
+            () => {
+                this.saveValue(Boolean(input.checked));
+            }
         );
 
         const container = this.container([

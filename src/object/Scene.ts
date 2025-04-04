@@ -12,7 +12,7 @@ import ShaderSource from "../resource/shader/ShaderSource.ts";
 import RenderingContext from "../primitives/RenderingContext.ts";
 import Matrix4 from "../utils/Matrix4.ts";
 import { ModalWindow, window_create } from "../../lib/window.ts";
-import { getEditor } from "../editor/Editor.ts";
+import Editor, { getEditor } from "../editor/Editor.ts";
 import SceneSettings from "./SceneSettings.ts";
 
 
@@ -221,12 +221,6 @@ export default class Scene {
             ])
         );
 
-        w.id = id;
-
-        w.addEventListener("keydown", event => event.stopPropagation());
-        w.addEventListener("keyup", event => event.stopPropagation());
-        w.addEventListener("keypress", event => event.stopPropagation());
-
-        return w;
+        return Editor.initWindow(w, id);
     }
 }
