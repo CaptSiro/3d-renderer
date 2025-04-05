@@ -1,5 +1,5 @@
 import Path from "../Path.ts";
-import ResourceCache from "../ResourceCache.ts";
+import AsyncResourceCache from "../AsyncResourceCache.ts";
 
 
 
@@ -9,7 +9,7 @@ type ShaderSourceArg = {
 }
 
 export default class ShaderSource {
-    private static cache: ResourceCache<ShaderSourceArg, ShaderSource> = new ResourceCache(
+    private static cache: AsyncResourceCache<ShaderSourceArg, ShaderSource> = new AsyncResourceCache(
         ShaderSource.stringifyArg,
         ShaderSource.create
     );

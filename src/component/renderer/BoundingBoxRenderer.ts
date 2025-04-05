@@ -85,6 +85,6 @@ export default class BoundingBoxRenderer extends Component {
         gl.bindVertexArray(null);
 
         const source = await ShaderSource.loadShader("ray");
-        this._shader = await Shader.load(source);
+        this._shader = Shader.load(source);
     }
 }

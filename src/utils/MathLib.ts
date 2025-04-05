@@ -39,4 +39,8 @@ export default class MathLib {
             MathLib.lerp(a.z, b.z, t),
         );
     }
+
+    public static is2PowX(x: number): boolean {
+        return (x & (x - 1)) === 0;
+    }
 }

@@ -54,9 +54,7 @@ export class RayRenderer extends Component implements Renderer {
         gl.bindVertexArray(null);
 
         ShaderSource.loadShader("ray").then(source => {
-            Shader.load(source).then(shader => {
-                this._shader = shader;
-            });
+            this._shader = Shader.load(source);
         });
     }
 

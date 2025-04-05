@@ -3,21 +3,16 @@ import ParseContext from "./ParseContext.ts";
 import WavefrontMtlParser, { Mtl } from "./WavefrontMtlParser.ts";
 import { is } from "../../../../../lib/jsml/jsml.ts";
 import Arrays from "../../../../utils/Arrays.ts";
+import ObjPart from "./ObjPart.ts";
 
 
-
-export type MaterialRange = {
-    name: string,
-    start: number,
-    end: number,
-};
 
 export type Obj = {
     name: string,
-    vertexToIndex: Map<string, number>,
-    triangles: number[],
-    materialRanges: ParseContext<MaterialRange>,
+    parts: Map<string, ObjPart>
 };
+
+
 
 export default class WavefrontObjParser {
     private static mtlParser = new WavefrontMtlParser();
@@ -26,6 +21,10 @@ export default class WavefrontObjParser {
     private normals: number[][] = [];
     private textureCoords: number[][] = [];
     private materials: Mtl[] = [];
+
+    private currentMaterial: string = '';
+
+
 
     public async parse(path: Path, content: string) {
         this.vertexes = [];
@@ -36,13 +35,7 @@ export default class WavefrontObjParser {
         let index = 0;
         const context = new ParseContext<Obj>(() => ({
             name: '',
-            vertexToIndex: new Map(),
-            triangles: [],
-            materialRanges: new ParseContext<MaterialRange>(() => ({
-                name: '',
-                start: 0,
-                end: 0
-            }))
+            parts: new Map<string, ObjPart>()
         }));
 
         while (true) {
@@ -62,7 +55,6 @@ export default class WavefrontObjParser {
             index = end;
         }
 
-        context.getCurrent().materialRanges.save();
         context.save();
 
         return {
@@ -72,18 +64,6 @@ export default class WavefrontObjParser {
             materials: this.materials,
             models: context.getCollection()
         }
-    }
-
-    private lookupVertex(model: Obj, vertex: string): number {
-        const index = model.vertexToIndex.get(vertex);
-        if (is(index)) {
-            return index;
-        }
-
-        const size = model.vertexToIndex.size;
-        model.vertexToIndex.set(vertex, size);
-
-        return size;
     }
 
     private async processLine(line: string, context: ParseContext<Obj>, path: Path): Promise<void> {
@@ -114,36 +94,23 @@ export default class WavefrontObjParser {
                 break;
             case 'f':
                 context.markAsUpdated();
-                const materialIndex = '/' + model.materialRanges.getCurrent().name;
-                const v0 = this.lookupVertex(model, segments[0] + materialIndex);
-                let end = model.materialRanges.getCurrent().end;
+                const part = model.parts.get(this.currentMaterial) ?? new ObjPart();
+                const v0 = part.lookupVertex(segments[0]);
 
                 for (let i = 0; i < segments.length - 2; i++) {
-                    model.triangles.push(
-                        v0,
-                        this.lookupVertex(model, segments[i + 1] + materialIndex),
-                        this.lookupVertex(model, segments[i + 2] + materialIndex)
-                    );
-
-                    end++;
+                    part.addVertexIndex(v0);
+                    part.addVertexIndex(part.lookupVertex(segments[i + 1]));
+                    part.addVertexIndex(part.lookupVertex(segments[i + 2]));
                 }
 
-                model.materialRanges.set("end", end);
+                model.parts.set(this.currentMaterial, part);
                 break;
             case 'usemtl':
-                const currentMaterial = model.materialRanges.getCurrent();
-                if (currentMaterial.start !== currentMaterial.end) {
-                    model.materialRanges.save();
-                }
-
-                model.materialRanges.set("name", segments[0] ?? '');
-                model.materialRanges.set("start", currentMaterial.end);
-                model.materialRanges.set("end", currentMaterial.end);
+                this.currentMaterial = segments[0] ?? '';
                 break;
             case 'o':
-                context.getCurrent().materialRanges.save();
                 context.save();
-                context.set("name", segments[0] ?? '');
+                context.set("name", segments[0] ?? '', false);
                 break;
             case 'mtllib':
                 const mtl = Path.join(

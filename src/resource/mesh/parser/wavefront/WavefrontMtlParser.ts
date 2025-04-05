@@ -7,6 +7,7 @@ import Arrays from "../../../../utils/Arrays.ts";
 
 export type Mtl = {
     name: string,
+    path: string,
     [key: string]: number[] | string | number
 };
 
@@ -15,6 +16,7 @@ export default class WavefrontMtlParser {
         const content = await path.read();
         const context = new ParseContext<Mtl>(() => ({
             name: '',
+            path: path.getLiteral(),
         }));
 
         let index = 0;

@@ -14,7 +14,7 @@ const zero = [0, 0, 0];
 export default class ObjMesh implements MeshFileParser {
     async parse(path: Path, content: string): Promise<MeshSource[]> {
         const description = await new WavefrontObjParser().parse(path, content);
-        const meshSources: MeshSource[] = new Array(description.models.length);
+        const meshSources: MeshSource[] = [];
 
         const defaultMaterial = await MaterialSource.load(MaterialSource.getDefaultMaterial());
         const materialSources = new Map<string, MaterialSource>();
@@ -30,62 +30,67 @@ export default class ObjMesh implements MeshFileParser {
 
         for (let m = 0; m < description.models.length; m++) {
             const model = description.models[m];
-            const boundingBox = BoundingBox.initial();
 
-            const indexes = Uint32Array.from(model.triangles);
-            const vertexData = new Float32Array(model.vertexToIndex.size * meshVertexLayout.getTotalFloats());
-
-            for (const [vertex, index] of model.vertexToIndex) {
-                const components = vertex.split('/');
-
-                let i = index * meshVertexLayout.getTotalFloats();
-
-                // Vertex
-                const vertexIndex = Number(components[0]);
-                const v = vertexIndex > 0
-                    ? description.vertexes[vertexIndex - 1]
-                    : zero;
-
-                vertexData[i++] = v[0];
-                vertexData[i++] = v[1];
-                vertexData[i++] = v[2];
-
-                if (vertexIndex > 0) {
-                    boundingBox.addVertex(v[0], v[1], v[2]);
+            for (const [materialName, part] of model.parts) {
+                if (part.getIndexes().length === 0) {
+                    continue;
                 }
 
-                // Normal
-                const normalIndex = Number(components[2]);
-                const n = normalIndex > 0
-                    ? description.normals[normalIndex - 1]
-                    : zero;
+                const indexes = Uint32Array.from(part.getIndexes());
+                const boundingBox = BoundingBox.initial();
 
-                vertexData[i++] = n[0];
-                vertexData[i++] = n[1];
-                vertexData[i++] = n[2];
+                const vertexData = new Float32Array(part.getVertexToIndex().size * meshVertexLayout.getTotalFloats());
 
-                // Texture Coordinates
-                const textureCoordIndex = Number(components[1]);
-                const t = textureCoordIndex > 0
-                    ? description.textureCoords[textureCoordIndex - 1]
-                    : zero;
+                for (const [vertex, index] of part.getVertexToIndex()) {
+                    const components = vertex.split('/');
 
-                vertexData[i++] = t[0];
-                vertexData[i++] = t[1];
+                    let i = index * meshVertexLayout.getTotalFloats();
 
-                // Material Index
-                vertexData[i++] = materialIndexes.get(components[3] ?? '') ?? 0;
+                    // Vertex
+                    const vertexIndex = Number(components[0]);
+                    const v = vertexIndex > 0
+                        ? description.vertexes[vertexIndex - 1]
+                        : zero;
+
+                    vertexData[i++] = v[0];
+                    vertexData[i++] = v[1];
+                    vertexData[i++] = v[2];
+
+                    if (vertexIndex > 0) {
+                        boundingBox.addVertex(v[0], v[1], v[2]);
+                    }
+
+                    // Normal
+                    const normalIndex = Number(components[2]);
+                    const n = normalIndex > 0
+                        ? description.normals[normalIndex - 1]
+                        : zero;
+
+                    vertexData[i++] = n[0];
+                    vertexData[i++] = n[1];
+                    vertexData[i++] = n[2];
+
+                    // Texture Coordinates
+                    const textureCoordIndex = Number(components[1]);
+                    const t = textureCoordIndex > 0
+                        ? description.textureCoords[textureCoordIndex - 1]
+                        : zero;
+
+                    vertexData[i++] = t[0];
+                    vertexData[i++] = t[1];
+                }
+
+                meshSources.push(
+                    new MeshSource(
+                        vertexData,
+                        indexes.length / 3,
+                        meshVertexLayout,
+                        materialSources.get(materialName) ?? defaultMaterial,
+                        boundingBox,
+                        model.name
+                    ).setIndexes(indexes)
+                );
             }
-
-            meshSources[m] = new MeshSource(
-                vertexData,
-                indexes.length / 3,
-                meshVertexLayout,
-                materialSources,
-                materialIndexes,
-                boundingBox,
-                model.name
-            ).setIndexes(indexes);
         }
 
         return meshSources;

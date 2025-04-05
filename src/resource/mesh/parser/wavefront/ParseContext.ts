@@ -1,3 +1,7 @@
+import { Opt } from "../../../../../lib/types.ts";
+
+
+
 export default class ParseContext<T> {
     private readonly collection: T[];
     private current: T;
@@ -15,18 +19,18 @@ export default class ParseContext<T> {
 
 
 
-    public set(key: keyof T, value: T[keyof T]): void {
-        this.currentUpdated = true;
+    public set(key: keyof T, value: T[keyof T], updated: boolean = true): void {
+        this.currentUpdated = updated;
         this.current[key] = value;
     }
 
-    public save(): void {
+    public save(initial: Opt<T> = undefined): void {
         if (!this.currentUpdated) {
             return;
         }
 
         this.collection.push(this.current);
-        this.current = this.factory();
+        this.current = initial ?? this.factory();
         this.currentUpdated = false;
     }
 

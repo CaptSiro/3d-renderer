@@ -5,6 +5,7 @@ import Material from "../material/Material.ts";
 import { int } from "../../types.ts";
 import Shader from "../shader/Shader.ts";
 import BoundingBox from "../../primitives/BoundingBox.ts";
+import MaterialSource from "../material/MaterialSource.ts";
 
 
 
@@ -15,8 +16,7 @@ export default class Mesh {
     private readonly hasEbo: boolean;
     private readonly vertexCount: number;
 
-    private readonly materials: Map<string, Material>;
-    private readonly materialIndexes: Map<string, int>;
+    private readonly material: Material;
     private readonly boundingBox: BoundingBox;
     private readonly name: string;
 
@@ -28,12 +28,7 @@ export default class Mesh {
         this.name = source.getName();
         this.boundingBox = source.getBoundingBox();
 
-        this.materials = new Map<string, Material>();
-        for (const [name, materialSource] of source.getMaterialSources()) {
-            this.materials.set(name, new Material(materialSource));
-        }
-
-        this.materialIndexes = source.getMaterialIndexes();
+        this.material = new Material(source.getMaterialSource());
 
         const data = source.getData();
 
@@ -90,17 +85,6 @@ export default class Mesh {
             total,
             offset * FLOAT_SIZE
         );
-        offset += vertexLayout.getTextureCoordFloats();
-
-        gl.enableVertexAttribArray(3);
-        gl.vertexAttribPointer(
-            3,
-            vertexLayout.getMaterialIndexFloats(),
-            gl.FLOAT,
-            false,
-            total,
-            offset * FLOAT_SIZE
-        );
 
         gl.bindVertexArray(null);
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
@@ -124,12 +108,12 @@ export default class Mesh {
     public delete(): void {
         gl.deleteVertexArray(this.vao);
         gl.deleteBuffer(this.vbo);
+
+        this.material.delete();
     }
 
-    public bindMaterials(shader: Shader, staticArray: string): void {
-        for (const [name, material] of this.materials) {
-            material.bind(shader, `${staticArray}[${this.materialIndexes.get(name) ?? 0}]`);
-        }
+    public getMaterial(): Material {
+        return this.material;
     }
 
     public getBoundingBox(): BoundingBox {

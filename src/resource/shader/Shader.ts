@@ -3,7 +3,9 @@ import { gl } from "../../main.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
 import { Opt } from "../../../lib/types";
 import { Mat4, Vec3 } from "../../types";
+import Material from "../material/Material.ts";
 import ResourceCache from "../ResourceCache.ts";
+import Texture from "../Texture.ts";
 
 
 
@@ -16,7 +18,7 @@ export default class Shader {
         Shader.create
     );
 
-    private static create(source: ShaderSource): Promise<Shader> {
+    private static create(source: ShaderSource): Shader {
         const vertex = Shader.compile(gl.VERTEX_SHADER, source.getVertexCode());
         if (!is(vertex)) {
             throw new Error("Shader compilation error");
@@ -36,10 +38,10 @@ export default class Shader {
             throw new Error("Shader program compilation error");
         }
 
-        return Promise.resolve(new Shader(program));
+        return new Shader(program);
     }
 
-    public static async load(source: ShaderSource): Promise<Shader> {
+    public static load(source: ShaderSource): Shader {
         return Shader.shaders.get(source);
     }
 
@@ -200,5 +202,27 @@ export default class Shader {
             transpose,
             matrix.elements
         );
+    }
+
+    private currentMaterial: Opt<string>;
+    public setMaterial(uniform: string, material: Material) {
+        if (this.currentMaterial === material.name) {
+            return;
+        }
+
+        this.setVec3(uniform + ".ambient", material.ambient);
+        this.setVec3(uniform + ".diffuse", material.diffuse);
+        this.setVec3(uniform + ".specular", material.specular);
+        this.setFloat(uniform + ".shininess", material.shininess);
+
+        this.setInt(uniform + ".maps", material.maps);
+
+        Texture.bind(material.map_ambient, this, uniform + "_ambient", 0);
+        Texture.bind(material.map_diffuse, this, uniform + "_diffuse", 1);
+        Texture.bind(material.map_specular, this, uniform + "_specular", 2);
+        Texture.bind(material.map_shininess, this, uniform + "_shininess", 3);
+        Texture.bind(material.map_bump, this, uniform + "_bump", 4);
+
+        this.currentMaterial = material.name;
     }
 }

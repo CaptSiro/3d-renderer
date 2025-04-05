@@ -44,9 +44,8 @@ export default class MeshRenderer extends Component implements Renderer {
         this._shader.setMat4("MVP", camera.vp ['*'] (model));
 
         for (const mesh of this._meshes) {
-            mesh.bindMaterials(this._shader, "materials");
-
             mesh.bind();
+            this._shader.setMaterial('material', mesh.getMaterial());
             mesh.draw();
         }
 
@@ -112,7 +111,7 @@ export default class MeshRenderer extends Component implements Renderer {
             boundingBox.merge(mesh.getBoundingBox());
         }
 
-        const shader = await Shader.load(shaderSource);
+        const shader = Shader.load(shaderSource);
 
         this._meshes = meshes;
         this._shader = shader;

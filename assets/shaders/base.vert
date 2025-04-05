@@ -5,7 +5,6 @@ precision mediump float;
 layout (location = 0) in vec3 aPosition;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTextureCoords;
-layout (location = 3) in float aMaterialIndex;
 
 // Uniforms
 uniform mat4 MVP;
@@ -15,7 +14,6 @@ uniform mat4 Model;
 out vec3 Normal;
 out vec3 FragmentPosition;
 out vec2 TextureCoords;
-out float MaterialIndex;
 
 void main()
 {
@@ -23,5 +21,4 @@ void main()
     FragmentPosition = vec3(Model * vec4(aPosition, 1.0));
     Normal = transpose(inverse(mat3(Model))) * aNormal;
     TextureCoords = aTextureCoords;
-    MaterialIndex = aMaterialIndex;
 }

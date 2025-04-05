@@ -2,11 +2,10 @@ import Path from "../Path.ts";
 import MeshFileParser from "./parser/MeshFileParser.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
 import VertexLayout from "./VertexLayout.ts";
-import AsyncResourceCache from "../ResourceCache.ts";
 import MaterialSource from "../material/MaterialSource.ts";
-import { int } from "../../types.ts";
 import BoundingBox from "../../primitives/BoundingBox.ts";
 import ObjMesh from "./parser/wavefront/ObjMesh.ts";
+import AsyncResourceCache from "../AsyncResourceCache.ts";
 
 
 
@@ -55,8 +54,7 @@ export default class MeshSource {
         private data: Float32Array,
         private faceCount: number,
         private vertexLayout: VertexLayout,
-        private materialSources: Map<string, MaterialSource>,
-        private materialIndexes: Map<string, int>,
+        private materialSource: MaterialSource,
         private boundingBox: BoundingBox,
         private name: string = ''
     ) {}
@@ -92,17 +90,11 @@ export default class MeshSource {
         return this.vertexLayout;
     }
 
-    public getMaterialSources(): Map<string, MaterialSource> {
-        return this.materialSources;
-    }
-
-    public getMaterialIndexes(): Map<string, int> {
-        return this.materialIndexes;
+    public getMaterialSource(): MaterialSource {
+        return this.materialSource;
     }
 
     public getBoundingBox(): BoundingBox {
         return this.boundingBox;
     }
-
-
 }
