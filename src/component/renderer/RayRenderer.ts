@@ -6,7 +6,6 @@ import type { Vec3 } from "../../types.ts";
 import Shader from "../../resource/shader/Shader.ts";
 import { Opt } from "../../../lib/types.ts";
 import ShaderSource from "../../resource/shader/ShaderSource.ts";
-import Path from "../../resource/Path.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
 import BoundingBox from "../../primitives/BoundingBox.ts";
 import Color from "../../primitives/Color.ts";

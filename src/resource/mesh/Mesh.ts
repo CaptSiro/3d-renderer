@@ -2,10 +2,7 @@ import MeshSource from "./MeshSource.ts";
 import { gl } from "../../main.ts";
 import { FLOAT_SIZE } from "../../webgl.ts";
 import Material from "../material/Material.ts";
-import { int } from "../../types.ts";
-import Shader from "../shader/Shader.ts";
 import BoundingBox from "../../primitives/BoundingBox.ts";
-import MaterialSource from "../material/MaterialSource.ts";
 
 
 

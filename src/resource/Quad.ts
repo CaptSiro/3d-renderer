@@ -1,7 +1,6 @@
 import { Vec2, Vec3 } from "../types.ts";
 import { gl } from "../main.ts";
 import { FLOAT_SIZE, quadVertexLayout } from "../webgl.ts";
-import { Opt } from "../../lib/types.ts";
 
 
 
