@@ -25,7 +25,7 @@ export default class ObjMesh implements MeshFileParser {
 
         for (const material of description.materials) {
             materialIndexes.set(material.name, materialSources.size);
-            materialSources.set(material.name, MaterialSource.fromMtlV2(material));
+            materialSources.set(material.name, MaterialSource.fromMtl(material));
         }
 
         for (let m = 0; m < description.models.length; m++) {

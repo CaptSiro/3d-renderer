@@ -11,7 +11,7 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd textures/wood_floor_diff_4k.jpg
-# map_bump textures/wood_floor_nor_gl_4k.jpg
+map_bump textures/wood_floor_nor_gl_4k.jpg
 
 newmtl Material.004
 Ns 361.101807
@@ -23,4 +23,4 @@ Ni 1.500000
 d 1.000000
 illum 3
 map_Kd textures/wood_floor_diff_4k.jpg
-# map_bump textures/wood_floor_nor_gl_4k.jpg
+map_bump textures/wood_floor_nor_gl_4k.jpg

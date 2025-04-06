@@ -41,6 +41,8 @@ uniform sampler2D material_bump;
 // Output
 out vec4 OutColor;
 
+mat3 TBN;
+
 vec3 get_ambient() {
     if ((material.maps & MAP_AMBIENT_MASK) != 0) {
         return texture(material_ambient, TextureCoords).rgb;
@@ -73,16 +75,31 @@ float get_shininess() {
     return material.shininess;
 }
 
+mat3 get_TBN() {
+    vec3 N = normalize(Normal);
+
+    vec3 position_dx = dFdx(FragmentPosition);
+    vec3 position_dy = dFdy(FragmentPosition);
+    vec2 textureCoord_dx = dFdx(TextureCoords);
+    vec2 textureCoord_dy = dFdy(TextureCoords);
+
+    float r = 1.0 / max((textureCoord_dx.x * textureCoord_dy.y - textureCoord_dy.x * textureCoord_dx.y), 1e-6);
+    vec3 T = (position_dx * textureCoord_dy.y - position_dy * textureCoord_dx.y) * r;
+    vec3 B = cross(N, T);
+
+    return mat3(normalize(T), normalize(B), N);
+}
+
 vec3 get_normal() {
     if ((material.maps & MAP_BUMP_MASK) != 0) {
-        return normalize(texture(material_bump, TextureCoords).rgb * 2.0 - 1.0) * 2.0;
+        vec3 n = texture(material_bump, TextureCoords).rgb * 2.0 - 1.0;
+        return normalize(get_TBN() * n);
     }
 
     return normalize(Normal);
 }
 
-void main()
-{
+void main() {
     vec3 ambient = get_ambient() * light.ambient * get_diffuse();
 
     vec3 norm = get_normal();

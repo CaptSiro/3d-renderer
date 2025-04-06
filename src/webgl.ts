@@ -6,7 +6,6 @@ import { gl } from "./main.ts";
 
 
 export const FLOAT_SIZE = 4;
-export const MAX_MATERIALS = 64;
 
 export const LAYOUT_VERTEX3 = 3;
 export const LAYOUT_NORMAL3 = 3;

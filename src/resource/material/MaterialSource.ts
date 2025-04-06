@@ -43,36 +43,6 @@ export default class MaterialSource {
         return Path.from("/assets/materials/plastic-white.json");
     }
 
-    private static rgbToFloatArray(rgb: Opt<Rgb>): float[] {
-        if (!is(rgb)) {
-            return [0, 0, 0];
-        }
-
-        return [
-            rgb.red,
-            rgb.green,
-            rgb.blue
-        ];
-    }
-
-    public static fromMtl(description: any): MaterialSource {
-        const ambient = MaterialSource.rgbToFloatArray(description.Ka);
-
-        if (is(description.Ke)) {
-            ambient[0] += description.Ke.red;
-            ambient[1] += description.Ke.green;
-            ambient[2] += description.Ke.blue;
-        }
-
-        return new MaterialSource({
-            name: description.path + '/' + description.name,
-            ambient,
-            diffuse: MaterialSource.rgbToFloatArray(description.Kd),
-            specular: MaterialSource.rgbToFloatArray(description.Ks),
-            shininess: (description.Ns ?? 250) / 1000
-        });
-    }
-
     private static setMap(shape: MaterialShape, property: keyof MaterialShape, directory: string, value: any): void {
         if (!is(value)) {
             return;
@@ -82,7 +52,7 @@ export default class MaterialSource {
         shape[property] = assert(Path.join(directory, value)).getLiteral();
     }
 
-    public static fromMtlV2(description: Mtl): MaterialSource {
+    public static fromMtl(description: Mtl): MaterialSource {
         const ambient = description.Ka as number[];
         const diffuse = description.Kd as number[];
 

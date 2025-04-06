@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 todo
-requirements.xlsx
+*requirements.xlsx
