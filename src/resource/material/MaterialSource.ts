@@ -1,5 +1,5 @@
 import Path from "../Path.ts";
-import { float, Rgb } from "../../types";
+import { float } from "../../types";
 import { Opt } from "../../../lib/types.ts";
 import { assert, is } from "../../../lib/jsml/jsml.ts";
 import { Mtl } from "../mesh/parser/wavefront/WavefrontMtlParser.ts";

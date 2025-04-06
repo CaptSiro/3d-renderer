@@ -31,12 +31,6 @@ export type Mat4 = {
     elements: Float32Array
 } | any;
 
-export type Rgb = {
-    red: number,
-    green: number,
-    blue: number
-};
-
 
 
 export type Predicate<T> = (x: T) => boolean;
