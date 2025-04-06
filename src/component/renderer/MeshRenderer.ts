@@ -35,6 +35,8 @@ export default class MeshRenderer extends Component implements Renderer {
             return;
         }
 
+        const usePbr = this.scene.getSettings().defaultShader === "pbr";
+
         if (this._shader.bind() || this._timestamp !== this.scene.getTime().getSystemTimestamp()) {
             this.setSceneLight();
         }
@@ -45,7 +47,11 @@ export default class MeshRenderer extends Component implements Renderer {
 
         for (const mesh of this._meshes) {
             mesh.bind();
-            this._shader.setMaterial('material', mesh.getMaterial());
+            if (usePbr) {
+                this._shader.setMaterialPbr('material', mesh.getMaterial());
+            } else {
+                this._shader.setMaterialPhong('material', mesh.getMaterial());
+            }
             mesh.draw();
         }
 
@@ -122,7 +128,7 @@ export default class MeshRenderer extends Component implements Renderer {
 
     public async initFromModelFile(path: Path): Promise<void> {
         const meshSources = await MeshSource.load(path);
-        const shaderSource = await ShaderSource.loadShader("base");
+        const shaderSource = await this.scene.getSettings().getDefaultShader();
 
         await this.init(meshSources, shaderSource);
     }

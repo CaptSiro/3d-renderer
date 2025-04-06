@@ -8,7 +8,6 @@ import Time from "./Time.ts";
 import { float, Predicate } from "../types.ts";
 import Movement from "../component/Movement.ts";
 import MeshSource from "../resource/mesh/MeshSource.ts";
-import ShaderSource from "../resource/shader/ShaderSource.ts";
 import RenderingContext from "../primitives/RenderingContext.ts";
 import Matrix4 from "../utils/Matrix4.ts";
 import { ModalWindow, window_create } from "../../lib/window.ts";
@@ -153,7 +152,7 @@ export default class Scene {
 
         if (MeshSource.isMeshFile(path)) {
             const meshSources = await MeshSource.load(path);
-            const shaderSource = await ShaderSource.loadShader("base");
+            const shaderSource = await this._settings.getDefaultShader();
 
             const first = meshSources[0];
             if (!is(first)) {

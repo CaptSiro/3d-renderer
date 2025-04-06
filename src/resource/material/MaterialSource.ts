@@ -14,6 +14,7 @@ export type MaterialShape = {
     diffuse: float[],
     specular: float[],
     shininess: float,
+    metallic: float,
 
     map_ambient?: string,
     map_diffuse?: string,
@@ -72,6 +73,7 @@ export default class MaterialSource {
             name: description.path + '/' + description.name,
             ambient,
             diffuse,
+            metallic: ambient[0],
             specular: description.Ks as number[],
             shininess: ((description.Ns as Opt<number>) ?? 250) / 1000,
         };

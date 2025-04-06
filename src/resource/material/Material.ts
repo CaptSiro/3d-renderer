@@ -19,6 +19,7 @@ export default class Material {
     public readonly diffuse: Vec3;
     public readonly specular: Vec3;
     public readonly shininess: float;
+    public readonly metallic: float;
     public readonly maps: int;
 
     public map_ambient: Opt<Texture>;
@@ -39,6 +40,7 @@ export default class Material {
         this.diffuse = glm.vec3(...data.diffuse.slice(0, 3))
         this.specular = glm.vec3(...data.specular.slice(0, 3))
         this.shininess = data.shininess;
+        this.metallic = data.metallic;
 
         this.maps = 0;
 

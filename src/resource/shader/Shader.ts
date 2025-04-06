@@ -205,7 +205,7 @@ export default class Shader {
     }
 
     private currentMaterial: Opt<string>;
-    public setMaterial(uniform: string, material: Material) {
+    public setMaterialPhong(uniform: string, material: Material): void {
         if (this.currentMaterial === material.name) {
             return;
         }
@@ -221,6 +221,27 @@ export default class Shader {
         Texture.bind(material.map_diffuse, this, uniform + "_diffuse", 1);
         Texture.bind(material.map_specular, this, uniform + "_specular", 2);
         Texture.bind(material.map_shininess, this, uniform + "_shininess", 3);
+        Texture.bind(material.map_bump, this, uniform + "_bump", 4);
+
+        this.currentMaterial = material.name;
+    }
+
+    public setMaterialPbr(uniform: string, material: Material): void {
+        if (this.currentMaterial === material.name) {
+            return;
+        }
+
+        this.setFloat(uniform + ".ao", 1);
+        this.setVec3(uniform + ".albedo", material.diffuse);
+        this.setFloat(uniform + ".metallic", material.metallic);
+        this.setFloat(uniform + ".roughness", material.shininess);
+
+        this.setInt(uniform + ".maps", material.maps);
+
+        Texture.bind(material.map_ambient, this, uniform + "_ao", 0);
+        Texture.bind(material.map_diffuse, this, uniform + "_albedo", 1);
+        Texture.bind(material.map_specular, this, uniform + "_metallic", 2);
+        Texture.bind(material.map_shininess, this, uniform + "_roughness", 3);
         Texture.bind(material.map_bump, this, uniform + "_bump", 4);
 
         this.currentMaterial = material.name;

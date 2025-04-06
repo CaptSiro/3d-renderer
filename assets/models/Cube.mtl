@@ -2,8 +2,8 @@
 # www.blender.org
 
 newmtl Material.003
-Ns 63.652054
-Ka 1 1 1
+Ns 1000
+Ka 0 0 0
 Kd 0.071447 0.274274 0.800900
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
@@ -14,7 +14,7 @@ map_Kd textures/wood_floor_diff_4k.jpg
 map_bump textures/wood_floor_nor_gl_4k.jpg
 
 newmtl Material.004
-Ns 361.101807
+Ns 0
 Ka 1 1 1
 Kd 0.800111 0.053761 0.099743
 Ks 0.500000 0.500000 0.500000
