@@ -1,5 +1,5 @@
 import { Opt } from "../../lib/types";
-import { is } from "../../lib/jsml/jsml.ts";
+import { _, is } from "../../lib/jsml/jsml.ts";
 
 
 
@@ -97,7 +97,12 @@ export default class Path {
         return this.literal;
     }
 
-    public async read(): Promise<string> {
-        return await (await fetch(this.literal)).text();
+    public async read(): Promise<Opt<string>> {
+        const response = await fetch(this.literal);
+        if (!is(response.headers.get('last-modified'))) {
+            return _;
+        }
+
+        return await response.text();
     }
 }

@@ -128,6 +128,11 @@ export default class MeshRenderer extends Component implements Renderer {
 
     public async initFromModelFile(path: Path): Promise<void> {
         const meshSources = await MeshSource.load(path);
+        if (!is(meshSources)) {
+            console.error('Mesh file not found ' + path.getLiteral());
+            return;
+        }
+
         const shaderSource = await this.scene.getSettings().getDefaultShader();
 
         await this.init(meshSources, shaderSource);

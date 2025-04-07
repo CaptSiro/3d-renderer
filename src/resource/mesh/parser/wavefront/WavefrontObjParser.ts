@@ -122,9 +122,12 @@ export default class WavefrontObjParser {
                     break;
                 }
 
-                this.materials = this.materials.concat(
-                    await WavefrontObjParser.mtlParser.parse(mtl)
-                );
+                const materials = await WavefrontObjParser.mtlParser.parse(mtl);
+                if (!is(materials)) {
+                    break;
+                }
+
+                this.materials = this.materials.concat(materials);
                 break;
         }
     }

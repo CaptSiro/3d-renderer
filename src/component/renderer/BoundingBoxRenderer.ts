@@ -85,6 +85,11 @@ export default class BoundingBoxRenderer extends Component {
         gl.bindVertexArray(null);
 
         const source = await ShaderSource.loadShader("ray");
+        if (!is(source)) {
+            console.warn("Ray shader not found thus ray rendering is disabled");
+            return;
+        }
+
         this._shader = Shader.load(source);
     }
 }

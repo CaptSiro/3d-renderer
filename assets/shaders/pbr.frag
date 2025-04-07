@@ -56,7 +56,7 @@ vec3 pow_vec3(vec3 v, float exp) {
 
 vec3 get_albedo() {
     if ((material.maps & MAP_ALBEDO_MASK) != 0) {
-        return pow_vec3(texture(material_albedo, TextureCoords).rgb, 2.2);
+        return pow_vec3(texture(material_albedo, TextureCoords).rgb * material.albedo, 2.2);
     }
 
     return pow_vec3(material.albedo, 2.2);

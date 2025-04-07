@@ -152,6 +152,11 @@ export default class Scene {
 
         if (MeshSource.isMeshFile(path)) {
             const meshSources = await MeshSource.load(path);
+            if (!is(meshSources)) {
+                console.warn('Mesh file not found ' + path.getLiteral());
+                return gameObject;
+            }
+
             const shaderSource = await this._settings.getDefaultShader();
 
             const first = meshSources[0];

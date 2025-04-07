@@ -64,8 +64,12 @@ export default class GridRenderer extends Component {
 
     public async init(target: Transform): Promise<void> {
         this._target = target;
-        this._shader = Shader.load(
-            await ShaderSource.loadShader("grid")
-        );
+        const grid = await ShaderSource.loadShader("grid");
+        if (!is(grid)) {
+            console.warn('Grid shader not found');
+            return;
+        }
+
+        this._shader = Shader.load(grid);
     }
 }

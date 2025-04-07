@@ -1,7 +1,8 @@
 import Path from "../../../Path.ts";
 import ParseContext from "./ParseContext.ts";
-import { is } from "../../../../../lib/jsml/jsml.ts";
+import { _, is } from "../../../../../lib/jsml/jsml.ts";
 import Arrays from "../../../../utils/Arrays.ts";
+import { Opt } from "../../../../../lib/types.ts";
 
 
 
@@ -12,8 +13,12 @@ export type Mtl = {
 };
 
 export default class WavefrontMtlParser {
-    public async parse(path: Path): Promise<Mtl[]> {
+    public async parse(path: Path): Promise<Opt<Mtl[]>> {
         const content = await path.read();
+        if (!is(content)) {
+            return _;
+        }
+        
         const context = new ParseContext<Mtl>(() => ({
             name: '',
             path: path.getLiteral(),

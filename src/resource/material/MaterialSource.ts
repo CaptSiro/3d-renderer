@@ -1,7 +1,7 @@
 import Path from "../Path.ts";
 import { float } from "../../types";
 import { Opt } from "../../../lib/types.ts";
-import { assert, is } from "../../../lib/jsml/jsml.ts";
+import { _, assert, is } from "../../../lib/jsml/jsml.ts";
 import { Mtl } from "../mesh/parser/wavefront/WavefrontMtlParser.ts";
 import AsyncResourceCache from "../AsyncResourceCache.ts";
 
@@ -24,19 +24,24 @@ export type MaterialShape = {
 }
 
 export default class MaterialSource {
-    private static cache: AsyncResourceCache<Path, MaterialSource> = new AsyncResourceCache(
+    private static cache: AsyncResourceCache<Path, Opt<MaterialSource>> = new AsyncResourceCache(
         path => path.getLiteral(),
         MaterialSource.create
     );
 
-    public static async create(path: Path): Promise<MaterialSource> {
+    public static async create(path: Path): Promise<Opt<MaterialSource>> {
         const content = await path.read();
+        if (!is(content)) {
+            return _;
+        }
+
         const data = JSON.parse(content);
         data.name = path.getLiteral();
+
         return new MaterialSource(data);
     }
 
-    public static async load(path: Path): Promise<MaterialSource> {
+    public static async load(path: Path): Promise<Opt<MaterialSource>> {
         return this.cache.get(path);
     }
 

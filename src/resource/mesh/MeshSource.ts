@@ -1,11 +1,12 @@
 import Path from "../Path.ts";
 import MeshFileParser from "./parser/MeshFileParser.ts";
-import { is } from "../../../lib/jsml/jsml.ts";
+import { _, is } from "../../../lib/jsml/jsml.ts";
 import VertexLayout from "./VertexLayout.ts";
 import MaterialSource from "../material/MaterialSource.ts";
 import BoundingBox from "../../primitives/BoundingBox.ts";
 import ObjMesh from "./parser/wavefront/ObjMesh.ts";
 import AsyncResourceCache from "../AsyncResourceCache.ts";
+import { Opt } from "../../../lib/types.ts";
 
 
 
@@ -23,12 +24,12 @@ export default class MeshSource {
         return extension in parsers;
     }
 
-    private static cache: AsyncResourceCache<Path, MeshSource[]> = new AsyncResourceCache(
+    private static cache: AsyncResourceCache<Path, Opt<MeshSource[]>> = new AsyncResourceCache(
         path => path.getLiteral(),
         MeshSource.create
     );
 
-    public static async create(path: Path): Promise<MeshSource[]> {
+    public static async create(path: Path): Promise<Opt<MeshSource[]>> {
         const extension = path.getExtension();
 
         if (!is(extension)) {
@@ -39,10 +40,15 @@ export default class MeshSource {
             throw new Error(`The file extension ${extension} is not supported`);
         }
 
-        return await parsers[extension].parse(path, await path.read());
+        const content = await path.read();
+        if (!is(content)) {
+            return _;
+        }
+
+        return await parsers[extension].parse(path, content);
     }
 
-    public static async load(path: Path): Promise<MeshSource[]> {
+    public static async load(path: Path): Promise<Opt<MeshSource[]>> {
         return await MeshSource.cache.get(path);
     }
 

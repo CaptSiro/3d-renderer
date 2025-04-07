@@ -200,8 +200,12 @@ export default class SkyRenderer extends Component {
 
     public async init(target: Transform): Promise<void> {
         this._target = target;
-        this._shader = Shader.load(
-            await ShaderSource.loadShader("sky")
-        );
+        const sky = await ShaderSource.loadShader("sky");
+        if (!is(sky)) {
+            console.warn('Sky renderer not found');
+            return;
+        }
+
+        this._shader = Shader.load(sky);
     }
 }
