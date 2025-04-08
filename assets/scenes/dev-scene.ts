@@ -7,6 +7,7 @@ import Sun from "../scripts/Sun.ts";
 import LookAt from "../scripts/LookAt.ts";
 import { pause } from "../../src/main.ts";
 import RigidBody from "../../src/component/RigidBody.ts";
+import SpotLight from "../../src/component/lights/SpotLight.ts";
 
 
 
@@ -48,6 +49,17 @@ export default async function devScene_loader(): Promise<Scene> {
     cam1.addComponent(Camera);
     const lookAt = cam1.addComponent(LookAt);
     lookAt.setTarget(suzanne);
+
+    // const pointLight = await devScene.loadGameObject("light_000", Path.from("/assets/models/Cube.obj"));
+    // pointLight.transform
+    //     .setScale(glm.vec3(0.1, 0.1, 0.1))
+    // const l0 = pointLight.addComponent(Light);
+    // l0.intensity = 21;
+
+    const directionalLight = await devScene.loadGameObject("light_001", Path.from("/assets/models/camera.obj"));
+    directionalLight.transform.setPosition(glm.vec3(1, 0, 0));
+    const l1 = directionalLight.addComponent(SpotLight);
+    l1.intensity = 1000;
 
     pause?.click();
     devScene.getTime().setDayTime(0.25);

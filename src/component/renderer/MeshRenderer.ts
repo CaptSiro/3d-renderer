@@ -12,6 +12,7 @@ import SkyRenderer from "./SkyRenderer.ts";
 import State from "../../object/State.ts";
 import Path from "../../resource/Path.ts";
 import RenderingContext from "../../primitives/RenderingContext.ts";
+import { LIGHT_UBO_BINDING } from "../../webgl.ts";
 
 
 
@@ -68,6 +69,8 @@ export default class MeshRenderer extends Component implements Renderer {
             return;
         }
 
+        this.scene.bindLights(this._shader, "Lights", LIGHT_UBO_BINDING);
+
         const camera = this.scene.getActiveCamera();
         if (!is(camera)) {
             return;
@@ -118,6 +121,7 @@ export default class MeshRenderer extends Component implements Renderer {
         }
 
         const shader = Shader.load(shaderSource);
+        // shader.setUniformBlockBinding('Lights', 1);
 
         this._meshes = meshes;
         this._shader = shader;

@@ -5,7 +5,7 @@ import Path from "../resource/Path.ts";
 import MeshRenderer from "../component/renderer/MeshRenderer.ts";
 import jsml, { $, is } from "../../lib/jsml/jsml.ts";
 import Time from "./Time.ts";
-import { float, Predicate } from "../types.ts";
+import { float, int, Predicate } from "../types.ts";
 import Movement from "../component/Movement.ts";
 import MeshSource from "../resource/mesh/MeshSource.ts";
 import RenderingContext from "../primitives/RenderingContext.ts";
@@ -13,6 +13,10 @@ import Matrix4 from "../utils/Matrix4.ts";
 import { ModalWindow, window_create } from "../../lib/window.ts";
 import Editor, { getEditor } from "../editor/Editor.ts";
 import SceneSettings from "./SceneSettings.ts";
+import Light from "../component/lights/Light.ts";
+import { FLOAT_SIZE, LIGHT_UBO_LENGTH_OFFSET, LIGHT_UBO_SIZE, MAX_LIGHTS } from "../webgl.ts";
+import { gl } from "../main.ts";
+import Shader from "../resource/shader/Shader.ts";
 
 
 
@@ -20,6 +24,9 @@ const FIXED_UPDATE_MILLISECONDS = 20;
 
 export default class Scene {
     private readonly _gameObjects: GameObject[];
+    private readonly _lights: Light[];
+    private readonly _lightsBuffer: WebGLBuffer;
+
     private readonly _time: Time;
     private readonly _settings: SceneSettings;
     private _activeCamera: Opt<Camera>;
@@ -31,7 +38,9 @@ export default class Scene {
     constructor(
         private _name: string = ''
     ) {
+        this._lightsBuffer = gl.createBuffer();
         this._gameObjects = [];
+        this._lights = [];
         this._time = new Time(FIXED_UPDATE_MILLISECONDS);
         this._settings = new SceneSettings();
         this._physicsTimestamp = Date.now();
@@ -69,7 +78,40 @@ export default class Scene {
         }
     }
 
+    private populateLights(): void {
+        gl.bindBuffer(gl.UNIFORM_BUFFER, this._lightsBuffer);
+        gl.bufferData(gl.UNIFORM_BUFFER, LIGHT_UBO_SIZE, gl.DYNAMIC_DRAW);
+
+        const buffer = new Float32Array(LIGHT_UBO_LENGTH_OFFSET / FLOAT_SIZE);
+
+        let count = 0;
+        let offset = 0;
+        for (const light of this._lights) {
+            if (!light.isEnabled()) {
+                continue;
+            }
+
+            offset += light.getDescription().writeLight(buffer, offset);
+            count++;
+        }
+
+        gl.bufferSubData(gl.UNIFORM_BUFFER, 0, buffer, 0, offset * FLOAT_SIZE);
+
+        const length = Int32Array.from([count]);
+        gl.bufferSubData(gl.UNIFORM_BUFFER, LIGHT_UBO_LENGTH_OFFSET, length);
+
+        gl.bindBuffer(gl.UNIFORM_BUFFER, null);
+    }
+
+    public bindLights(shader: Shader, uniform: string, binding: int): void {
+        shader.setUniformBlockBinding(uniform, binding);
+        gl.bindBuffer(gl.UNIFORM_BUFFER, this._lightsBuffer);
+        gl.bindBufferBase(gl.UNIFORM_BUFFER, binding, this._lightsBuffer);
+    }
+
     public render(): void {
+        this.populateLights();
+
         const camera = this.getActiveCamera();
         if (!is(camera)) {
             return;
@@ -95,6 +137,8 @@ export default class Scene {
         for (const gameObject of this._gameObjects) {
             gameObject.delete();
         }
+
+        gl.deleteBuffer(this._lightsBuffer);
     }
 
 
@@ -109,6 +153,25 @@ export default class Scene {
 
     public getSettings(): SceneSettings {
         return this._settings;
+    }
+
+    public addLight(light: Light): void {
+        if (this._lights.length >= MAX_LIGHTS) {
+            console.warn("Action 'addLight' was ignored because it would have exceeded maximum number of lights in scene");
+            return;
+        }
+
+        this._lights.push(light);
+    }
+
+    public deleteLight(light: Light): boolean {
+        const i = this._lights.indexOf(light);
+        if (i < 0) {
+            return false;
+        }
+
+        this._lights.splice(i, 1);
+        return true;
     }
 
     public addGameObject(gameObject: GameObject): void {

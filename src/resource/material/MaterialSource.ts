@@ -37,6 +37,7 @@ export default class MaterialSource {
 
         const data = JSON.parse(content);
         data.name = path.getLiteral();
+        data.metallic = data.ambient.reduce((acc: number, x: number) => acc + x, 0) / data.ambient.length;
 
         return new MaterialSource(data);
     }

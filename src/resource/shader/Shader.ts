@@ -2,7 +2,7 @@ import ShaderSource from "./ShaderSource.ts";
 import { gl } from "../../main.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
 import { Opt } from "../../../lib/types";
-import { Mat4, Vec3 } from "../../types";
+import { int, Mat4, Vec3 } from "../../types";
 import Material from "../material/Material.ts";
 import ResourceCache from "../ResourceCache.ts";
 import Texture from "../Texture.ts";
@@ -168,6 +168,10 @@ export default class Shader {
         return this.program;
     }
 
+    public setUniformBlockBinding(uniform: string, binding: int): void {
+        const index =  gl.getUniformBlockIndex(this.program, uniform);
+        gl.uniformBlockBinding(this.program, index, binding);
+    }
 
     public getUniformLocation(uniform: string): WebGLUniformLocation | null {
         const cached = this.uniforms.get(uniform);

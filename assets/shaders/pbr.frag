@@ -25,6 +25,25 @@ struct Light {
     vec3 specular;
 };
 
+#define LIGHT_TYPE_POINT 0
+#define LIGHT_TYPE_DIRECTIONAL 1
+#define LIGHT_TYPE_SPOT 2
+
+struct LightV2 {
+    float type;
+    float intensity;
+    float cosAngle;
+
+    vec3 position;
+    float _p0;
+
+    vec3 color;
+    float _p1;
+
+    vec3 direction;
+    float _p2;
+};
+
 // Vertex Inputs
 in vec3 Normal;
 in vec3 FragmentPosition;
@@ -33,6 +52,11 @@ in vec2 TextureCoords;
 // Uniforms
 uniform vec3 ViewPosition;
 uniform Light light;
+
+layout(std140) uniform Lights {
+    LightV2 lights[64];
+    int lightsCount;
+};
 
 uniform Material material;
 uniform sampler2D material_ao; // ambient
@@ -146,6 +170,53 @@ vec3 pbr_gamma_correction(vec3 color) {
     return pow(c, vec3(1.0 / 2.2));
 }
 
+int get_light_type(int i) {
+    return int(round(lights[i].type));
+}
+
+vec3 get_light_direction(int i) {
+    if (get_light_type(i) == LIGHT_TYPE_POINT) {
+        return normalize(lights[i].position - FragmentPosition);
+    }
+
+    return lights[i].direction;
+}
+
+vec3 attenuate_light(int i) {
+    float distance = length(lights[i].position - FragmentPosition);
+    float attenuation = exp(-distance);
+    return lights[i].color * lights[i].intensity * attenuation;
+}
+
+vec3 get_light_radience(int i) {
+    vec3 radiance = vec3(0.0);
+
+    switch (get_light_type(i)) {
+        case LIGHT_TYPE_POINT: {
+            radiance = attenuate_light(i);
+            break;
+        }
+
+        case LIGHT_TYPE_SPOT: {
+            vec3 lightToFragment = normalize(lights[i].position - FragmentPosition);
+            float cosAngle = dot(lightToFragment, lights[i].direction);
+
+            if (cosAngle > lights[i].cosAngle) {
+                radiance = attenuate_light(i);
+            }
+
+            break;
+        }
+
+        default: {
+            radiance = lights[i].color * lights[i].intensity;
+            break;
+        }
+    }
+
+    return radiance;
+}
+
 void pbr() {
     vec3 albedo = get_albedo();
     float metallic = get_metallic();
@@ -159,26 +230,22 @@ void pbr() {
 
     vec3 l = vec3(0.0);
 
-    // foreach light
-    vec3 lightDir = normalize(light.position - FragmentPosition);
-    vec3 halfway = normalize(viewDir + lightDir);
+    for (int i = 0; i < lightsCount; i++) {
+        vec3 lightDir = get_light_direction(i);
+        vec3 radiance = get_light_radience(i);
 
-//    float distance = length(light.position - FragmentPosition);
-//    float attenuation = 1.0 / (distance * distance);
-//    vec3 radiance = vec3(23.47, 21.31, 20.79) * attenuation;
+        vec3 halfway = normalize(viewDir + lightDir);
 
-    vec3 radiance = light.diffuse * 20.0;
+        float NDF = pbr_distribution(normal, halfway, roughness);
+        float G = pbr_geometry_smith(normal, viewDir, lightDir, roughness);
+        vec3 F = pbr_fresnel(max(dot(halfway, viewDir), 0.0), F0);
 
-    float NDF = pbr_distribution(normal, halfway, roughness);
-    float G = pbr_geometry_smith(normal, viewDir, lightDir, roughness);
-    vec3 F = pbr_fresnel(max(dot(halfway, viewDir), 0.0), F0);
+        vec3 kD = (vec3(1.0) - F) * (1.0 - metallic);
+        vec3 specular = (NDF * G * F) / (4.0 * max(dot(normal, viewDir), 0.0) * max(dot(normal, lightDir), 0.0) + 0.0001);
 
-    vec3 kD = (vec3(1.0) - F) * (1.0 - metallic);
-    vec3 specular = (NDF * G * F) / (4.0 * max(dot(normal, viewDir), 0.0) * max(dot(normal, lightDir), 0.0) + 0.0001);
-
-    float NdotL = max(dot(normal, lightDir), 0.0);
-    l += (kD * albedo / PI + specular) * radiance * NdotL;
-    //[end] foreach light
+        float NdotL = max(dot(normal, lightDir), 0.0);
+        l += (kD * albedo / PI + specular) * radiance * NdotL;
+    }
 
     vec3 ambient = vec3(0.03) * albedo * ao;
     vec3 color = ambient + l;

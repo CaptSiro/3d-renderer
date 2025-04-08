@@ -6,6 +6,13 @@ import { gl } from "./main.ts";
 
 
 export const FLOAT_SIZE = 4;
+export const INT_SIZE = 4;
+
+export const MAX_LIGHTS = 64;
+export const LIGHT_SIZE = 16;
+export const LIGHT_UBO_BINDING = 0;
+export const LIGHT_UBO_LENGTH_OFFSET = LIGHT_SIZE * FLOAT_SIZE * MAX_LIGHTS;
+export const LIGHT_UBO_SIZE = LIGHT_UBO_LENGTH_OFFSET + INT_SIZE;
 
 export const LAYOUT_VERTEX3 = 3;
 export const LAYOUT_NORMAL3 = 3;

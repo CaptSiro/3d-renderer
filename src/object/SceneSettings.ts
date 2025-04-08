@@ -1,9 +1,8 @@
-import { editor } from "../editor/Editor.ts";
+import { editor, editorFactory } from "../editor/Editor.ts";
 import BooleanEditor from "../editor/BooleanEditor.ts";
-import StringEditor from "../editor/StringEditor.ts";
 import ShaderSource from "../resource/shader/ShaderSource.ts";
-import { Opt } from "../../lib/types.ts";
 import { is } from "../../lib/jsml/jsml.ts";
+import Select from "../editor/Select.ts";
 
 
 
@@ -12,14 +11,14 @@ export default class SceneSettings {
     public doCameraSwitching: boolean = true;
 
     @editor(BooleanEditor)
-    public doRenderSky: boolean = false;
+    public doRenderSky: boolean = true;
 
     @editor(BooleanEditor)
     public doRenderGrid: boolean = true;
 
-    @editor(StringEditor)
-    // public defaultShader: string = 'base';
-    public defaultShader: string = 'pbr';
+    @editorFactory(Select.enum(['base', 'pgr']))
+    public defaultShader: string = 'base';
+    // public defaultShader: string = 'pbr';
 
 
 

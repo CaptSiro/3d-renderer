@@ -16,6 +16,7 @@ declare global {
         normalize(...a: any[]): any,
         dot(...a: any[]): any,
         cross(...a: any[]): any,
+        radians(x: number): number,
     } | any;
 }
 

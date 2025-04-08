@@ -4,6 +4,7 @@ import { Opt } from "../../lib/types";
 import GameObject from "../object/GameObject.ts";
 import Vector3 from "../utils/Vector3.ts";
 import Matrix4 from "../utils/Matrix4.ts";
+import Vector4 from "../utils/Vector4.ts";
 
 
 
@@ -44,6 +45,10 @@ export default class Transform {
 
     public getPosition(): Vec3 {
         return this.position;
+    }
+
+    public getWorldPosition(): Vec3 {
+        return glm.vec3(this.getParentMatrix() ['*'] (Vector4.convertPoint3(this.position)));
     }
 
     public setPosition(position: Vec3): Transform {
@@ -101,14 +106,17 @@ export default class Transform {
     }
 
     public getForward(): Vec3 {
+        // return glm.vec3(this.getParentMatrix() ["*"] (Vector4.convertVector3(Vector3.FORWARD)));
         return this.rotation ["*"] (Vector3.FORWARD);
     }
 
     public getLeft(): Vec3 {
+        // return glm.vec3(this.getParentMatrix() ["*"] (Vector4.convertVector3(Vector3.LEFT)));
         return this.rotation ["*"] (Vector3.LEFT);
     }
 
     public getUp(): Vec3 {
+        // return glm.vec3(this.getParentMatrix() ["*"] (Vector4.convertVector3(Vector3.UP)));
         return this.rotation ["*"] (Vector3.UP);
     }
 

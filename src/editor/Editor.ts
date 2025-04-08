@@ -13,16 +13,27 @@ import {
 export const editorSymbol = Symbol("editor");
 
 export function editor<T extends typeof Editor<any>>(editorClass: T) {
-    return Reflect.metadata(editorSymbol, editorClass);
+    return Reflect.metadata(editorSymbol, (...args: any[]) => new (editorClass as any)(...args));
+}
+
+export type EditorFactory<T> = (
+    editorWindow: HTMLElement,
+    target: unknown,
+    name: string,
+    value: T
+) => Editor<any>;
+
+export function editorFactory(factory: EditorFactory<any>) {
+    return Reflect.metadata(editorSymbol, factory);
 }
 
 export function getEditor(editorWindow: HTMLElement, target: any, property: string): Opt<Editor<unknown>> {
-    const editorClass = Reflect.getMetadata(editorSymbol, target, property);
-    if (editorClass === undefined) {
+    const factory = Reflect.getMetadata(editorSymbol, target, property);
+    if (factory === undefined) {
         return undefined;
     }
 
-    return new editorClass(editorWindow, target, property, target[property]);
+    return factory(editorWindow, target, property, target[property]);
 }
 
 
