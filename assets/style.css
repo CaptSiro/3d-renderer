@@ -65,6 +65,28 @@ main,
 
 
 
+select {
+    border-radius: var(--form-border-radius);
+    border: unset;
+    padding: calc(1rem / 4);
+    background-color: var(--form-container-0);
+    color: var(--form-text-0);
+    border: 2px solid var(--form-container-3);
+    width: clamp(100px, 100%, 700px);
+    transition: background-color 250ms linear, border-color 250ms linear;
+}
+
+select option {
+    background-color: var(--container-1);
+    color: var(--text-0);
+}
+
+select option:hover {
+    background-color: var(--accent-1);
+    color: var(--text-1);
+}
+
+
 .hide {
     display: none !important;
 }
@@ -585,7 +607,8 @@ input.form-invalid {
     user-select: none;
 }
 
-.editor-container > input:not([type=checkbox]) {
+.editor-container > input:not([type=checkbox]),
+.editor-container > select {
     width: 150px;
 }
 

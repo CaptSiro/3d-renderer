@@ -8,6 +8,8 @@ import { gl } from "./main.ts";
 export const FLOAT_SIZE = 4;
 export const INT_SIZE = 4;
 
+export const FOG_LINEAR_END_OFFSET = 4;
+
 export const MAX_LIGHTS = 64;
 export const LIGHT_SIZE = 16;
 export const LIGHT_UBO_BINDING = 0;

@@ -95,7 +95,7 @@ export default class Camera extends Component {
 
 
     public get position(): Vec3 {
-        return this.transform.getPosition();
+        return this.transform.getWorldPosition();
     }
 
     public get vp(): Mat4 {
@@ -107,9 +107,11 @@ export default class Camera extends Component {
         const forward = glm.normalize(transform.getForward());
         const up = glm.normalize(transform.getUp());
 
+        const w = transform.getWorldPosition();
+
         this._view = glm.lookAt(
-            transform.getPosition(),
-            transform.getPosition() ["+"] (forward),
+            w,
+            w ["+"] (forward),
             up
         );
 
@@ -130,7 +132,7 @@ export default class Camera extends Component {
 
         const world = glm.normalize(glm.inverse(this._view) ["*"] (eye));
         return new Ray(
-            glm.vec3(this.transform.getPosition()),
+            glm.vec3(this.transform.getWorldPosition()),
             glm.vec3(world)
         );
     }

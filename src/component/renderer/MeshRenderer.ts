@@ -8,11 +8,11 @@ import ShaderSource from "../../resource/shader/ShaderSource.ts";
 import Renderer from "./Renderer.ts";
 import BoundingBox from "../../primitives/BoundingBox.ts";
 import BoundingBoxRenderer from "./BoundingBoxRenderer.ts";
-import SkyRenderer from "./SkyRenderer.ts";
 import State from "../../object/State.ts";
 import Path from "../../resource/Path.ts";
 import RenderingContext from "../../primitives/RenderingContext.ts";
 import { LIGHT_UBO_BINDING } from "../../webgl.ts";
+import Fog from "./Fog.ts";
 
 
 
@@ -78,21 +78,14 @@ export default class MeshRenderer extends Component implements Renderer {
 
         this._shader.setVec3("ViewPosition", camera.position);
 
-        const sky = camera.gameObject.getComponent(SkyRenderer);
-        if (!is(sky)) {
-            this._shader.setVec3("light.position", glm.vec3(0, 2, 0));
-            this._shader.setVec3("light.ambient", glm.vec3(0.3, 0.3, 0.35));
-            this._shader.setVec3("light.diffuse", glm.vec3(1.0, 1.0, 0.9));
-            this._shader.setVec3("light.specular", glm.vec3(1.0, 1.0, 1.0));
+        const fog = camera.gameObject.getComponent(Fog);
+        if (!is(fog)) {
             return;
         }
 
-        this._shader.setVec3("light.position", sky.getSunPosition());
-
-        const light = sky.getSunLight();
-        this._shader.setVec3("light.ambient", light.ambient);
-        this._shader.setVec3("light.diffuse", light.diffuse);
-        this._shader.setVec3("light.specular", light.specular);
+        this._shader.setVec3("fog.color", fog.getColor());
+        this._shader.setFloat("fog.density", fog.density);
+        this._shader.setInt("fog.function", fog.getShaderFunction());
     }
 
     public getBoundingBox(): Opt<BoundingBox> {

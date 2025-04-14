@@ -80,12 +80,10 @@ export default class RigidBody extends Component {
     }
 
     public addVelocity(velocity: Vec3): void {
-        Vector3.log(velocity);
         this._velocity ['+='] (velocity);
     }
 
     public addVelocityAngular(velocityAngular: Vec3): void {
-        Vector3.log(velocityAngular);
         this._velocityAngular ['+='] (velocityAngular);
     }
 }

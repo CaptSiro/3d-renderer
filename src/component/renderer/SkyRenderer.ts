@@ -10,9 +10,9 @@ import Time from "../../object/Time.ts";
 import { editor } from "../../editor/Editor.ts";
 import Vec3Editor from "../../editor/Vec3Editor.ts";
 import NumberEditor from "../../editor/NumberEditor.ts";
-import CpuSkyRenderer from "./CpuSkyRenderer.ts";
 import Vector3 from "../../utils/Vector3.ts";
 import MathLib from "../../utils/MathLib.ts";
+import Fog from "./Fog.ts";
 
 
 
@@ -112,7 +112,9 @@ export default class SkyRenderer extends Component {
 
 
     public awake(): void {
-        this.gameObject.addComponent(CpuSkyRenderer);
+        this.gameObject
+            .addComponent(Fog)
+            .bindSkyRenderer(this);
     }
 
 

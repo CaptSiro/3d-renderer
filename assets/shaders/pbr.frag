@@ -18,18 +18,11 @@ struct Material {
     int maps;
 };
 
-struct Light {
-    vec3 position;
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-};
-
 #define LIGHT_TYPE_POINT 0
 #define LIGHT_TYPE_DIRECTIONAL 1
 #define LIGHT_TYPE_SPOT 2
 
-struct LightV2 {
+struct Light {
     float type;
     float intensity;
     float cosAngle;
@@ -44,6 +37,18 @@ struct LightV2 {
     float _p2;
 };
 
+#define FOG_FUNCTION_MASK 0xf;
+#define FOG_LINEAR 0
+#define FOG_LINEAR_END_OFFSET 4
+#define FOG_EXP 1
+#define FOG_EXP2 2
+
+struct Fog {
+    vec3 color;
+    float density;
+    int function;
+};
+
 // Vertex Inputs
 in vec3 Normal;
 in vec3 FragmentPosition;
@@ -51,10 +56,10 @@ in vec2 TextureCoords;
 
 // Uniforms
 uniform vec3 ViewPosition;
-uniform Light light;
+uniform Fog fog;
 
 layout(std140) uniform Lights {
-    LightV2 lights[64];
+    Light lights[64];
     int lightsCount;
 };
 
@@ -109,6 +114,35 @@ float get_ao() {
 
     return material.ao;
 }
+
+
+
+float get_fog_factor() {
+    float z = length(FragmentPosition - ViewPosition);
+
+    int function = fog.function & FOG_FUNCTION_MASK;
+    switch (function) {
+        case FOG_LINEAR: {
+            float end = float(fog.function >> FOG_LINEAR_END_OFFSET);
+            return (end - z) / end;
+        }
+
+        case FOG_EXP: {
+            return exp(-(z * fog.density));
+        }
+
+        default: {
+            return exp(-(z*z * fog.density*fog.density));
+        }
+    }
+}
+
+vec3 fog_effect(vec3 color) {
+    float f = get_fog_factor();
+    return f * color + (1.0 - f) * fog.color;
+}
+
+
 
 mat3 get_TBN() {
     vec3 N = normalize(Normal);
@@ -250,7 +284,12 @@ void pbr() {
     vec3 ambient = vec3(0.03) * albedo * ao;
     vec3 color = ambient + l;
 
-    OutColor = vec4(pbr_gamma_correction(color), 1.0);
+    OutColor = vec4(
+        fog_effect(
+            pbr_gamma_correction(color)
+        ),
+        1.0
+    );
 }
 
 
