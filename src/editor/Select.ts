@@ -16,7 +16,7 @@ export default class Select<T> extends Editor<T> {
         return Select.options(
             options.map(x => ({
                 value: x,
-                label: x
+                label: x,
             })),
             s => s
         );
@@ -46,7 +46,7 @@ export default class Select<T> extends Editor<T> {
             const id = guid(true);
             this._select = jsml.select({
                 id,
-                onSelect: () => {
+                onChange: () => {
                     if (!is(this._parser) || !is(this._select)) {
                         return;
                     }
@@ -78,7 +78,8 @@ export default class Select<T> extends Editor<T> {
     }
 
     public html(): HTMLElement {
-        this.getSelect();
+        const select = this.getSelect();
+        select.value = String(this.readValue());
         return assert(this._container);
     }
 }

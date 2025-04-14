@@ -11,9 +11,10 @@ export default class Time {
     public dayDuration: float = 30;
     public scale: float = 1;
 
+    private dayTime: float = 0;
+
     private _deltaTime: float = 0;
     private _systemTimestamp: float = 0;
-    private _dayTime: float = 0;
     private _dayDeltaTime: float = 0;
 
 
@@ -29,8 +30,8 @@ export default class Time {
         this._deltaTime = now - this._systemTimestamp;
 
         this._dayDeltaTime = this._deltaTime * this.scale;
-        this._dayTime += this._dayDeltaTime / this.dayDuration;
-        this._dayTime -= Math.floor(this._dayTime);
+        this.dayTime += this._dayDeltaTime / this.dayDuration;
+        this.dayTime -= Math.floor(this.dayTime);
 
         this._systemTimestamp = now;
 
@@ -42,7 +43,7 @@ export default class Time {
             return;
         }
 
-        statsTime.textContent = "time-day: " + MathLib.round(this._dayTime, 3);
+        statsTime.textContent = "time-day: " + MathLib.round(this.dayTime, 3);
     }
 
 
@@ -60,11 +61,11 @@ export default class Time {
     }
 
     public getDayTime(): float {
-        return this._dayTime;
+        return this.dayTime;
     }
 
     public setDayTime(time: float01): void {
-        this._dayTime = time;
+        this.dayTime = time;
     }
 
     public getFixedDeltaTime(): float {

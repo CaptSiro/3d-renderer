@@ -220,22 +220,20 @@ export default class Scene {
                 return gameObject;
             }
 
-            const shaderSource = await this._settings.getDefaultShader();
-
             const first = meshSources[0];
             if (!is(first)) {
                 return gameObject;
             }
 
             const meshRenderer = gameObject.addComponent(MeshRenderer);
-            await meshRenderer.init([first], shaderSource);
+            await meshRenderer.init([first]);
 
             for (let i = 1; i < meshSources.length; i++) {
                 const meshSource = meshSources[i];
                 const child = new GameObject(meshSource.getName(), undefined, this);
 
                 const meshRenderer = child.addComponent(MeshRenderer);
-                await meshRenderer.init([meshSource], shaderSource);
+                await meshRenderer.init([meshSource]);
 
                 gameObject.transform.addChild(child);
             }

@@ -16,9 +16,8 @@ export default class SceneSettings {
     @editor(BooleanEditor)
     public doRenderGrid: boolean = true;
 
-    @editorFactory(Select.enum(['base', 'pgr']))
-    public defaultShader: string = 'base';
-    // public defaultShader: string = 'pbr';
+    @editorFactory(Select.enum(['phong', 'pbr']))
+    public defaultShader: string = 'pbr';
 
 
 
@@ -29,5 +28,21 @@ export default class SceneSettings {
         }
 
         return shader;
+    }
+
+    private _shaderListeners: (()=>void)[] = [];
+
+    public addDefaultShaderListener(listener: ()=>void): void {
+        this._shaderListeners.push(listener);
+    }
+
+    public onPropertyChange(property: string, oldValue: any, newValue: any): void {
+        if (property !== "defaultShader") {
+            return;
+        }
+
+        for (const shaderListener of this._shaderListeners) {
+            shaderListener();
+        }
     }
 }

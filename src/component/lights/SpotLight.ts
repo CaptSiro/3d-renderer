@@ -10,7 +10,7 @@ export const LIGHT_TYPE_SPOT = 2;
 
 export default class SpotLight extends Light {
     @editor(NumberEditor)
-    public angleDegrees: float = 15;
+    public angle: float = 15;
 
 
 
@@ -19,7 +19,7 @@ export default class SpotLight extends Light {
 
         description.type = LIGHT_TYPE_SPOT;
         description.direction = this.transform.getForward();
-        description.cosAngle = Math.cos(glm.radians(this.angleDegrees));
+        description.cosAngle = Math.cos(glm.radians(this.angle));
 
         return description;
     }

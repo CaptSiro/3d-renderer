@@ -112,7 +112,7 @@ export default class MeshRenderer extends Component implements Renderer {
 
 
 
-    public async init(meshSources: MeshSource[], shaderSource: ShaderSource): Promise<void> {
+    public async init(meshSources: MeshSource[], shaderSource: Opt<ShaderSource> = undefined): Promise<void> {
         const meshes = meshSources.map(x => new Mesh(x));
         const boundingBox = BoundingBox.initial();
 
@@ -120,11 +120,19 @@ export default class MeshRenderer extends Component implements Renderer {
             boundingBox.merge(mesh.getBoundingBox());
         }
 
-        const shader = Shader.load(shaderSource);
-        // shader.setUniformBlockBinding('Lights', 1);
+        const shader = Shader.load(shaderSource ?? await this.scene.getSettings().getDefaultShader());
 
         this._meshes = meshes;
         this._shader = shader;
+
+        if (!is(shaderSource)) {
+            this.scene.getSettings().addDefaultShaderListener(() => {
+                this.scene.getSettings().getDefaultShader().then(x => {
+                    this._shader = Shader.load(x);
+                });
+            });
+        }
+
         this._boundingBox = boundingBox;
         this._boundingBoxRenderer = this.gameObject.addComponent(BoundingBoxRenderer);
         await this._boundingBoxRenderer.init(this._boundingBox);
@@ -137,8 +145,6 @@ export default class MeshRenderer extends Component implements Renderer {
             return;
         }
 
-        const shaderSource = await this.scene.getSettings().getDefaultShader();
-
-        await this.init(meshSources, shaderSource);
+        await this.init(meshSources);
     }
 }
