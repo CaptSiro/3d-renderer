@@ -32,7 +32,6 @@ export default async function devScene_loader(): Promise<Scene> {
         .setPosition3(1, 0, 3)
         .setRotation(Quaternion.fromEulerDegrees(-50, 180, 60));
     suzanne.addComponent(RigidBody);
-    suzanne.addComponent(DebugLogger);
 
     const teapot = await devScene.loadGameObject("teapot", Path.from("/assets/models/Cube.obj"));
     teapot.addComponent(Sun);

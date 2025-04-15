@@ -14,7 +14,6 @@ import jsml, { $, is } from "../../lib/jsml/jsml.ts";
 import MeshSource from "../resource/mesh/MeshSource.ts";
 import MaterialSource from "../resource/material/MaterialSource.ts";
 import BoundingBox from "../primitives/BoundingBox.ts";
-import Path from "../resource/Path.ts";
 import BufferedImage from "../primitives/BufferedImage.ts";
 import Color from "../primitives/Color.ts";
 import { ModalWindow, window_create, window_open } from "../../lib/window.ts";
@@ -169,7 +168,7 @@ export default class Terrain extends Component {
                 ]).then();
             });
 
-        window_open(this.getTextureEditorWindow(url));
+        // window_open(this.getTextureEditorWindow(url));
     }
 
     private getTextureEditorWindow(texture: string): ModalWindow {

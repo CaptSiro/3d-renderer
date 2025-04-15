@@ -1,7 +1,6 @@
 import { $, is } from "../lib/jsml/jsml.ts";
 import { Mat4, Vec3 } from "./types";
 import Scene from "./object/Scene.ts";
-import MaterialSource from "./resource/material/MaterialSource.ts";
 import { window_open } from "../lib/window.ts";
 import Keyboard from "./input/Keyboard.ts";
 import State from "./object/State.ts";

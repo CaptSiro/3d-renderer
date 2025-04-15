@@ -4,7 +4,6 @@ import MeshFileParser from "../MeshFileParser.ts";
 import WavefrontObjParser from "./WavefrontObjParser.ts";
 import MaterialSource from "../../../material/MaterialSource.ts";
 import { meshVertexLayout } from "../../../../webgl.ts";
-import { int } from "../../../../types.ts";
 import BoundingBox from "../../../../primitives/BoundingBox.ts";
 import { is } from "../../../../../lib/jsml/jsml.ts";
 
