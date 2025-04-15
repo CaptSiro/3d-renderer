@@ -1,4 +1,4 @@
-import jsml, { _, assert, Content, is } from "../../lib/jsml/jsml.ts";
+import jsml, { $, _, assert, Content, is } from "../../lib/jsml/jsml.ts";
 import "reflect-metadata"
 import { Opt } from "../../lib/types.ts";
 import {
@@ -42,6 +42,11 @@ const EDITOR_UPDATE_INTERVAL = 500;
 
 export default abstract class Editor<T> {
     public static initWindow(w: ModalWindow, id: string): ModalWindow {
+        const win = $<HTMLDivElement>("#" + id);
+        if (is(win)) {
+            return win;
+        }
+
         w.id = id;
 
         w.addEventListener("keydown", event => event.stopPropagation());

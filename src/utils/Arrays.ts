@@ -1,4 +1,4 @@
-import type { Vec3 } from "../types.ts";
+import type { Vec2, Vec3 } from "../types.ts";
 
 
 
@@ -17,6 +17,12 @@ export default class Arrays {
         buffer[offset++] = vec.x;
         buffer[offset++] = vec.y;
         buffer[offset++] = vec.z;
+        return offset;
+    }
+
+    public static writeVec2(buffer: Float32Array, offset: number, vec: Vec2): number {
+        buffer[offset++] = vec.x;
+        buffer[offset++] = vec.y;
         return offset;
     }
 }

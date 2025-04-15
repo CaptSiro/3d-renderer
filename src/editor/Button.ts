@@ -3,7 +3,9 @@ import jsml, { _ } from "../../lib/jsml/jsml.ts";
 
 
 
-export default class Button extends Editor<(event: MouseEvent) => void> {
+export type ButtonHandler = (event: MouseEvent) => void;
+
+export default class Button extends Editor<ButtonHandler> {
     private readonly button: HTMLButtonElement;
 
     public constructor(

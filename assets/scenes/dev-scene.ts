@@ -12,6 +12,8 @@ import Spline from "../../src/component/Spline.ts";
 import BezierCurve from "../../src/component/BezierCurve.ts";
 import SplineRenderer from "../../src/component/renderer/SplineRenderer.ts";
 import FollowPath from "../scripts/FollowPath.ts";
+import Terrain from "../../src/component/Terrain.ts";
+import DebugLogger from "../../src/component/DebugLogger.ts";
 
 
 
@@ -22,10 +24,7 @@ export default async function devScene_loader(): Promise<Scene> {
     cam0.transform
         .setPosition3(0, 0.2, -3);
 
-    devScene.setActiveCamera(
-        cam0.addComponent(Camera)
-    );
-
+    devScene.setActiveCamera(cam0.addComponent(Camera));
     cam0.addComponent(Movement);
 
     const suzanne = await devScene.loadGameObject("suzanne", Path.from("/assets/models/Suzanne.obj"));
@@ -33,6 +32,7 @@ export default async function devScene_loader(): Promise<Scene> {
         .setPosition3(1, 0, 3)
         .setRotation(Quaternion.fromEulerDegrees(-50, 180, 60));
     suzanne.addComponent(RigidBody);
+    suzanne.addComponent(DebugLogger);
 
     const teapot = await devScene.loadGameObject("teapot", Path.from("/assets/models/Cube.obj"));
     teapot.addComponent(Sun);
@@ -80,9 +80,7 @@ export default async function devScene_loader(): Promise<Scene> {
     // l0.intensity = 21;
 
     const directionalLight = await devScene.loadGameObject("light_001", Path.from("/assets/models/camera.obj"));
-    directionalLight.transform
-        .setRotation(Quaternion.fromEulerDegrees(0, 180, 0))
-        .setPosition3(1, 0, 0);
+    directionalLight.transform.setPosition3(1, 0, 0);
     const l1 = directionalLight.addComponent(SpotLight);
     l1.intensity = 1000;
 
@@ -114,6 +112,27 @@ export default async function devScene_loader(): Promise<Scene> {
     pause?.click();
     devScene.getTime().setDayTime(0.25);
     devScene.getTime().scale = 0;
+
+    const terrain_001 = devScene.createGameObject('terrain_001');
+    terrain_001.transform
+        .setPosition3(0, 0.5, 5)
+        .setScale3(0.1, 0.1, 0.1);
+    const terrain0 = terrain_001.addComponent(Terrain);
+    terrain0.height = 4;
+    terrain0.size = glm.vec2(20, 20);
+    terrain0.scale = 0.3;
+    terrain0.generate();
+
+    const terrain_002 = devScene.createGameObject('terrain_002');
+    terrain_002.transform
+        .setPosition3(3, 0.5, 5)
+        .setScale3(0.1, 0.1, 0.1);
+    const terrain1 = terrain_002.addComponent(Terrain);
+    terrain1.height = 4;
+    terrain1.size = glm.vec2(20, 20);
+    terrain1.scale = 0.3;
+    terrain1.offset = 50;
+    terrain1.generate();
 
     return devScene;
 }

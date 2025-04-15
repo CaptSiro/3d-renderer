@@ -43,14 +43,35 @@ export default class MaterialSource {
     }
 
     public static async load(path: Path): Promise<Opt<MaterialSource>> {
-        return this.cache.get(path);
+        return MaterialSource.cache.get(path);
+    }
+
+    public static async loadImage(imageSource: string, base: Opt<MaterialSource> = undefined): Promise<Opt<MaterialSource>> {
+        base ??= await MaterialSource.create(MaterialSource.getDefaultMaterial());
+        if (!is(base)) {
+            return;
+        }
+
+        base.data.name += imageSource;
+        base.data.map_diffuse = imageSource;
+        return base;
+    }
+
+    public static async loadImagePath(image: Path, base: Opt<MaterialSource> = undefined): Promise<Opt<MaterialSource>> {
+        base ??= await MaterialSource.create(MaterialSource.getDefaultMaterial());
+        if (!is(base)) {
+            return;
+        }
+
+        base.data.map_diffuse = image.getLiteral();
+        return base;
     }
 
     public static getDefaultMaterial(): Path {
         return Path.from("/assets/materials/plastic-white.json");
     }
 
-    private static setMap(shape: MaterialShape, property: keyof MaterialShape, directory: string, value: any): void {
+    public static setMap(shape: MaterialShape, property: keyof MaterialShape, directory: string, value: any): void {
         if (!is(value)) {
             return;
         }

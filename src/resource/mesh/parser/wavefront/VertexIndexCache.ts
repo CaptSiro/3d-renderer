@@ -2,7 +2,7 @@ import { is } from "../../../../../lib/jsml/jsml.ts";
 
 
 
-export default class ObjPart {
+export default class VertexIndexCache {
     private readonly vertexToIndex: Map<string, number>;
     private readonly indexes: number[];
 

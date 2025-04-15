@@ -76,13 +76,16 @@ async function init() {
         stopPropagation: true
     });
     Keyboard.register({
+        key: "F2",
+        onPress: () => window_open(mainScene.getGameObjectsWindow()),
+        preventDefault: true,
+        stopPropagation: true
+    });
+    Keyboard.register({
         key: "f",
         onPress: () => State.isBoundingBoxRenderingEnabled = !State.isBoundingBoxRenderingEnabled,
         preventDefault: true,
     });
-
-
-    await MaterialSource.load(MaterialSource.getDefaultMaterial());
 
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);

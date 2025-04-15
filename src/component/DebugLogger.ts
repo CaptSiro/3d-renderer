@@ -9,7 +9,7 @@ import MeshRenderer from "./renderer/MeshRenderer.ts";
 
 export default class DebugLogger extends Component {
     @editor(NumberEditor)
-    public timeout: float = 1000;
+    public timeout: float = 5000;
     private _id: any;
 
 

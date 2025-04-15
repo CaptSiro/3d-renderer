@@ -6,6 +6,7 @@ import MaterialSource from "../../../material/MaterialSource.ts";
 import { meshVertexLayout } from "../../../../webgl.ts";
 import { int } from "../../../../types.ts";
 import BoundingBox from "../../../../primitives/BoundingBox.ts";
+import { is } from "../../../../../lib/jsml/jsml.ts";
 
 
 
@@ -17,14 +18,14 @@ export default class ObjMesh implements MeshFileParser {
         const meshSources: MeshSource[] = [];
 
         const defaultMaterial = await MaterialSource.load(MaterialSource.getDefaultMaterial());
-        const materialSources = new Map<string, MaterialSource>();
-        const materialIndexes = new Map<string, int>();
+        if (!is(defaultMaterial)) {
+            return [];
+        }
 
-        materialIndexes.set('', materialSources.size);
+        const materialSources = new Map<string, MaterialSource>();
         materialSources.set('', defaultMaterial);
 
         for (const material of description.materials) {
-            materialIndexes.set(material.name, materialSources.size);
             materialSources.set(material.name, MaterialSource.fromMtl(material));
         }
 

@@ -568,6 +568,10 @@ input.form-invalid {
     font-size: 14px;
 }
 
+.editor-content.pad {
+    padding: 16px;
+}
+
 .editor-content h3 {
     text-align: left;
     padding: var(--gap-smaller) var(--gap);

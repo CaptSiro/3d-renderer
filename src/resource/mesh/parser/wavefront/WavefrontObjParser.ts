@@ -3,13 +3,13 @@ import ParseContext from "./ParseContext.ts";
 import WavefrontMtlParser, { Mtl } from "./WavefrontMtlParser.ts";
 import { is } from "../../../../../lib/jsml/jsml.ts";
 import Arrays from "../../../../utils/Arrays.ts";
-import ObjPart from "./ObjPart.ts";
+import VertexIndexCache from "./VertexIndexCache.ts";
 
 
 
 export type Obj = {
     name: string,
-    parts: Map<string, ObjPart>
+    parts: Map<string, VertexIndexCache>
 };
 
 
@@ -35,7 +35,7 @@ export default class WavefrontObjParser {
         let index = 0;
         const context = new ParseContext<Obj>(() => ({
             name: '',
-            parts: new Map<string, ObjPart>()
+            parts: new Map<string, VertexIndexCache>()
         }));
 
         while (true) {
@@ -94,7 +94,7 @@ export default class WavefrontObjParser {
                 break;
             case 'f':
                 context.markAsUpdated();
-                const part = model.parts.get(this.currentMaterial) ?? new ObjPart();
+                const part = model.parts.get(this.currentMaterial) ?? new VertexIndexCache();
                 const v0 = part.lookupVertex(segments[0]);
 
                 for (let i = 0; i < segments.length - 2; i++) {

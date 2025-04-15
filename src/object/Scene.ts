@@ -10,7 +10,7 @@ import Movement from "../component/Movement.ts";
 import MeshSource from "../resource/mesh/MeshSource.ts";
 import RenderingContext from "../primitives/RenderingContext.ts";
 import Matrix4 from "../utils/Matrix4.ts";
-import { ModalWindow, window_create } from "../../lib/window.ts";
+import { ModalWindow, window_create, window_open } from "../../lib/window.ts";
 import Editor, { getEditor } from "../editor/Editor.ts";
 import SceneSettings from "./SceneSettings.ts";
 import Light from "../component/lights/Light.ts";
@@ -285,6 +285,34 @@ export default class Scene {
                 componentContent
             ])
         );
+
+        return Editor.initWindow(w, id);
+    }
+
+    public getGameObjectsWindow(): ModalWindow {
+        const id = "__scene-gameObjects__" + this._name;
+        const win = $<HTMLDivElement>("#" + id);
+        if (is(win)) {
+            return win;
+        }
+
+        const content = jsml.div("editor-content pad");
+        const w = window_create(
+            this._name + " settings",
+            content,
+            {
+                isDraggable: true,
+                isMinimizable: true,
+                isResizable: true,
+                width: "400px"
+            }
+        );
+
+        for (const gameObject of this._gameObjects) {
+            content.append(jsml.button({
+                onClick: () => window_open(gameObject.getEditorWindow())
+            }, gameObject.name));
+        }
 
         return Editor.initWindow(w, id);
     }

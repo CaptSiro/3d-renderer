@@ -28,8 +28,16 @@ export default class MathLib {
         return (x - a) / (b - a);
     }
 
+    public static fade(t: number): number {
+        return t * t * t * (t * (t * 6 - 15) + 10);
+    }
+
     public static lerp(a: float, b: float, t: float): float {
         return a + (b - a) * t;
+    }
+
+    public static smoothStep(x: number): number{
+        return 6*x**5 - 15*x**4 + 10*x**3;
     }
 
     public static lerpColor(a: Vec3, b: Vec3, t: float): Vec3 {
