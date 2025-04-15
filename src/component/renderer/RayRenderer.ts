@@ -12,6 +12,7 @@ import Color from "../../primitives/Color.ts";
 import ColorEditor from "../../editor/ColorEditor.ts";
 import { editor } from "../../editor/Editor.ts";
 import RenderingContext from "../../primitives/RenderingContext.ts";
+import { deleteBuffer, deleteVertexArray } from "../../webgl.ts";
 
 
 
@@ -72,13 +73,8 @@ export class RayRenderer extends Component implements Renderer {
     }
 
     public delete(): void {
-        if (is(this._vbo)) {
-            gl.deleteBuffer(this._vbo);
-        }
-
-        if (is(this._vao)) {
-            gl.deleteVertexArray(this._vao);
-        }
+        deleteBuffer(this._vbo);
+        deleteVertexArray(this._vao);
     }
 
     // Renderer

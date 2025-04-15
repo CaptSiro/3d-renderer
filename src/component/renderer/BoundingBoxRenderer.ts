@@ -24,9 +24,43 @@ export default class BoundingBoxRenderer extends Component {
     @editor(ColorEditor)
     public color: Color = boundingBoxColor;
 
+    private _boundingBox: Opt<BoundingBox>;
+
 
 
     // Component
+    public awake() {
+        this._vao = gl.createVertexArray();
+        gl.bindVertexArray(this._vao);
+
+        this._vbo = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._vbo);
+
+        this._ebo = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._ebo);
+
+        gl.enableVertexAttribArray(0);
+        gl.vertexAttribPointer(
+            0,
+            lineVertexLayout.getVertexFloats(),
+            gl.FLOAT,
+            false,
+            0,
+            0
+        );
+
+        gl.bindVertexArray(null);
+
+        ShaderSource.loadShader("ray").then(source => {
+            if (!is(source)) {
+                console.warn("Ray shader not found thus ray rendering is disabled");
+                return;
+            }
+
+            this._shader = Shader.load(source);
+        });
+    }
+
     public delete() {
         deleteVertexArray(this._vao);
         deleteBuffer(this._vbo);
@@ -52,44 +86,25 @@ export default class BoundingBoxRenderer extends Component {
         this._shader.setVec3("Color", this.color.vec3);
 
         gl.bindVertexArray(this._vao);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._vbo);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._ebo);
-
         gl.drawElements(gl.LINES, BoundingBox.LINE_COUNT, BoundingBox.getIndexType(), 0);
-
         gl.bindVertexArray(null);
     }
 
-    public async init(boundingBox: BoundingBox) {
-        this._vao = gl.createVertexArray();
-        gl.bindVertexArray(this._vao);
-
-        this._vbo = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._vbo);
-        gl.bufferData(gl.ARRAY_BUFFER, boundingBox.getVertexes(), gl.STATIC_DRAW);
-
-        this._ebo = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._ebo);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, boundingBox.getVertexIndexes(), gl.STATIC_DRAW);
-
-        gl.enableVertexAttribArray(0);
-        gl.vertexAttribPointer(
-            0,
-            lineVertexLayout.getVertexFloats(),
-            gl.FLOAT,
-            false,
-            0,
-            0
-        );
-
-        gl.bindVertexArray(null);
-
-        const source = await ShaderSource.loadShader("ray");
-        if (!is(source)) {
-            console.warn("Ray shader not found thus ray rendering is disabled");
+    public init(boundingBox: BoundingBox) {
+        if (!is(this._vao) || !is(this._vbo) || !is(this._ebo)) {
             return;
         }
 
-        this._shader = Shader.load(source);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._vbo);
+        gl.bufferData(gl.ARRAY_BUFFER, boundingBox.getVertexes(), gl.STATIC_DRAW);
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._ebo);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, boundingBox.getVertexIndexes(), gl.STATIC_DRAW);
+
+        this._boundingBox = boundingBox;
+    }
+
+    public get boundingBox(): Opt<BoundingBox> {
+        return this._boundingBox;
     }
 }

@@ -128,7 +128,7 @@ export default class MeshRenderer extends Component implements Renderer {
 
         this._boundingBox = boundingBox;
         this._boundingBoxRenderer = this.gameObject.addComponent(BoundingBoxRenderer);
-        await this._boundingBoxRenderer.init(this._boundingBox);
+        this._boundingBoxRenderer.init(this._boundingBox);
     }
 
     public async initFromModelFile(path: Path): Promise<void> {

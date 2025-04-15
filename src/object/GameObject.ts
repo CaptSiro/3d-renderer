@@ -21,7 +21,7 @@ export default class GameObject {
     private isActive: boolean;
     private readonly components: Map<string, Component>;
     private readonly _transform: Transform;
-    private renderer: Opt<Renderer>;
+    private renderer: Opt<Renderer & Component>;
     private readonly _scene: Scene;
 
 
@@ -76,7 +76,9 @@ export default class GameObject {
             return;
         }
 
-        this.renderer?.draw(context);
+        if (this.renderer?.isEnabled() === true) {
+            this.renderer?.draw(context);
+        }
 
         const children = this.transform.getChildren();
         if (children.length === 0) {

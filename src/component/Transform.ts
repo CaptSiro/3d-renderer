@@ -59,6 +59,10 @@ export default class Transform {
         return this;
     }
 
+    public setPosition3(x: float, y: float, z: float): Transform {
+        return this.setPosition(glm.vec3(x, y, z));
+    }
+
     public getRotation(): Quat {
         return this.rotation;
     }
@@ -82,6 +86,10 @@ export default class Transform {
         this.scale.y = scale.y;
         this.scale.z = scale.z;
         return this;
+    }
+
+    public setScale3(x: float, y: float, z: float): Transform {
+        return this.setScale(glm.vec3(x, y, z));
     }
 
     public getMatrix(): Mat4 {

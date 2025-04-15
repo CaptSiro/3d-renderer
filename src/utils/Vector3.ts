@@ -1,4 +1,5 @@
-import { float, Vec3 } from "../types.ts";
+import { float, float01, Vec3 } from "../types.ts";
+import MathLib from "./MathLib.ts";
 
 
 
@@ -64,5 +65,13 @@ export default class Vector3 {
             y: v.y,
             z: v.z
         });
+    }
+
+    public static lerp(a: Vec3, b: Vec3, t: float01): Vec3 {
+        return glm.vec3(
+            MathLib.lerp(a.x, b.x, t),
+            MathLib.lerp(a.y, b.y, t),
+            MathLib.lerp(a.z, b.z, t),
+        );
     }
 }

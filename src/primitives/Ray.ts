@@ -9,6 +9,7 @@ import { is } from "../../lib/jsml/jsml.ts";
 import Vector4 from "../utils/Vector4.ts";
 import RayCastContext from "./RayCastContext.ts";
 import Matrix4 from "../utils/Matrix4.ts";
+import BoundingBoxRenderer from "../component/renderer/BoundingBoxRenderer.ts";
 
 
 
@@ -64,13 +65,13 @@ export default class Ray {
         return array;
     }
 
-    private testGameObject(gameObject: GameObject, context: RayCastContext, closestDistance: number): number {
-        const meshRenderer = gameObject.getComponent(MeshRenderer);
-        if (!is(meshRenderer)) {
+    private testGameObject(gameObject: GameObject, context: RayCastContext): number {
+        const boundingBoxRenderer = gameObject.getComponent(BoundingBoxRenderer);
+        if (!is(boundingBoxRenderer)) {
             return Number.POSITIVE_INFINITY;
         }
 
-        const boundingBox = meshRenderer.getBoundingBox();
+        const boundingBox = boundingBoxRenderer.boundingBox;
         if (!is(boundingBox)) {
             return Number.POSITIVE_INFINITY;
         }
@@ -119,7 +120,7 @@ export default class Ray {
             closestDistance
         }
 
-        let distance = this.testGameObject(gameObject, context, closestDistance);
+        let distance = this.testGameObject(gameObject, context);
 
         if (distance < closestDistance) {
             ret.closest = gameObject;

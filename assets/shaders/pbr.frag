@@ -233,7 +233,7 @@ vec3 get_light_radience(int i) {
 
         case LIGHT_TYPE_SPOT: {
             vec3 lightToFragment = normalize(lights[i].position - FragmentPosition);
-            float cosAngle = dot(lightToFragment, lights[i].direction);
+            float cosAngle = dot(lightToFragment, -lights[i].direction);
 
             if (cosAngle > lights[i].cosAngle) {
                 radiance = attenuate_light(i);
