@@ -1,6 +1,6 @@
 import Component from "./Component.ts";
 import { Mat4, Vec2, Vec3 } from "../types";
-import { projectionMatrix, viewport } from "../main.ts";
+import { viewport } from "../main.ts";
 import Ray from "../primitives/Ray.ts";
 import { Opt } from "../../lib/types.ts";
 import GridRenderer from "./renderer/GridRenderer.ts";
@@ -10,11 +10,22 @@ import Counter from "../primitives/Counter.ts";
 import Keyboard from "../input/Keyboard.ts";
 import MeshRenderer from "./renderer/MeshRenderer.ts";
 import Path from "../resource/Path.ts";
+import { editor } from "../editor/Editor.ts";
+import NumberEditor from "../editor/NumberEditor.ts";
 
 
 
 export default class Camera extends Component {
     private static keyCounter: Counter = new Counter(1);
+
+    @editor(NumberEditor)
+    public fov: number = 60;
+
+    @editor(NumberEditor)
+    public near: number = 0.1;
+
+    @editor(NumberEditor)
+    public far: number = 500;
 
 
 
@@ -23,10 +34,12 @@ export default class Camera extends Component {
 
     private _view: Mat4 = undefined;
     private _vp: Mat4 = undefined
+    private _projection: Mat4 = undefined;
 
 
 
     public awake(): void {
+        this.updateProjection();
         this.updateView();
         this.assignKey();
 
@@ -40,6 +53,16 @@ export default class Camera extends Component {
             const meshRenderer = this.gameObject.addComponent(MeshRenderer);
             meshRenderer.initFromModelFile(Path.from("/assets/models/camera.obj")).then();
         }
+
+        viewport.addEventListener('resize', () => {
+            this.updateProjection();
+        });
+    }
+
+    private updateProjection(): Mat4 {
+        const rect = viewport.getBoundingClientRect();
+        const aspectRatio = rect.width / rect.height;
+        this._projection = glm.perspective(glm.radians(this.fov), aspectRatio, this.near, this.far);
     }
 
     private assignKey(): void {
@@ -115,7 +138,7 @@ export default class Camera extends Component {
             up
         );
 
-        this._vp = projectionMatrix ["*"] (this._view);
+        this._vp = this._projection ["*"] (this._view);
     }
 
     public screenPositionToWorldRay(position: Vec2): Ray {
@@ -126,7 +149,7 @@ export default class Camera extends Component {
             1
         );
 
-        const eye = glm.inverse(projectionMatrix) ["*"] (clip);
+        const eye = glm.inverse(this._projection) ["*"] (clip);
         eye.z = -1;
         eye.w = 0;
 
@@ -135,5 +158,13 @@ export default class Camera extends Component {
             glm.vec3(this.transform.getWorldPosition()),
             glm.vec3(world)
         );
+    }
+
+
+
+    public onPropertyChange(property: string, oldValue: any, newValue: any) {
+        if (property === 'fov' || property === 'near' || property === 'far') {
+            this.updateProjection();
+        }
     }
 }

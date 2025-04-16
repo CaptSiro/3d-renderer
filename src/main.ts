@@ -27,7 +27,6 @@ if (!is(_viewport)) {
 }
 
 export const viewport = _viewport;
-export let projectionMatrix: Mat4;
 
 function resizeViewport() {
     if (!is(_viewport)) {
@@ -39,9 +38,6 @@ function resizeViewport() {
     _viewport.height = Math.floor(rect.height);
 
     gl.viewport(0, 0, _viewport.width, _viewport.height);
-
-    const aspectRatio = rect.width / rect.height;
-    projectionMatrix = glm.perspective(glm.radians(35.0), aspectRatio, 0.1, 500);
 }
 
 const context = _viewport?.getContext("webgl2");
