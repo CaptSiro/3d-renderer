@@ -3,7 +3,6 @@ import Path from "../../src/resource/Path";
 import Quaternion from "../../src/utils/Quaternion";
 import Camera from "../../src/component/Camera";
 import Movement from "../../src/component/Movement";
-import Sun from "../scripts/Sun.ts";
 import LookAt from "../scripts/LookAt.ts";
 import { pause } from "../../src/main.ts";
 import RigidBody from "../../src/component/RigidBody.ts";
@@ -13,7 +12,8 @@ import BezierCurve from "../../src/component/BezierCurve.ts";
 import SplineRenderer from "../../src/component/renderer/SplineRenderer.ts";
 import FollowPath from "../scripts/FollowPath.ts";
 import Terrain from "../../src/component/Terrain.ts";
-import DebugLogger from "../../src/component/DebugLogger.ts";
+import Sun from "../../src/component/lights/Sun.ts";
+import GlobalIllumination from "../../src/component/lights/GlobalIllumination.ts";
 
 
 
@@ -33,9 +33,10 @@ export default async function devScene_loader(): Promise<Scene> {
         .setRotation(Quaternion.fromEulerDegrees(-50, 180, 60));
     suzanne.addComponent(RigidBody);
 
-    const teapot = await devScene.loadGameObject("teapot", Path.from("/assets/models/Cube.obj"));
-    teapot.addComponent(Sun);
-    teapot.transform
+    const sun = await devScene.loadGameObject("sun", Path.from("/assets/models/Cube.obj"));
+    sun.addComponent(GlobalIllumination);
+    sun.addComponent(Sun);
+    sun.transform
         .setPosition3(0, 5, 5)
         .setScale3(5, 5, 5);
 
@@ -81,7 +82,7 @@ export default async function devScene_loader(): Promise<Scene> {
     const directionalLight = await devScene.loadGameObject("light_001", Path.from("/assets/models/camera.obj"));
     directionalLight.transform.setPosition3(1, 0, 0);
     const l1 = directionalLight.addComponent(SpotLight);
-    l1.intensity = 1000;
+    l1.intensity = 100;
 
     const spline = devScene.createGameObject('spline_001');
     spline.transform.setPosition3(12, 0, 0);

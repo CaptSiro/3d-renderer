@@ -16,7 +16,7 @@ import MaterialSource from "../resource/material/MaterialSource.ts";
 import BoundingBox from "../primitives/BoundingBox.ts";
 import BufferedImage from "../primitives/BufferedImage.ts";
 import Color from "../primitives/Color.ts";
-import { ModalWindow, window_create, window_open } from "../../lib/window.ts";
+import { ModalWindow, window_create } from "../../lib/window.ts";
 
 
 

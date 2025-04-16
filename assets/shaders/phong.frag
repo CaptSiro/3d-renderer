@@ -137,7 +137,7 @@ vec3 get_light_direction(int i) {
         return normalize(lights[i].position - FragmentPosition);
     }
 
-    return lights[i].direction;
+    return -lights[i].direction;
 }
 
 vec3 attenuate_light(int i) {
