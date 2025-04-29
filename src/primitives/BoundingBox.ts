@@ -14,8 +14,8 @@ export default class BoundingBox {
 
     public static initial(): BoundingBox {
         return new BoundingBox(
-            Vector3.MAX,
-            Vector3.MIN
+            Vector3.clone(Vector3.MAX),
+            Vector3.clone(Vector3.MIN)
         );
     }
 

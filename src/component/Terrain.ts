@@ -16,7 +16,7 @@ import MaterialSource from "../resource/material/MaterialSource.ts";
 import BoundingBox from "../primitives/BoundingBox.ts";
 import BufferedImage from "../primitives/BufferedImage.ts";
 import Color from "../primitives/Color.ts";
-import { ModalWindow, window_create } from "../../lib/window.ts";
+import { ModalWindow, window_create, window_open } from "../../lib/window.ts";
 
 
 
@@ -96,13 +96,13 @@ export default class Terrain extends Component {
         let j = 0;
         for (let y0 = 0; y0 < this.size.y - 1; y0++) {
             const y1 = y0 + 1;
-            const v0 = y0 / (this.size.y - 1);
-            const v1 = y1 / (this.size.y - 1);
+            const v0 = y0 / this.size.y;
+            const v1 = y1 / this.size.y;
 
             for (let x0 = 0; x0 < this.size.x - 1; x0++) {
                 const x1 = x0 + 1;
-                const u0 = 1 - (x0 / (this.size.x - 1));
-                const u1 = 1 - (x1 / (this.size.x - 1));
+                const u0 = 1 - (x0 / this.size.x);
+                const u1 = 1 - (x1 / this.size.x);
 
                 const v00 = vertexes[y0 * this.size.x + x0];
                 const v10 = vertexes[y0 * this.size.x + x1];
@@ -119,26 +119,26 @@ export default class Terrain extends Component {
                 Arrays.writeVec3(data, j * meshVertexLayout.getTotalFloats() + VERTEX, n0);
                 Arrays.writeVec2(data, j * meshVertexLayout.getTotalFloats() + VERTEX + NORMAL, t10);
 
-                Arrays.writeVec3(data, j++ * meshVertexLayout.getTotalFloats(), v00);
-                Arrays.writeVec3(data, j * meshVertexLayout.getTotalFloats() + VERTEX, n0);
-                Arrays.writeVec2(data, j * meshVertexLayout.getTotalFloats() + VERTEX + NORMAL, t00);
-
                 Arrays.writeVec3(data, j++ * meshVertexLayout.getTotalFloats(), v01);
                 Arrays.writeVec3(data, j * meshVertexLayout.getTotalFloats() + VERTEX, n0);
                 Arrays.writeVec2(data, j * meshVertexLayout.getTotalFloats() + VERTEX + NORMAL, t01);
+
+                Arrays.writeVec3(data, j++ * meshVertexLayout.getTotalFloats(), v11);
+                Arrays.writeVec3(data, j * meshVertexLayout.getTotalFloats() + VERTEX, n0);
+                Arrays.writeVec2(data, j * meshVertexLayout.getTotalFloats() + VERTEX + NORMAL, t11);
 
                 const n1 = this.triangleNormal(v10, v01, v11);
                 Arrays.writeVec3(data, j++ * meshVertexLayout.getTotalFloats(), v10);
                 Arrays.writeVec3(data, j * meshVertexLayout.getTotalFloats() + VERTEX, n1);
                 Arrays.writeVec2(data, j * meshVertexLayout.getTotalFloats() + VERTEX + NORMAL, t10);
 
+                Arrays.writeVec3(data, j++ * meshVertexLayout.getTotalFloats(), v00);
+                Arrays.writeVec3(data, j * meshVertexLayout.getTotalFloats() + VERTEX, n1);
+                Arrays.writeVec2(data, j * meshVertexLayout.getTotalFloats() + VERTEX + NORMAL, t00);
+
                 Arrays.writeVec3(data, j++ * meshVertexLayout.getTotalFloats(), v01);
                 Arrays.writeVec3(data, j * meshVertexLayout.getTotalFloats() + VERTEX, n1);
                 Arrays.writeVec2(data, j * meshVertexLayout.getTotalFloats() + VERTEX + NORMAL, t01);
-
-                Arrays.writeVec3(data, j++ * meshVertexLayout.getTotalFloats(), v11);
-                Arrays.writeVec3(data, j * meshVertexLayout.getTotalFloats() + VERTEX, n1);
-                Arrays.writeVec2(data, j * meshVertexLayout.getTotalFloats() + VERTEX + NORMAL, t11);
             }
         }
 

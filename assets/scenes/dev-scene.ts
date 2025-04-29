@@ -14,6 +14,8 @@ import FollowPath from "../scripts/FollowPath.ts";
 import Terrain from "../../src/component/Terrain.ts";
 import Sun from "../../src/component/lights/Sun.ts";
 import GlobalIllumination from "../../src/component/lights/GlobalIllumination.ts";
+import SpriteRenderer from "../../src/component/renderer/SpriteRenderer.ts";
+import MeshRenderer from "../../src/component/renderer/MeshRenderer.ts";
 
 
 
@@ -133,6 +135,20 @@ export default async function devScene_loader(): Promise<Scene> {
     terrain1.scale = 0.3;
     terrain1.offset = 50;
     terrain1.generate();
+
+
+
+    const baussi = devScene.createGameObject('baussi');
+    baussi.transform.setPosition3(-9, 1, 0);
+    const spriteRenderer = baussi.addComponent(SpriteRenderer);
+    const images = [];
+    for (let i = 0; i < 381; i++) {
+        const frame = String(i).padStart(3, '0');
+        images.push(`/assets/sprites/baussi/frame_${frame}_delay-0.04s.png`);
+    }
+    spriteRenderer.images = images;
+    spriteRenderer.fps = 25;
+    spriteRenderer.setDimensions(2, 1);
 
     return devScene;
 }

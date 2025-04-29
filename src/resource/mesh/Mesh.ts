@@ -13,7 +13,7 @@ export default class Mesh {
     private readonly hasEbo: boolean;
     private readonly vertexCount: number;
 
-    private readonly material: Material;
+    private material: Material;
     private readonly boundingBox: BoundingBox;
     private readonly name: string;
 
@@ -115,5 +115,9 @@ export default class Mesh {
 
     public getBoundingBox(): BoundingBox {
         return this.boundingBox;
+    }
+
+    public setMaterial(material: Material): void {
+        this.material = material;
     }
 }

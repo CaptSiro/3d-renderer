@@ -28,6 +28,8 @@ export default class ObjMesh implements MeshFileParser {
             materialSources.set(material.name, MaterialSource.fromMtl(material));
         }
 
+        const isQuad = path.getLiteral().includes('quad');
+
         for (let m = 0; m < description.models.length; m++) {
             const model = description.models[m];
 
@@ -38,6 +40,13 @@ export default class ObjMesh implements MeshFileParser {
 
                 const indexes = Uint32Array.from(part.getIndexes());
                 const boundingBox = BoundingBox.initial();
+
+                if (isQuad) {
+                    const h = boundingBox.getHigh();
+                    console.log(h.x, h.y, h.z);
+                    const l = boundingBox.getLow();
+                    console.log(l.x, l.y, l.z);
+                }
 
                 const vertexData = new Float32Array(part.getVertexToIndex().size * meshVertexLayout.getTotalFloats());
 
@@ -58,6 +67,11 @@ export default class ObjMesh implements MeshFileParser {
 
                     if (vertexIndex > 0) {
                         boundingBox.addVertex(v[0], v[1], v[2]);
+
+                        if (isQuad) {
+                            console.log(v);
+                            console.log(boundingBox);
+                        }
                     }
 
                     // Normal

@@ -102,6 +102,10 @@ export default class MeshRenderer extends Component implements Renderer {
             mesh.delete();
         }
     }
+    
+    public getMeshes(): Opt<Mesh[]> {
+        return this._meshes;
+    }
 
 
 

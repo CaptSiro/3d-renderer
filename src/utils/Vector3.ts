@@ -4,10 +4,11 @@ import MathLib from "./MathLib.ts";
 
 
 export default class Vector3 {
-    public static zero(): Vec3 {
-        return glm.vec3(0, 0, 0);
+    public static clone(vec: Vec3): Vec3 {
+        return glm.vec3(vec);
     }
 
+    public static ZERO: Vec3 = glm.vec3(0, 0, 0);
     public static MIN: Vec3 = glm.vec3(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
     public static MAX: Vec3 = glm.vec3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
 

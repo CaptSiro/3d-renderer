@@ -1,5 +1,5 @@
 import { $, is } from "../lib/jsml/jsml.ts";
-import { Mat4, Vec3 } from "./types";
+import { Vec3 } from "./types";
 import Scene from "./object/Scene.ts";
 import { window_open } from "../lib/window.ts";
 import Keyboard from "./input/Keyboard.ts";
