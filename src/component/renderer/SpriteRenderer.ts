@@ -49,7 +49,6 @@ export default class SpriteRenderer extends Component {
     public awake() {
         this.scale();
         this._meshRenderer = this.gameObject.addComponent(MeshRenderer);
-        console.log('---- QUAD ----');
         this._meshRenderer.initFromModelFile(Path.from('/assets/models/quad.obj'))
             .then(async () => {
                 if (!is(this.images)) {
@@ -100,7 +99,7 @@ export default class SpriteRenderer extends Component {
 
     private scale(): void {
         this.transform.setScale(
-            glm.vec3(this.width, this.height, 1)
+            glm.vec3(this.width, 1, this.height)
         );
     }
 

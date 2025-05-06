@@ -19,7 +19,7 @@ export default class Camera extends Component {
     private static keyCounter: Counter = new Counter(1);
 
     @editor(NumberEditor)
-    public fov: number = 60;
+    private fov: number = 60;
 
     @editor(NumberEditor)
     public near: number = 0.1;
@@ -54,7 +54,7 @@ export default class Camera extends Component {
             meshRenderer.initFromModelFile(Path.from("/assets/models/camera.obj")).then();
         }
 
-        viewport.addEventListener('resize', () => {
+        window.addEventListener('resize', () => {
             this.updateProjection();
         });
     }
@@ -158,6 +158,12 @@ export default class Camera extends Component {
             glm.vec3(this.transform.getWorldPosition()),
             glm.vec3(world)
         );
+    }
+
+    public setFov(fov: number): Camera {
+        this.fov = fov;
+        this.updateProjection();
+        return this;
     }
 
 

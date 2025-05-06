@@ -156,10 +156,10 @@ export default class CpuSkyRenderer extends Component {
         const sun = this.getSunPosition();
 
         console.log("[DIRECTION]")
-        Vector3.log(direction);
+        Vector3.print(direction);
         const v = glm.vec3(origin);
         v ["+="] (step);
-        Vector3.log(v);
+        Vector3.print(v);
 
         let x = glm.vec3(0, 0, 0);
 
@@ -179,7 +179,7 @@ export default class CpuSkyRenderer extends Component {
                 stepLength * i
             );
 
-            Vector3.log(this.density(glm.vec3(sample)));
+            Vector3.print(this.density(glm.vec3(sample)));
 
             const sampleColor = this.density(glm.vec3(sample))
                 ["*"] (Vector3.exp((sunRayDepth ["+"] (cameraRayDepth)) ["*"] (-1)))
@@ -190,7 +190,7 @@ export default class CpuSkyRenderer extends Component {
         }
 
         console.log("[X]")
-        Vector3.log(x);
+        Vector3.print(x);
 
         return x
             ["*"] (this.phase(direction, glm.normalize(sun ["-"] (origin))))

@@ -15,7 +15,9 @@ import Terrain from "../../src/component/Terrain.ts";
 import Sun from "../../src/component/lights/Sun.ts";
 import GlobalIllumination from "../../src/component/lights/GlobalIllumination.ts";
 import SpriteRenderer from "../../src/component/renderer/SpriteRenderer.ts";
-import MeshRenderer from "../../src/component/renderer/MeshRenderer.ts";
+import SphereCollider from "../../src/component/SphereCollider.ts";
+import Light from "../../src/component/lights/Light.ts";
+import Color from "../../src/primitives/Color.ts";
 
 
 
@@ -28,12 +30,14 @@ export default async function devScene_loader(): Promise<Scene> {
 
     devScene.setActiveCamera(cam0.addComponent(Camera));
     cam0.addComponent(Movement);
+    cam0.addComponent(SphereCollider).radius = 0.25;
 
     const suzanne = await devScene.loadGameObject("suzanne", Path.from("/assets/models/Suzanne.obj"));
     suzanne.transform
         .setPosition3(1, 0, 3)
         .setRotation(Quaternion.fromEulerDegrees(-50, 180, 60));
     suzanne.addComponent(RigidBody);
+    suzanne.addComponent(SphereCollider).radius = 0.25;
 
     const sun = await devScene.loadGameObject("sun", Path.from("/assets/models/Cube.obj"));
     sun.addComponent(GlobalIllumination);
@@ -46,6 +50,7 @@ export default async function devScene_loader(): Promise<Scene> {
     cube.transform
         .setScale(glm.vec3(0.25, 0.25, 0.25))
         .setPosition(glm.vec3(-1, -0.5, 3));
+    cube.addComponent(SphereCollider).radius = 0.25;
 
     suzanne.transform.addChild(cube);
 
@@ -54,6 +59,18 @@ export default async function devScene_loader(): Promise<Scene> {
         .setPosition3(-3, 0.1, -1);
     cam1.addComponent(Camera);
     const lookAt = cam1.addComponent(LookAt);
+
+    const cam2 = devScene.createGameObject('cam2');
+    cam2.transform
+        .setPosition3(6.6, 6.8, -3.2)
+        .setRotation(Quaternion.fromEulerDegrees(65, -21, 0));
+    cam2.addComponent(Camera);
+
+    const cam3 = devScene.createGameObject('cam2');
+    cam3.transform
+        .setPosition3(-15.323511123657227, 12.194103240966797, 20.064395904541016)
+        .setRotation(Quaternion.fromEulerDegrees(-155.79981994628906, 45.84980392456055, 179.99984741210938));
+    cam3.addComponent(Camera).setFov(15);
 
     const spline2 = devScene.createGameObject('spline_002');
     spline2.transform.setPosition3(8, 0, 0);
@@ -68,23 +85,23 @@ export default async function devScene_loader(): Promise<Scene> {
     const f2 = cam1.addComponent(FollowPath);
     f2.setPath(s2);
 
-    // const cam2 = devScene.createGameObject('cam2');
-    // cam2.transform
-    //     .setPosition3(0, 1, -4);
-    // cam2.addComponent(Camera);
-    //
-    // suzanne.transform.addChild(cam2);
-
-    // const pointLight = await devScene.loadGameObject("light_000", Path.from("/assets/models/Cube.obj"));
-    // pointLight.transform
-    //     .setScale3(0.1, 0.1, 0.1);
-    // const l0 = pointLight.addComponent(Light);
-    // l0.intensity = 21;
+    const pointLight = await devScene.loadGameObject("light_000", Path.from("/assets/models/Cube.obj"));
+    pointLight.transform
+        .setPosition3(6, 0.5, 0)
+        .setScale3(0.1, 0.1, 0.1);
+    const l0 = pointLight.addComponent(Light);
+    l0.intensity = 50;
+    l0.color = Color.fromHex("#cec600");
+    pointLight.addComponent(SphereCollider).radius = 0.25;
 
     const directionalLight = await devScene.loadGameObject("light_001", Path.from("/assets/models/camera.obj"));
-    directionalLight.transform.setPosition3(1, 0, 0);
+    directionalLight.transform
+        .setRotation(Quaternion.fromEulerDegrees(75, 0, 0))
+        .setPosition3(4, 2, -0.6);
     const l1 = directionalLight.addComponent(SpotLight);
-    l1.intensity = 100;
+    l1.color = Color.fromHex("#b40a2b");
+    l1.intensity = 200;
+    directionalLight.addComponent(SphereCollider).radius = 0.25;
 
     const spline = devScene.createGameObject('spline_001');
     spline.transform.setPosition3(12, 0, 0);
@@ -139,7 +156,9 @@ export default async function devScene_loader(): Promise<Scene> {
 
 
     const baussi = devScene.createGameObject('baussi');
-    baussi.transform.setPosition3(-9, 1, 0);
+    baussi.transform
+        .setRotation(Quaternion.fromEulerDegrees(0, 180, 0))
+        .setPosition3(5, 0.1, 0);
     const spriteRenderer = baussi.addComponent(SpriteRenderer);
     const images = [];
     for (let i = 0; i < 381; i++) {
@@ -148,7 +167,7 @@ export default async function devScene_loader(): Promise<Scene> {
     }
     spriteRenderer.images = images;
     spriteRenderer.fps = 25;
-    spriteRenderer.setDimensions(2, 1);
+    spriteRenderer.setDimensions(4, 2);
 
     return devScene;
 }

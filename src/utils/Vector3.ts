@@ -38,6 +38,10 @@ export default class Vector3 {
         );
     }
 
+    public static clamp(min: Vec3, max: Vec3, v: Vec3): Vec3 {
+        return Vector3.min(Vector3.max(min, v), max);
+    }
+
     public static exp(v: Vec3): Vec3 {
         return glm.vec3(
             Math.exp(v.x),
@@ -60,7 +64,7 @@ export default class Vector3 {
         );
     }
 
-    public static log(v: Vec3): void {
+    public static print(v: Vec3): void {
         console.log({
             x: v.x,
             y: v.y,

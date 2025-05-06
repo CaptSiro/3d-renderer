@@ -17,6 +17,7 @@ import Light from "../component/lights/Light.ts";
 import { FLOAT_SIZE, LIGHT_UBO_LENGTH_OFFSET, LIGHT_UBO_SIZE, MAX_LIGHTS } from "../webgl.ts";
 import { gl } from "../main.ts";
 import Shader from "../resource/shader/Shader.ts";
+import SphereCollider from "../component/SphereCollider.ts";
 
 
 
@@ -26,6 +27,7 @@ export default class Scene {
     private readonly _gameObjects: GameObject[];
     private readonly _lights: Light[];
     private readonly _lightsBuffer: WebGLBuffer;
+    private readonly _colliders: SphereCollider[];
 
     private readonly _time: Time;
     private readonly _settings: SceneSettings;
@@ -41,6 +43,7 @@ export default class Scene {
         this._lightsBuffer = gl.createBuffer();
         this._gameObjects = [];
         this._lights = [];
+        this._colliders = [];
         this._time = new Time(FIXED_UPDATE_MILLISECONDS);
         this._settings = new SceneSettings();
         this._physicsTimestamp = Date.now();
@@ -75,6 +78,31 @@ export default class Scene {
             }
 
             gameObject.fixedUpdate();
+        }
+
+        this.checkCollision();
+    }
+
+    public checkCollision(): void {
+        if (this._colliders.length <= 1) {
+            return;
+        }
+
+        for (let i = 0; i < this._colliders.length; i++) {
+            const ci = this._colliders[i];
+
+            for (let j = 0; j < this._colliders.length; j++) {
+                if (i == j) {
+                    continue;
+                }
+
+                const cj = this._colliders[j];
+                if (!ci.isColliding(cj)) {
+                    continue;
+                }
+
+                ci.onCollision(cj);
+            }
         }
     }
 
@@ -171,6 +199,20 @@ export default class Scene {
         }
 
         this._lights.splice(i, 1);
+        return true;
+    }
+
+    public addCollider(collider: SphereCollider): void {
+        this._colliders.push(collider);
+    }
+
+    public deleteCollider(collider: SphereCollider): boolean {
+        const i = this._colliders.indexOf(collider);
+        if (i < 0) {
+            return false;
+        }
+
+        this._colliders.splice(i, 1);
         return true;
     }
 
