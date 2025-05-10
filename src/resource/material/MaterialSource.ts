@@ -21,6 +21,8 @@ export type MaterialShape = {
     map_specular?: string,
     map_shininess?: string,
     map_bump?: string,
+
+    textureWrap?: GLenum;
 }
 
 export default class MaterialSource {

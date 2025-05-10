@@ -73,7 +73,7 @@ export default class SplineRenderer extends Component implements Renderer {
         }
 
         this._boundingBox = BoundingBox.initial();
-        const buffer = this._spline.getBuffer(this._boundingBox);
+        const buffer = this._spline.generateBuffer(this._boundingBox);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this._vbo);
         gl.bufferData(gl.ARRAY_BUFFER, buffer, gl.STATIC_DRAW);

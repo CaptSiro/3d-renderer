@@ -18,6 +18,7 @@ import SpriteRenderer from "../../src/component/renderer/SpriteRenderer.ts";
 import SphereCollider from "../../src/component/SphereCollider.ts";
 import Light from "../../src/component/lights/Light.ts";
 import Color from "../../src/primitives/Color.ts";
+import TextureSlider from "../scripts/TextureSlider.ts";
 
 
 
@@ -90,8 +91,8 @@ export default async function devScene_loader(): Promise<Scene> {
         .setPosition3(6, 0.5, 0)
         .setScale3(0.1, 0.1, 0.1);
     const l0 = pointLight.addComponent(Light);
-    l0.intensity = 50;
-    l0.color = Color.fromHex("#cec600");
+    l0.intensity = 200;
+    l0.color = Color.fromHex("#4da0ff");
     pointLight.addComponent(SphereCollider).radius = 0.25;
 
     const directionalLight = await devScene.loadGameObject("light_001", Path.from("/assets/models/camera.obj"));
@@ -168,6 +169,14 @@ export default async function devScene_loader(): Promise<Scene> {
     spriteRenderer.images = images;
     spriteRenderer.fps = 25;
     spriteRenderer.setDimensions(4, 2);
+
+    spriteRenderer.onMaterialUpdate = (material, context) => {
+        const time = context.scene.getTime().getSystemTimestamp();
+        material.textureOffset = glm.vec2(
+            Math.cos(2 * time) / 2,
+            Math.sin(2 * time) / 2
+        );
+    }
 
     return devScene;
 }

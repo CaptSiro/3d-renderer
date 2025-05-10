@@ -33,7 +33,7 @@ export default class Spline extends Component {
         return this._segments.length * (this.sections + 1);
     }
 
-    public getBuffer(boundingBox: BoundingBox = BoundingBox.initial()): Float32Array {
+    public generateBuffer(boundingBox: BoundingBox = BoundingBox.initial()): Float32Array {
         const sections = this.sections;
         const buffer = new Float32Array(lineVertexLayout.getTotalFloats() * this._segments.length * (sections + 1));
 

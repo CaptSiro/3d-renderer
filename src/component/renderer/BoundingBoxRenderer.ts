@@ -28,7 +28,6 @@ export default class BoundingBoxRenderer extends Component {
 
 
 
-    // Component
     public awake() {
         this._vao = gl.createVertexArray();
         gl.bindVertexArray(this._vao);

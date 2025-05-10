@@ -95,6 +95,10 @@ export default class GameObject {
         }
     }
 
+    /**
+     * Propagates the delete event to the components, and then it removes itself from bound scene. Deleted GameObject
+     * shall not be used again
+     */
     public delete(): void {
         this.setActive(false);
 
@@ -105,6 +109,9 @@ export default class GameObject {
         this.removeFromScene();
     }
 
+    /**
+     * Only removes the GameObject from bound scene. Afterward, it may be assigned to another scene
+     */
     public removeFromScene(): void {
         this._scene.deleteGameObject(
             x => x._id === this._id

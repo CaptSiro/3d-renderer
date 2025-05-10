@@ -26,6 +26,8 @@ export default class LightDescription {
 
 
     /**
+     * Write light description data at specified start of the light description block
+     *
      * @returns Total floats written
      */
     public writeLight(buffer: Float32Array, start: number): int {

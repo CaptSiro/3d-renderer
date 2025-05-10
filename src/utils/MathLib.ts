@@ -28,9 +28,6 @@ export default class MathLib {
         return (x - a) / (b - a);
     }
 
-    public static fade(t: number): number {
-        return t * t * t * (t * (t * 6 - 15) + 10);
-    }
 
     public static lerp(a: float, b: float, t: float): float {
         return a + (b - a) * t;

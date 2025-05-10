@@ -12,6 +12,10 @@ export type SelectOption<T> = {
 }
 
 export default class Select<T> extends Editor<T> {
+    /**
+     * Creates a Select from specified set of string values as { value: x, label: x }. In other words, the value is its label
+     * @param options
+     */
     public static enum(options: string[]): EditorFactory<string> {
         return Select.options(
             options.map(x => ({
@@ -22,6 +26,11 @@ export default class Select<T> extends Editor<T> {
         );
     }
 
+    /**
+     * Creates a Select from specified options and value parser
+     * @param options
+     * @param parser It shall return the interpreted value from the string representation
+     */
     public static options<V>(options: SelectOption<V>[], parser: (value: string) => V): EditorFactory<V> {
         return (...args) => {
             const select = new Select<V>(...args);

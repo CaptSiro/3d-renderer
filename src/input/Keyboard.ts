@@ -110,6 +110,14 @@ export default class Keyboard {
 
 
 
+    /**
+     * Works as router infrastructure. It takes an object, and it tries every single "route" if the object passed
+     * the "route" it shall be provided to the destination endpoint. Routes are represented as registers and
+     * the gatekeepers are the rules (key and modifiers) enforced on the register. The destination endpoint is the handler
+     * function per event type, it is called if provided (onUp, onDown, onPress)
+     * @param event
+     * @param type
+     */
     public static handle(event: KeyboardEvent, type: "down" | "up" | "press"): void {
         const isMovementDirectionEvent = event.key in Keyboard.movementVectorDescription
             || event.key.toLowerCase() in Keyboard.movementVectorDescription;

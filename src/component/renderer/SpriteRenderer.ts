@@ -1,8 +1,6 @@
 import { Opt } from "../../../lib/types.ts";
-import BoundingBox from "../../primitives/BoundingBox.ts";
-import RenderingContext from "../../primitives/RenderingContext.ts";
 import Component from "../Component.ts";
-import { assert, is } from "../../../lib/jsml/jsml.ts";
+import { is } from "../../../lib/jsml/jsml.ts";
 import { editor } from "../../editor/Editor.ts";
 import NumberEditor from "../../editor/NumberEditor.ts";
 import MeshRenderer from "./MeshRenderer.ts";
@@ -10,6 +8,7 @@ import Path from "../../resource/Path.ts";
 import Material from "../../resource/material/Material.ts";
 import MaterialSource from "../../resource/material/MaterialSource.ts";
 import { float, int } from "../../types.ts";
+import GameObject from "../../object/GameObject.ts";
 
 
 
@@ -28,6 +27,8 @@ export default class SpriteRenderer extends Component {
     public fps: number = 1;
     protected frame: int = 0;
     protected time: float = 0;
+
+    public onMaterialUpdate: (material: Material, spriteRenderer: SpriteRenderer) => void = () => {};
 
 
 
@@ -74,7 +75,7 @@ export default class SpriteRenderer extends Component {
             });
     }
 
-    public update() {
+    public getCurrentMaterial(): Opt<Material> {
         this.time += this.scene.getTime().getDeltaTime();
         const frameDuration = 1 / this.fps;
 
@@ -88,7 +89,17 @@ export default class SpriteRenderer extends Component {
         }
 
         this.frame -= Math.floor(this.frame / this._materials.length) * this._materials.length;
-        this.setMaterial(this._materials[this.frame]);
+        return this._materials[this.frame];
+    }
+
+    public update() {
+        const material = this.getCurrentMaterial();
+        if (!is(material)) {
+            return;
+        }
+
+        this.onMaterialUpdate(material, this);
+        this.setMaterial(material);
     }
 
     public onPropertyChange(property: string, oldValue: any, newValue: any) {

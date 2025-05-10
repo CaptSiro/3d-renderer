@@ -151,25 +151,6 @@ export function window_close(element: HTMLElement) {
     element.dispatchEvent(new CustomEvent(EVENT_WINDOW_CLOSED));
 }
 
-export function window_requestAction(id: string, action: "close" | "open") {
-    const w = $("#" + id);
-    if (w === null) {
-        return;
-    }
-
-    switch (action) {
-        case 'close': {
-            window_close(w);
-            break;
-        }
-
-        case 'open': {
-            window_open(w);
-            break;
-        }
-    }
-}
-
 
 
 export function window_addDraggable(element: HTMLElement): void {

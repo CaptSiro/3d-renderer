@@ -17,6 +17,9 @@ import Vector3 from "../../utils/Vector3.ts";
 
 
 
+/**
+ * Port of GPU code to CPU for easier debugging. The simulation is performed on single enlarged pixel
+ */
 export default class CpuSkyRenderer extends Component {
     private _skyRenderer: Opt<SkyRenderer>;
     private _center: Vec3 = glm.vec3(0, 0, 0);

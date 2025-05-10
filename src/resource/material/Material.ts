@@ -1,4 +1,4 @@
-import { float, int, Vec3 } from "../../types";
+import { float, int, Vec2, Vec3 } from "../../types";
 import MaterialSource from "./MaterialSource.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
 import Texture from "../Texture.ts";
@@ -15,11 +15,12 @@ const MAP_BUMP_MASK = 1 << 4;
 export default class Material {
     public readonly name: string;
 
-    public readonly ambient: Vec3;
-    public readonly diffuse: Vec3;
-    public readonly specular: Vec3;
-    public readonly shininess: float;
-    public readonly metallic: float;
+    public ambient: Vec3;
+    public diffuse: Vec3;
+    public specular: Vec3;
+    public textureOffset: Vec2;
+    public shininess: float;
+    public metallic: float;
     public readonly maps: int;
 
     public map_ambient: Opt<Texture>;
@@ -36,9 +37,10 @@ export default class Material {
         const data = source.getData();
         this.name = data.name;
 
-        this.ambient = glm.vec3(...data.ambient.slice(0, 3))
-        this.diffuse = glm.vec3(...data.diffuse.slice(0, 3))
-        this.specular = glm.vec3(...data.specular.slice(0, 3))
+        this.ambient = glm.vec3(...data.ambient.slice(0, 3));
+        this.diffuse = glm.vec3(...data.diffuse.slice(0, 3));
+        this.specular = glm.vec3(...data.specular.slice(0, 3));
+        this.textureOffset = glm.vec2(0, 0);
         this.shininess = data.shininess;
         this.metallic = data.metallic;
 

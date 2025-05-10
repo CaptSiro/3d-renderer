@@ -32,20 +32,20 @@ export default class SphereCollider extends Component {
         const a = this;
         const b = other;
 
-        const s_a = this.transform.getWorldPosition();
-        const s_b = other.transform.getWorldPosition();
+        const centerA = this.transform.getWorldPosition();
+        const centerB = other.transform.getWorldPosition();
 
-        const v = glm.normalize(s_b ['-'] (s_a));
-        const i_a = s_a ['+'] (v ['*'] (a.radius))
-        const i_b = s_a ['+'] (v ['*'] (1 - b.radius))
-        const i_h = (i_a ['+'] (i_b)) ['*'] (0.5);
+        const v = glm.normalize(centerB ['-'] (centerA));
+        const intersectionA = centerA ['+'] (v ['*'] (a.radius))
+        const intersectionB = centerA ['+'] (v ['*'] (1 - b.radius))
+        const intersectionHalfPoint = (intersectionA ['+'] (intersectionB)) ['*'] (0.5);
 
         this.transform.setPosition(
-            i_h ['+'] (v ['*'] (-a.radius))
+            intersectionHalfPoint ['+'] (v ['*'] (-a.radius))
         );
 
         other.transform.setPosition(
-            i_h ['+'] (v ['*'] (b.radius))
+            intersectionHalfPoint ['+'] (v ['*'] (b.radius))
         );
     }
 }

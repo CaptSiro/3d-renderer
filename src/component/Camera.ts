@@ -41,7 +41,7 @@ export default class Camera extends Component {
     public awake(): void {
         this.updateProjection();
         this.updateView();
-        this.assignKey();
+        this.assignKeyRegister();
 
         this._skyRenderer = this.gameObject.addComponent(SkyRenderer);
         this._skyRenderer.init(this.transform).then();
@@ -65,7 +65,7 @@ export default class Camera extends Component {
         this._projection = glm.perspective(glm.radians(this.fov), aspectRatio, this.near, this.far);
     }
 
-    private assignKey(): void {
+    private assignKeyRegister(): void {
         if (Camera.keyCounter.peek() > 9) {
             return;
         }

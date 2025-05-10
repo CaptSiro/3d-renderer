@@ -64,6 +64,13 @@ export default class Ray {
         return array;
     }
 
+    /**
+     * Test whether this ray intersects the bounding box of the GameObject. If it intersects the distance from ray start
+     * is returned, otherwise the constant Number.POSITIVE_INFINITY is returned
+     * @param gameObject
+     * @param context
+     * @private
+     */
     private testGameObject(gameObject: GameObject, context: RayCastContext): number {
         const boundingBoxRenderer = gameObject.getComponent(BoundingBoxRenderer);
         if (!is(boundingBoxRenderer)) {
@@ -113,6 +120,14 @@ export default class Ray {
         return close;
     }
 
+    /**
+     * Recursively test intersection in GameObject subtree and return the closest hit if the parent or any of
+     * the descendants intersect this ray
+     * @param gameObject
+     * @param context
+     * @param closestDistance
+     * @private
+     */
     private test(gameObject: GameObject, context: RayCastContext, closestDistance: number): RayCastResult {
         let ret: RayCastResult = {
             closest: undefined,

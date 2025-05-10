@@ -83,6 +83,9 @@ export default class Scene {
         this.checkCollision();
     }
 
+    /**
+     * Iterate over each collider and test for collision with any other collider
+     */
     public checkCollision(): void {
         if (this._colliders.length <= 1) {
             return;
@@ -106,6 +109,10 @@ export default class Scene {
         }
     }
 
+    /**
+     * Create and send a buffer of currently present lights in the scene to the GPU
+     * @private
+     */
     private populateLights(): void {
         gl.bindBuffer(gl.UNIFORM_BUFFER, this._lightsBuffer);
         gl.bufferData(gl.UNIFORM_BUFFER, LIGHT_UBO_SIZE, gl.DYNAMIC_DRAW);
@@ -131,6 +138,12 @@ export default class Scene {
         gl.bindBuffer(gl.UNIFORM_BUFFER, null);
     }
 
+    /**
+     * Bind uniform buffer object that contains lights description data to provided shader
+     * @param shader
+     * @param uniform
+     * @param binding
+     */
     public bindLights(shader: Shader, uniform: string, binding: int): void {
         shader.setUniformBlockBinding(uniform, binding);
         gl.bindBuffer(gl.UNIFORM_BUFFER, this._lightsBuffer);

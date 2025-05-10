@@ -11,6 +11,7 @@ struct Material {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+    vec2 textureOffset;
     float shininess;
     int maps;
 };
@@ -72,9 +73,13 @@ out vec4 OutColor;
 
 mat3 TBN;
 
+vec2 get_texture_coords() {
+    return TextureCoords + material.textureOffset;
+}
+
 vec3 get_ambient() {
     if ((material.maps & MAP_AMBIENT_MASK) != 0) {
-        return texture(material_ambient, TextureCoords).rgb;
+        return texture(material_ambient, get_texture_coords()).rgb;
     }
 
     return material.ambient;
@@ -82,7 +87,7 @@ vec3 get_ambient() {
 
 vec3 get_diffuse() {
     if ((material.maps & MAP_DIFFUSE_MASK) != 0) {
-        return texture(material_diffuse, TextureCoords).rgb;
+        return texture(material_diffuse, get_texture_coords()).rgb;
     }
 
     return material.diffuse;
@@ -90,7 +95,7 @@ vec3 get_diffuse() {
 
 vec3 get_specular() {
     if ((material.maps & MAP_SPECULAR_MASK) != 0) {
-        return texture(material_specular, TextureCoords).rgb;
+        return texture(material_specular, get_texture_coords()).rgb;
     }
 
     return material.specular;
@@ -98,7 +103,7 @@ vec3 get_specular() {
 
 float get_shininess() {
     if ((material.maps & MAP_SHININESS_MASK) != 0) {
-        return texture(material_shininess, TextureCoords).r;
+        return texture(material_shininess, get_texture_coords()).r;
     }
 
     return material.shininess;
@@ -109,8 +114,8 @@ mat3 get_TBN() {
 
     vec3 position_dx = dFdx(FragmentPosition);
     vec3 position_dy = dFdy(FragmentPosition);
-    vec2 textureCoord_dx = dFdx(TextureCoords);
-    vec2 textureCoord_dy = dFdy(TextureCoords);
+    vec2 textureCoord_dx = dFdx(get_texture_coords());
+    vec2 textureCoord_dy = dFdy(get_texture_coords());
 
     float r = 1.0 / max((textureCoord_dx.x * textureCoord_dy.y - textureCoord_dy.x * textureCoord_dx.y), 1e-6);
     vec3 T = (position_dx * textureCoord_dy.y - position_dy * textureCoord_dx.y) * r;
@@ -121,7 +126,7 @@ mat3 get_TBN() {
 
 vec3 get_normal() {
     if ((material.maps & MAP_BUMP_MASK) != 0) {
-        vec3 n = texture(material_bump, TextureCoords).rgb * 2.0 - 1.0;
+        vec3 n = texture(material_bump, get_texture_coords()).rgb * 2.0 - 1.0;
         return normalize(get_TBN() * n);
     }
 

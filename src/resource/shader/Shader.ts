@@ -2,7 +2,7 @@ import ShaderSource from "./ShaderSource.ts";
 import { gl } from "../../main.ts";
 import { is } from "../../../lib/jsml/jsml.ts";
 import { Opt } from "../../../lib/types";
-import { int, Mat4, Vec3 } from "../../types";
+import { int, Mat4, Vec2, Vec3 } from "../../types";
 import Material from "../material/Material.ts";
 import ResourceCache from "../ResourceCache.ts";
 import Texture from "../Texture.ts";
@@ -200,6 +200,10 @@ export default class Shader {
         gl.uniform3f(this.getUniformLocation(uniform), vector.x, vector.y, vector.z);
     }
 
+    public setVec2(uniform: string, vector: Vec2) {
+        gl.uniform2f(this.getUniformLocation(uniform), vector.x, vector.y);
+    }
+
     public setMat4(uniform: string, matrix: Mat4, transpose: boolean = false) {
         gl.uniformMatrix4fv(
             this.getUniformLocation(uniform),
@@ -217,6 +221,7 @@ export default class Shader {
         this.setVec3(uniform + ".ambient", material.ambient);
         this.setVec3(uniform + ".diffuse", material.diffuse);
         this.setVec3(uniform + ".specular", material.specular);
+        this.setVec2(uniform + ".textureOffset", material.textureOffset);
         this.setFloat(uniform + ".shininess", material.shininess);
 
         this.setInt(uniform + ".maps", material.maps);
@@ -237,6 +242,7 @@ export default class Shader {
 
         this.setFloat(uniform + ".ao", 1);
         this.setVec3(uniform + ".albedo", material.diffuse);
+        this.setVec2(uniform + ".textureOffset", material.textureOffset);
         this.setFloat(uniform + ".metallic", material.metallic);
         this.setFloat(uniform + ".roughness", material.shininess);
 
