@@ -18,7 +18,6 @@ import SpriteRenderer from "../../src/component/renderer/SpriteRenderer.ts";
 import SphereCollider from "../../src/component/SphereCollider.ts";
 import Light from "../../src/component/lights/Light.ts";
 import Color from "../../src/primitives/Color.ts";
-import TextureSlider from "../scripts/TextureSlider.ts";
 
 
 
@@ -177,6 +176,60 @@ export default async function devScene_loader(): Promise<Scene> {
             Math.sin(2 * time) / 2
         );
     }
+
+
+
+    const nodeLarge = await devScene.loadGameObject("nodeLarge", Path.from("/assets/models/node-large.obj"));
+    nodeLarge.transform
+        .setPosition3(-3, 1, 0);
+
+    const nodeMedium = await devScene.loadGameObject("nodeMedium", Path.from("/assets/models/node-medium.obj"));
+    nodeMedium.transform
+        .setPosition3(-5, 1, 0);
+
+    const nodeSmall = await devScene.loadGameObject("nodeSmall", Path.from("/assets/models/node-small.obj"));
+    nodeSmall.transform
+        .setPosition3(-7, 1, 0);
+
+    const tree = await devScene.loadGameObject("tree", Path.from("/assets/models/tree.obj"));
+    tree.transform
+        .setPosition3(-9, 1, 0);
+
+    const pickaxe = await devScene.loadGameObject("pickaxe", Path.from("/assets/models/pickaxe.obj"));
+    pickaxe.transform
+        .setPosition3(-11, 1, 0);
+
+    const powerPlant = await devScene.loadGameObject("powerPlant", Path.from("/assets/models/powerplant.obj"));
+    powerPlant.transform
+        .setPosition3(0, 0, -20)
+        .setScale3(100, 100, 100);
+
+    const directionalLight1 = await devScene.loadGameObject("light_002", Path.from("/assets/models/camera.obj"));
+    directionalLight1.transform
+        .setPosition3(1.8164747953414917, 6.876829624176025, -11.663747787475586)
+        .setRotation(Quaternion.fromEulerDegrees(-120.45005798339844, -26.00025177001953, -179.99984741210938))
+    const l2 = directionalLight1.addComponent(SpotLight);
+    l2.color = Color.fromHex("#ff0000");
+    l2.intensity = 10000;
+    directionalLight.addComponent(SphereCollider).radius = 0.25;
+
+    const directionalLight2 = await devScene.loadGameObject("light_003", Path.from("/assets/models/camera.obj"));
+    directionalLight2.transform
+        .setPosition3(-1.6248395442962646, 4.1641364097595215, -13.236002922058105)
+        .setRotation(Quaternion.fromEulerDegrees(-114.60015106201172, 18.700197219848633, 179.99984741210938))
+    const l3 = directionalLight2.addComponent(SpotLight);
+    l3.color = Color.fromHex("#00ff00");
+    l3.intensity = 500;
+    directionalLight.addComponent(SphereCollider).radius = 0.25;
+
+    const directionalLight3 = await devScene.loadGameObject("light_004", Path.from("/assets/models/camera.obj"));
+    directionalLight3.transform
+        .setPosition3(0.7631348967552185, 1.825176477432251, -12.153656005859375)
+        .setRotation(Quaternion.fromEulerDegrees(-157.05001831054688, -16.749849319458008, -179.99984741210938))
+    const l4 = directionalLight3.addComponent(SpotLight);
+    l4.color = Color.fromHex("#0000ff");
+    l4.intensity = 750;
+    directionalLight.addComponent(SphereCollider).radius = 0.25;
 
     return devScene;
 }

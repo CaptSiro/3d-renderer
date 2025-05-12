@@ -155,8 +155,8 @@ export default class Transform {
         // https://stackoverflow.com/a/66054048
         const norm = glm.normalize(axis);
 
-        const w = glm.cos(angleRadians / 2);
-        const v = glm.sin(angleRadians / 2);
+        const w = Math.cos(angleRadians / 2);
+        const v = Math.sin(angleRadians / 2);
 
         this.setRotation(glm.quat(w, norm ["*"] (v)));
     }
