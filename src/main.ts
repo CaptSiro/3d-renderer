@@ -1,12 +1,14 @@
-import { $, is } from "../lib/jsml/jsml.ts";
+import jsml, { $, _, Content, is } from "../lib/jsml/jsml.ts";
 import { Vec3 } from "./types";
 import Scene from "./object/Scene.ts";
-import { window_open } from "../lib/window.ts";
+import { ModalWindow, window_create, window_open } from "../lib/window.ts";
 import Keyboard from "./input/Keyboard.ts";
 import State from "./object/State.ts";
 import MathLib from "./utils/MathLib.ts";
 import devScene_loader from "../assets/scenes/dev-scene.ts";
 import Movement from "./component/Movement.ts";
+import Editor from "./editor/Editor.ts";
+import HelpWindow, { HelpWindow_wasOpen } from "./HelpWindow.ts";
 
 declare global {
     const glm: {
@@ -59,6 +61,13 @@ export let mainScene: Scene = new Scene('default_scene');
 async function init() {
     Keyboard.init();
     Keyboard.register({
+        key: "H",
+        modifiers: ["ctrl"],
+        onPress: () => window_open(HelpWindow()),
+        preventDefault: true,
+        stopPropagation: true
+    });
+    Keyboard.register({
         key: "F3",
         onPress: () => State.isStatisticScreenOpened = !State.isStatisticScreenOpened,
         preventDefault: true,
@@ -91,6 +100,10 @@ async function init() {
 
     mainScene.delete();
     mainScene = await devScene_loader();
+
+    if (HelpWindow_wasOpen()) {
+        window_open(HelpWindow());
+    }
 }
 
 
