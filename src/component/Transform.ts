@@ -128,8 +128,12 @@ export default class Transform {
         return this.rotation ["*"] (Vector3.UP);
     }
 
+    public lookAtGameObject(target: GameObject, normalizedUp: Vec3 = Vector3.UP): void {
+        this.lookAt(target.transform.getWorldPosition(), normalizedUp);
+    }
+
     public lookAtTransform(target: Transform, normalizedUp: Vec3 = Vector3.UP): void {
-        this.lookAt(target.position, normalizedUp);
+        this.lookAt(target.getWorldPosition(), normalizedUp);
     }
 
     public lookAt(target: Vec3, normalizedUp: Vec3 = Vector3.UP): void {

@@ -48,6 +48,8 @@ export default class Component {
 
     public awake(): void {}
 
+    public start(): void {}
+
     public update(): void {}
 
     public fixedUpdate(): void {}

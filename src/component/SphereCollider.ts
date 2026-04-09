@@ -1,7 +1,6 @@
 import Component from "./Component.ts";
 import { editor } from "../editor/Editor.ts";
 import NumberEditor from "../editor/NumberEditor.ts";
-import Vector3 from "../utils/Vector3.ts";
 
 
 

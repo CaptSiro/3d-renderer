@@ -108,6 +108,10 @@ async function init() {
 
 
 
+async function start() {
+    mainScene.start();
+}
+
 async function update() {
     mainScene.update();
 }
@@ -253,6 +257,7 @@ function frameCallback(): void {
         });
 }
 
-init().then(() => {
+init().then(async () => {
+    await start();
     frameCallback();
 });

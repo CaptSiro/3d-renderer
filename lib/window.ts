@@ -5,6 +5,7 @@ import jsml, { $, _, Icon, is } from "./jsml/jsml.ts";
 
 export type ModalWindow = HTMLDivElement;
 
+export const EVENT_WINDOW_FOCUSED = 'windowFocused';
 export const EVENT_WINDOW_OPENED = 'windowOpened';
 export const EVENT_WINDOW_CLOSED = 'windowClosed';
 export const EVENT_WINDOW_MINIMIZED = 'windowMinimized';

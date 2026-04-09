@@ -7,7 +7,7 @@ import Renderer, { isRenderer } from "../component/renderer/Renderer.ts";
 import { mainScene } from "../main.ts";
 import { int, Predicate } from "../types.ts";
 import Counter from "../primitives/Counter.ts";
-import { ModalWindow, window_create } from "../../lib/window.ts";
+import { EVENT_WINDOW_FOCUSED, ModalWindow, window_create } from "../../lib/window.ts";
 import TransformEditor from "../editor/TransformEditor.ts";
 import Editor, { getEditor } from "../editor/Editor.ts";
 import RenderingContext from "../primitives/RenderingContext.ts";
@@ -18,6 +18,7 @@ export default class GameObject {
     private static readonly counter: Counter = new Counter();
 
     private readonly _id: int;
+    private readonly _safeName: string;
     private isActive: boolean;
     private readonly components: Map<string, Component>;
     private readonly _transform: Transform;
@@ -31,6 +32,7 @@ export default class GameObject {
         transform: Opt<Transform> = undefined,
         scene: Opt<Scene> = undefined
     ) {
+        this._safeName = this._name.replace(/[.#\[\]=]/, '');
         this._id = GameObject.counter.increment();
         this.isActive = true;
         this.components = new Map<string, Component>();
@@ -46,6 +48,18 @@ export default class GameObject {
     }
 
 
+
+    public start(): void {
+        if (!this.isActive) {
+            return;
+        }
+
+        for (const component of this.components.values()) {
+            if (component.isEnabled()) {
+                component.start();
+            }
+        }
+    }
 
     public update(): void {
         if (!this.isActive) {
@@ -121,7 +135,7 @@ export default class GameObject {
 
 
     public getId(): string {
-        return this._name + '-' + this._id;
+        return this._safeName + '-' + this._id;
     }
 
     public setActive(isActive: boolean): void {
@@ -196,6 +210,12 @@ export default class GameObject {
             }
         );
 
+        const setLocationHash = () => {
+            location.hash = id;
+        };
+
+        w.addEventListener(EVENT_WINDOW_FOCUSED, setLocationHash);
+
         content.append(
             new TransformEditor(w, this, "transform", this.transform)
                 .html()
@@ -221,6 +241,7 @@ export default class GameObject {
             );
         }
 
+        setLocationHash();
         return Editor.initWindow(w, id);
     }
 }

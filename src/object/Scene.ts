@@ -18,6 +18,7 @@ import { FLOAT_SIZE, LIGHT_UBO_LENGTH_OFFSET, LIGHT_UBO_SIZE, MAX_LIGHTS } from 
 import { gl } from "../main.ts";
 import Shader from "../resource/shader/Shader.ts";
 import SphereCollider from "../component/SphereCollider.ts";
+import Component from "../component/Component.ts";
 
 
 
@@ -50,6 +51,18 @@ export default class Scene {
     }
 
 
+
+    public start(): void {
+        this._activeCamera?.gameObject.start();
+
+        for (const gameObject of this._gameObjects.values()) {
+            if (gameObject === this._activeCamera?.gameObject) {
+                continue;
+            }
+
+            gameObject.start();
+        }
+    }
 
     public update(): void {
         while (this._physicsTimestamp < Date.now()) {
@@ -243,8 +256,42 @@ export default class Scene {
         return true;
     }
 
-    public getGameObjects(): MapIterator<GameObject> {
+    public getGameObjects(): ArrayIterator<GameObject> {
         return this._gameObjects.values();
+    }
+
+    protected findGameObjectRecursive(gameObject: GameObject, predicate: Predicate<GameObject>): Opt<GameObject> {
+        if (predicate(gameObject)) {
+            return gameObject;
+        }
+
+        for (const child of gameObject.transform.getChildren()) {
+            if (!is(child.gameObject)) {
+                continue;
+            }
+
+            const result = this.findGameObjectRecursive(child.gameObject, predicate);
+            if (!is(result)) {
+                continue;
+            }
+
+            return result;
+        }
+
+        return null;
+    }
+
+    public findGameObject(predicate: Predicate<GameObject>): Opt<GameObject> {
+        for (const gameObject of this._gameObjects.values()) {
+            const result = this.findGameObjectRecursive(gameObject, predicate);
+            if (!is(result)) {
+                continue;
+            }
+
+            return result;
+        }
+
+        return null;
     }
 
     public getActiveCamera(): Opt<Camera> {

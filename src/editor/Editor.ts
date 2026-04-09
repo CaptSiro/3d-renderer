@@ -2,7 +2,7 @@ import jsml, { $, _, assert, Content, is } from "../../lib/jsml/jsml.ts";
 import "reflect-metadata"
 import { Opt } from "../../lib/types.ts";
 import {
-    EVENT_WINDOW_CLOSED,
+    EVENT_WINDOW_CLOSED, EVENT_WINDOW_FOCUSED,
     EVENT_WINDOW_MAXIMIZED,
     EVENT_WINDOW_MINIMIZED,
     EVENT_WINDOW_OPENED, ModalWindow,
@@ -69,6 +69,7 @@ export default abstract class Editor<T> {
             }
 
             w.style.zIndex = String(windows.length + 1);
+            w.dispatchEvent(new CustomEvent(EVENT_WINDOW_FOCUSED));
         });
 
         return w;

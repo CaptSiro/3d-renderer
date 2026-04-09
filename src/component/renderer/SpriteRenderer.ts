@@ -8,7 +8,6 @@ import Path from "../../resource/Path.ts";
 import Material from "../../resource/material/Material.ts";
 import MaterialSource from "../../resource/material/MaterialSource.ts";
 import { float, int } from "../../types.ts";
-import GameObject from "../../object/GameObject.ts";
 
 
 

@@ -18,6 +18,8 @@ import SpriteRenderer from "../../src/component/renderer/SpriteRenderer.ts";
 import SphereCollider from "../../src/component/SphereCollider.ts";
 import Light from "../../src/component/lights/Light.ts";
 import Color from "../../src/primitives/Color.ts";
+import AtmosphereView from "../scripts/AtmosphereView.ts";
+import FocusLocationHash from "../scripts/FocusLocationHash.ts";
 
 
 
@@ -30,6 +32,7 @@ export default async function devScene_loader(): Promise<Scene> {
 
     devScene.setActiveCamera(cam0.addComponent(Camera));
     cam0.addComponent(Movement);
+    cam0.addComponent(FocusLocationHash);
     cam0.addComponent(SphereCollider).radius = 0.25;
 
     const suzanne = await devScene.loadGameObject("suzanne", Path.from("/assets/models/Suzanne.obj"));
@@ -128,9 +131,7 @@ export default async function devScene_loader(): Promise<Scene> {
 
     lookAt.setTarget(cube2);
 
-    pause?.click();
-    devScene.getTime().setDayTime(0.25);
-    devScene.getTime().scale = 0;
+
 
     const terrain_001 = devScene.createGameObject('terrain_001');
     terrain_001.transform
@@ -147,10 +148,10 @@ export default async function devScene_loader(): Promise<Scene> {
         .setPosition3(3, 0.5, 5)
         .setScale3(0.1, 0.1, 0.1);
     const terrain1 = terrain_002.addComponent(Terrain);
-    terrain1.height = 4;
+    terrain1.height = 8;
     terrain1.size = glm.vec2(20, 20);
-    terrain1.scale = 0.3;
-    terrain1.offset = 50;
+    terrain1.scale = 0.4;
+    terrain1.offset = 1234;
     terrain1.generate();
 
 
@@ -230,6 +231,21 @@ export default async function devScene_loader(): Promise<Scene> {
     l4.color = Color.fromHex("#0000ff");
     l4.intensity = 750;
     directionalLight.addComponent(SphereCollider).radius = 0.25;
+
+
+
+    const cam4 = devScene.createGameObject("cam4");
+    cam4.transform
+        .setPosition3(0, 22, 0);
+    cam4.addComponent(Camera);
+    cam4.addComponent(Movement);
+    cam4.addComponent(AtmosphereView);
+
+
+
+    pause?.click();
+    devScene.getTime().setDayTime(0.30);
+    devScene.getTime().scale = 0;
 
     return devScene;
 }

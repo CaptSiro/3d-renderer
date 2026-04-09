@@ -148,7 +148,7 @@ vec3 get_light_direction(int i) {
 vec3 attenuate_light(int i) {
     float distance = length(lights[i].position - FragmentPosition);
     float attenuation = exp(-distance);
-    return lights[i].color * lights[i].intensity * attenuation;
+    return lights[i].color * attenuation;
 }
 
 vec3 get_light_radiance(int i) {
@@ -172,7 +172,7 @@ vec3 get_light_radiance(int i) {
         }
 
         default: {
-            radiance = lights[i].color;
+            radiance = lights[i].color / lights[i].intensity;
             break;
         }
     }
