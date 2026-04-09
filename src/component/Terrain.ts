@@ -67,18 +67,20 @@ export default class Terrain extends Component {
             return;
         }
 
-        const vertexCount = this.size.x * this.size.y;
-        const triangleCount = (this.size.x - 1) * (this.size.y - 1) * 2;
+        const sizeX = Math.round(this.size.x);
+        const sizeY = Math.round(this.size.y);
+        const vertexCount = sizeX * sizeY;
+        const triangleCount = (sizeX - 1) * (sizeY - 1) * 2;
         const vertexes = new Array(vertexCount);
         const boundingBox = BoundingBox.initial();
-        const texture = new BufferedImage(this.size.x, this.size.y);
+        const texture = new BufferedImage(sizeX, sizeY);
 
         let i = 0;
-        for (let y = 0; y < this.size.y; y++) {
-            for (let x = 0; x < this.size.x; x++) {
+        for (let y = 0; y < sizeY; y++) {
+            for (let x = 0; x < sizeX; x++) {
                 const vertexY = Perlin.noise(
-                    (x + this.offset) / (this.size.x * this.scale),
-                    (y + this.offset) / (this.size.y * this.scale)
+                    (x + this.offset) / (sizeX * this.scale),
+                    (y + this.offset) / (sizeY * this.scale)
                 ) * this.height;
 
                 const v = vertexes[i++] = glm.vec3(x, vertexY, y);
@@ -94,20 +96,20 @@ export default class Terrain extends Component {
         const NORMAL = meshVertexLayout.getNormalFloats();
 
         let j = 0;
-        for (let y0 = 0; y0 < this.size.y - 1; y0++) {
+        for (let y0 = 0; y0 < sizeY - 1; y0++) {
             const y1 = y0 + 1;
-            const v0 = y0 / this.size.y;
-            const v1 = y1 / this.size.y;
+            const v0 = y0 / sizeY;
+            const v1 = y1 / sizeY;
 
-            for (let x0 = 0; x0 < this.size.x - 1; x0++) {
+            for (let x0 = 0; x0 < sizeX - 1; x0++) {
                 const x1 = x0 + 1;
-                const u0 = 1 - (x0 / this.size.x);
-                const u1 = 1 - (x1 / this.size.x);
+                const u0 = 1 - (x0 / sizeX);
+                const u1 = 1 - (x1 / sizeX);
 
-                const v00 = vertexes[y0 * this.size.x + x0];
-                const v10 = vertexes[y0 * this.size.x + x1];
-                const v01 = vertexes[y1 * this.size.x + x0];
-                const v11 = vertexes[y1 * this.size.x + x1];
+                const v00 = vertexes[y0 * sizeX + x0];
+                const v10 = vertexes[y0 * sizeX + x1];
+                const v01 = vertexes[y1 * sizeX + x0];
+                const v11 = vertexes[y1 * sizeX + x1];
 
                 const t00 = glm.vec2(u0, v0);
                 const t10 = glm.vec2(u1, v0);
@@ -167,8 +169,6 @@ export default class Terrain extends Component {
                     )
                 ]).then();
             });
-
-        // window_open(this.getTextureEditorWindow(url));
     }
 
     private getTextureEditorWindow(texture: string): ModalWindow {
@@ -195,7 +195,7 @@ export default class Terrain extends Component {
     }
 
     @editor(Button)
-    public _Generate: Button_.ButtonHandler = this.generate;
+    public _Generate: Button_.ButtonHandler = this.generate.bind(this);
 
     public onPropertyChange(property: string, oldValue: any, newValue: any) {
         if (this.generateOnPropertyWrite) {

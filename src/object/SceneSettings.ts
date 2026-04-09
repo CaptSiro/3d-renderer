@@ -3,10 +3,16 @@ import BooleanEditor from "../editor/BooleanEditor.ts";
 import ShaderSource from "../resource/shader/ShaderSource.ts";
 import { is } from "../../lib/jsml/jsml.ts";
 import Select from "../editor/Select.ts";
+import NumberEditor from "../editor/NumberEditor.ts";
+import { setAudioVolume } from "../../lib/audio.ts";
+import MathLib from "../utils/MathLib.ts";
 
 
 
 export default class SceneSettings {
+    @editorFactory(NumberEditor.custom({ step: 0.01, min: 0, max: 1 }))
+    public audioVolume: number = 1;
+
     @editor(BooleanEditor)
     public doCameraSwitching: boolean = true;
 
@@ -37,12 +43,19 @@ export default class SceneSettings {
     }
 
     public onPropertyChange(property: string, oldValue: any, newValue: any): void {
-        if (property !== "defaultShader") {
-            return;
-        }
+        switch (property) {
+            case "audioVolume": {
+                setAudioVolume(MathLib.clamp(this.audioVolume, 0, 1));
+                break;
+            }
 
-        for (const shaderListener of this._shaderListeners) {
-            shaderListener();
+            case "defaultShader": {
+                for (const shaderListener of this._shaderListeners) {
+                    shaderListener();
+                }
+
+                break;
+            }
         }
     }
 }

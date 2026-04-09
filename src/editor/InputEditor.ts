@@ -2,11 +2,12 @@ import Editor from "./Editor.ts";
 import jsml, { is } from "../../lib/jsml/jsml.ts";
 import { guid } from "../../lib/guid.ts";
 import { Opt } from "../../lib/types.ts";
+import Pointer from "../utils/Pointer.ts";
 
 
 
 export default abstract class InputEditor<T> extends Editor<T> {
-    public static enableNumberScrolling(label: HTMLElement, input: HTMLInputElement, strength: number = 0.1): void {
+    public static enableNumberScrolling(label: HTMLElement, input: HTMLInputElement, strength?: Pointer<number>): void {
         let isScrolling = false;
 
         label.addEventListener("pointerdown", async event => {
@@ -24,7 +25,7 @@ export default abstract class InputEditor<T> extends Editor<T> {
                 return;
             }
 
-            input.value = String(Number(input.value) + event.movementX * strength);
+            input.value = String(Number(input.value) + event.movementX * (strength?.deref ?? 1));
             input.dispatchEvent(new Event("input"));
         });
     }
@@ -35,10 +36,15 @@ export default abstract class InputEditor<T> extends Editor<T> {
         return "text";
     }
 
+    private strength: Pointer<number> = new Pointer(0.1);
     protected input: Opt<HTMLInputElement>;
     protected inputFocused: boolean = false;
 
     protected abstract parseValue(value: string): T;
+
+    setStrength(strength: number): void {
+        this.strength.deref = strength;
+    }
 
     public update(): void {
         if (!is(this.input) || this.inputFocused) {
@@ -69,7 +75,7 @@ export default abstract class InputEditor<T> extends Editor<T> {
 
         const label = jsml.label({ for: id }, this.getLabel());
         if (input.type === "number") {
-            InputEditor.enableNumberScrolling(label, input);
+            InputEditor.enableNumberScrolling(label, input, this.strength);
         }
 
         const container = this.container([

@@ -7,6 +7,8 @@ import {
     EVENT_WINDOW_MINIMIZED,
     EVENT_WINDOW_OPENED, ModalWindow,
 } from "../../lib/window.ts";
+import { playAudio } from "../../lib/audio.ts";
+import throttle from "../../lib/throttle.ts";
 
 
 
@@ -39,6 +41,10 @@ export function getEditor(editorWindow: HTMLElement, target: any, property: stri
 
 
 const EDITOR_UPDATE_INTERVAL = 500;
+const [soundEffect] = throttle(
+    () => playAudio("/assets/audio/button-click.mp3").then(),
+    200
+);
 
 export default abstract class Editor<T> {
     public static initWindow(w: ModalWindow, id: string): ModalWindow {
@@ -117,7 +123,12 @@ export default abstract class Editor<T> {
         return (this.target as any)[this.name];
     }
 
+    protected playUiSoundEffect(): void {
+        soundEffect();
+    }
+
     protected saveValue(value: T): void {
+        this.playUiSoundEffect();
         const target = this.target as any;
 
         const old = target[this.name];

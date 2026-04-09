@@ -15,18 +15,10 @@ export default class FocusLocationHash extends Component {
         }
 
         const gameObject = this.scene.findGameObject(x => x.getId() === hash);
-        // const gameObject = this.scene.findGameObject(x => {
-        //     if (x.getId() === hash) {
-        //         console.log('MATCH');
-        //     }
-        //
-        //     return x.getId() === hash;
-        // });
-        console.log(gameObject?.transform);
         if (!is(gameObject)) {
             return;
         }
 
-        this.transform.lookAtTransform(gameObject.transform);
+        this.transform.lookAtGameObject(gameObject);
     }
 }

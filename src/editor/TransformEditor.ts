@@ -28,6 +28,7 @@ class TransformVec3Editor extends Vec3Editor {
     }
 
     protected saveValue(value: Vec3) {
+        this.playUiSoundEffect();
         this.setter(value);
     }
 }
@@ -45,17 +46,17 @@ export default class TransformEditor extends Editor<Transform> {
     public html(): HTMLElement {
         const position = new TransformVec3Editor(this.editorWindow, this.value, "position", this.value.getPosition());
         position.setGetter(() => this.value.getPosition());
-        position.setSetter((x) => this.value.setPosition(x));
+        position.setSetter(x => this.value.setPosition(x));
         this.position = position;
 
         const rotation = new TransformVec3Editor(this.editorWindow, this.value, "rotation", Quaternion.toEulerDegrees(this.value.getRotation()));
         rotation.setGetter(() => Quaternion.toEulerDegrees(this.value.getRotation()));
-        rotation.setSetter((v) => this.value.setRotation(Quaternion.fromEulerDegrees(v.x, v.y, v.z)));
+        rotation.setSetter(x => this.value.setRotation(Quaternion.fromEulerDegrees(x.x, x.y, x.z)));
         this.rotation = rotation;
 
         const scale = new TransformVec3Editor(this.editorWindow, this.value, "scale", this.value.getScale());
         scale.setGetter(() => this.value.getScale());
-        scale.setSetter((x) => this.value.setScale(x));
+        scale.setSetter(x => this.value.setScale(x));
         this.scale = scale;
 
         return jsml.div("editor-column", [

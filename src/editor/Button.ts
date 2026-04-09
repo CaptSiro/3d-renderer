@@ -1,5 +1,6 @@
 import Editor from "./Editor.ts";
 import jsml, { _ } from "../../lib/jsml/jsml.ts";
+import { playAudio } from "../../lib/audio.ts";
 
 
 
@@ -17,7 +18,10 @@ export default class Button extends Editor<ButtonHandler> {
         super(editorWindow, target, name, value);
         this.button = jsml.button({
             class: "editor-button",
-            onClick: value.bind(target),
+            onClick: (event: MouseEvent) => {
+                this.playUiSoundEffect();
+                value(event);
+            },
         }, this.getLabel());
     }
 
