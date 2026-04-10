@@ -6,12 +6,16 @@ import Select from "../editor/Select.ts";
 import NumberEditor from "../editor/NumberEditor.ts";
 import { setAudioVolume } from "../../lib/audio.ts";
 import MathLib from "../utils/MathLib.ts";
+import { audio } from "../../assets/audio/audio-sources.ts";
 
 
 
 export default class SceneSettings {
     @editorFactory(NumberEditor.custom({ step: 0.01, min: 0, max: 1 }))
-    public audioVolume: number = 1;
+    public backgroundVolume: number = 0.5;
+
+    @editorFactory(NumberEditor.custom({ step: 0.01, min: 0, max: 1 }))
+    public soundEffectVolume: number = 1;
 
     @editor(BooleanEditor)
     public doCameraSwitching: boolean = true;
@@ -24,6 +28,12 @@ export default class SceneSettings {
 
     @editorFactory(Select.enum(['phong', 'pbr']))
     public defaultShader: string = 'pbr';
+
+
+
+    constructor() {
+        this.onPropertyChange("backgroundVolume", 1, 0.5);
+    }
 
 
 
@@ -44,8 +54,21 @@ export default class SceneSettings {
 
     public onPropertyChange(property: string, oldValue: any, newValue: any): void {
         switch (property) {
-            case "audioVolume": {
-                setAudioVolume(MathLib.clamp(this.audioVolume, 0, 1));
+            case "backgroundVolume": {
+                setAudioVolume(
+                    MathLib.clamp(this.backgroundVolume, 0, 1),
+                    audio.channels.background
+                );
+
+                break;
+            }
+
+            case "soundEffectVolume": {
+                setAudioVolume(
+                    MathLib.clamp(this.soundEffectVolume, 0, 1),
+                    audio.channels.soundEffects
+                );
+
                 break;
             }
 

@@ -1,13 +1,12 @@
-import jsml, { $, _, Content, is } from "../lib/jsml/jsml.ts";
+import { $, is } from "../lib/jsml/jsml.ts";
 import { Vec3 } from "./types";
 import Scene from "./object/Scene.ts";
-import { ModalWindow, window_create, window_open } from "../lib/window.ts";
+import { window_alert, window_open } from "../lib/window.ts";
 import Keyboard from "./input/Keyboard.ts";
 import State from "./object/State.ts";
 import MathLib from "./utils/MathLib.ts";
 import devScene_loader from "../assets/scenes/dev-scene.ts";
 import Movement from "./component/Movement.ts";
-import Editor from "./editor/Editor.ts";
 import HelpWindow, { HelpWindow_wasOpen } from "./HelpWindow.ts";
 
 declare global {
@@ -20,6 +19,24 @@ declare global {
         radians(x: number): number,
     } | any;
 }
+
+
+
+window.addEventListener('load', async () => {
+    const setInternetStatus = async (isOnline: boolean) => {
+        document.body.classList.toggle('online', isOnline);
+        document.body.classList.toggle('offline', !isOnline);
+
+        if (!isOnline) {
+            await window_alert("You are currently offline. Some content may not load.");
+        }
+    }
+
+    window.addEventListener('online', () => setInternetStatus(true));
+    window.addEventListener('offline', () => setInternetStatus(false));
+
+    await setInternetStatus(window.navigator.onLine);
+});
 
 
 

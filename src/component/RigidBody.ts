@@ -38,7 +38,7 @@ export default class RigidBody extends Component {
     }
 
     @editor(Button)
-    private Add_Velocity = this.applyVelocity;
+    private Add_Velocity = this.applyVelocity.bind(this);
 
 
 

@@ -7,8 +7,9 @@ import {
     EVENT_WINDOW_MINIMIZED,
     EVENT_WINDOW_OPENED, ModalWindow,
 } from "../../lib/window.ts";
-import { playAudio } from "../../lib/audio.ts";
+import { AudioPlayer, playAudio } from "../../lib/audio.ts";
 import throttle from "../../lib/throttle.ts";
+import { audio } from "../../assets/audio/audio-sources.ts";
 
 
 
@@ -42,7 +43,10 @@ export function getEditor(editorWindow: HTMLElement, target: any, property: stri
 
 const EDITOR_UPDATE_INTERVAL = 500;
 const [soundEffect] = throttle(
-    () => playAudio("/assets/audio/button-click.mp3").then(),
+    () => {
+        const player = AudioPlayer(audio.buttonClick, audio.channels.soundEffects);
+        playAudio(player).then();
+    },
     200
 );
 

@@ -20,6 +20,7 @@ import Light from "../../src/component/lights/Light.ts";
 import Color from "../../src/primitives/Color.ts";
 import AtmosphereView from "../scripts/AtmosphereView.ts";
 import FocusLocationHash from "../scripts/FocusLocationHash.ts";
+import BackgroundAudioPlayer from "../scripts/BackgroundAudioPlayer.ts";
 
 
 
@@ -33,6 +34,7 @@ export default async function devScene_loader(): Promise<Scene> {
     devScene.setActiveCamera(cam0.addComponent(Camera));
     cam0.addComponent(Movement);
     cam0.addComponent(FocusLocationHash);
+    cam0.addComponent(BackgroundAudioPlayer);
     cam0.addComponent(SphereCollider).radius = 0.25;
 
     const suzanne = await devScene.loadGameObject("suzanne", Path.from("/assets/models/Suzanne.obj"));

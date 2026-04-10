@@ -19,7 +19,7 @@ export default class GameObject {
 
     private readonly _id: int;
     private readonly _safeName: string;
-    private isActive: boolean;
+    private _isActive: boolean;
     private readonly components: Map<string, Component>;
     private readonly _transform: Transform;
     private renderer: Opt<Renderer & Component>;
@@ -34,7 +34,7 @@ export default class GameObject {
     ) {
         this._safeName = this._name.replace(/[.#\[\]=]/, '');
         this._id = GameObject.counter.increment();
-        this.isActive = true;
+        this._isActive = true;
         this.components = new Map<string, Component>();
 
         this._transform = is(transform)
@@ -50,7 +50,7 @@ export default class GameObject {
 
 
     public start(): void {
-        if (!this.isActive) {
+        if (!this._isActive) {
             return;
         }
 
@@ -62,7 +62,7 @@ export default class GameObject {
     }
 
     public update(): void {
-        if (!this.isActive) {
+        if (!this._isActive) {
             return;
         }
 
@@ -74,7 +74,7 @@ export default class GameObject {
     }
 
     public fixedUpdate(): void {
-        if (!this.isActive) {
+        if (!this._isActive) {
             return;
         }
 
@@ -86,7 +86,7 @@ export default class GameObject {
     }
 
     public render(context: RenderingContext): void {
-        if (!this.isActive || this === context.camera.gameObject) {
+        if (!this._isActive || this === context.camera.gameObject) {
             return;
         }
 
@@ -138,8 +138,12 @@ export default class GameObject {
         return this._safeName + '-' + this._id;
     }
 
+    public isActive(): boolean {
+        return this._isActive;
+    }
+
     public setActive(isActive: boolean): void {
-        this.isActive = isActive;
+        this._isActive = isActive;
     }
 
     public get transform(): Transform {

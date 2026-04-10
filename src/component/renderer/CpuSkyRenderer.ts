@@ -109,7 +109,7 @@ export default class CpuSkyRenderer extends Component {
     }
 
     @editor(Button)
-    public render = this.renderPixel;
+    public render = this.renderPixel.bind(this);
 
 
 

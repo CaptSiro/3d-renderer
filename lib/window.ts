@@ -255,13 +255,13 @@ export type WindowSettings = {
 
 export function window_create(title: string, content: any, settings: WindowSettings = {}): HTMLDivElement {
     const controls = [
-        jsml.button("close", Icon("nf-fa-close"))
+        jsml.button("close", Icon("nf-fa-close", 'X'))
     ];
 
     if (settings.isMinimizable === true) {
         controls.unshift(
-            jsml.button("minimize", Icon("nf-fa-window_minimize")),
-            jsml.button("maximize", Icon("nf-fa-window_maximize")),
+            jsml.button("minimize", Icon("nf-fa-window_minimize", '_')),
+            jsml.button("maximize", Icon("nf-fa-window_maximize", '[]')),
         );
     }
 

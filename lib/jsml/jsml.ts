@@ -71,7 +71,42 @@ export function assert<T>(variable: Opt<T>): T {
     return variable;
 }
 
-export function Icon(nf: string): HTMLElement {
-    return jsml.i('nf ' + nf);
+function Optional(condition: boolean, content: Content): Opt<Content> {
+    return condition
+        ? content
+        : undefined;
 }
 
+export function Icon(nf: string, alt: Opt<string> = null): HTMLElement {
+    return jsml.i(
+        'nf ' + nf,
+        Optional(is(alt), jsml.span(_, alt))
+    );
+}
+
+class IconElement extends HTMLElement {
+    static observedAttributes = ['src', 'placeholder'];
+
+    connectedCallback() {
+        this.render();
+    }
+
+    attributeChangedCallback() {
+        this.render();
+    }
+
+    render() {
+        this.innerHTML = '';
+
+        const src = this.getAttribute('src');
+        const placeholder = this.getAttribute('placeholder');
+
+        if (!is(src)) {
+            return;
+        }
+
+        this.appendChild(Icon(src, placeholder));
+    }
+}
+
+customElements.define('x-icon', IconElement);

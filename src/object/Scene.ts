@@ -18,7 +18,6 @@ import { FLOAT_SIZE, LIGHT_UBO_LENGTH_OFFSET, LIGHT_UBO_SIZE, MAX_LIGHTS } from 
 import { gl } from "../main.ts";
 import Shader from "../resource/shader/Shader.ts";
 import SphereCollider from "../component/SphereCollider.ts";
-import Component from "../component/Component.ts";
 
 
 
