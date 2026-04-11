@@ -46,6 +46,7 @@ export default class MeshRenderer extends Component implements Renderer {
         this._shader.setMat4("Model", model);
         this._shader.setMat4("MVP", camera.vp ['*'] (model));
 
+        // Draw meshes
         for (const mesh of this._meshes) {
             mesh.bind();
             if (usePbr) {

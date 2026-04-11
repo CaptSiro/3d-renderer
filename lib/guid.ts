@@ -3,6 +3,10 @@ const guids = new Set();
 
 
 
+/**
+ * @param from inclusive
+ * @param to exclusive
+ */
 function random(from: number, to: number): number {
     return Math.random() * (Math.max(from, to) - Math.min(from, to)) + from;
 }

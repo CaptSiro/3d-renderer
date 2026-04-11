@@ -12,6 +12,10 @@ export default class AsyncResourceCache<A, T> {
         this.cache = new Map();
     }
 
+    /**
+     * If the argument exists in the cache return built result if not build it, store it, and return it
+     * @param arg
+     */
     public async get(arg: A): Promise<T> {
         const key = this.toKey(arg);
         const hit = this.cache.get(key);

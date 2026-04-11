@@ -50,19 +50,30 @@ const jsml = new Proxy({}, {
 
 export default jsml;
 
-
+/**
+ * Shorthand for root.querySelector(query)
+ */
 export function $<T extends HTMLElement = HTMLElement>(query: string, root: HTMLElement|Document = document): T|null {
     return root.querySelector(query);
 }
 
+/**
+ * Shorthand for root.querySelectorAll(query)
+ */
 export function $$(query: string, root: HTMLElement|Document = document): NodeList {
     return root.querySelectorAll(query);
 }
 
+/**
+ * Checks if variable is defined (x !== undefined && x !== null)
+ */
 export function is<T>(variable: T|null|undefined): variable is T {
     return variable !== undefined && variable !== null;
 }
 
+/**
+ * Asserts that variable is defined and throws Error if it is not defined
+ */
 export function assert<T>(variable: Opt<T>): T {
     if (!is(variable)) {
         throw new Error("Is-Assertion failed x does not have defined value");
@@ -71,6 +82,9 @@ export function assert<T>(variable: Opt<T>): T {
     return variable;
 }
 
+/**
+ * Optionally returns content if condition is met
+ */
 function Optional(condition: boolean, content: Content): Opt<Content> {
     return condition
         ? content

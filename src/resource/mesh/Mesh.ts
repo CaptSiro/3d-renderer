@@ -19,6 +19,10 @@ export default class Mesh {
 
 
 
+    /**
+     * Sends mesh to the GPU when created
+     * @param source
+     */
     constructor(
         source: MeshSource
     ) {

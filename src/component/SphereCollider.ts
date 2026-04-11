@@ -28,6 +28,7 @@ export default class SphereCollider extends Component {
     }
 
     public onCollision(other: SphereCollider): void {
+        // When intersecting move out of the way
         const a = this;
         const b = other;
 

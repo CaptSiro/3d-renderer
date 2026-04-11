@@ -98,24 +98,32 @@ export default class Terrain extends Component {
         let j = 0;
         for (let y0 = 0; y0 < sizeY - 1; y0++) {
             const y1 = y0 + 1;
+            // Get texture coords for current quad u and v and precompute the edge values start=0 and end=1
+            // v start
             const v0 = y0 / sizeY;
+            // v end
             const v1 = y1 / sizeY;
 
             for (let x0 = 0; x0 < sizeX - 1; x0++) {
                 const x1 = x0 + 1;
+                // u start
                 const u0 = 1 - (x0 / sizeX);
+                // u end
                 const u1 = 1 - (x1 / sizeX);
 
+                // Get corner vertexes of the quad
                 const v00 = vertexes[y0 * sizeX + x0];
                 const v10 = vertexes[y0 * sizeX + x1];
                 const v01 = vertexes[y1 * sizeX + x0];
                 const v11 = vertexes[y1 * sizeX + x1];
 
+                // Texture coords as vec2
                 const t00 = glm.vec2(u0, v0);
                 const t10 = glm.vec2(u1, v0);
                 const t01 = glm.vec2(u0, v1);
                 const t11 = glm.vec2(u1, v1);
 
+                // Write quad data
                 const n0 = this.triangleNormal(v10, v00, v01);
                 Arrays.writeVec3(data, j++ * meshVertexLayout.getTotalFloats(), v10);
                 Arrays.writeVec3(data, j * meshVertexLayout.getTotalFloats() + VERTEX, n0);

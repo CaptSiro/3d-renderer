@@ -14,6 +14,7 @@ export default class BackgroundAudioPlayer extends Component {
     private isPlaying: boolean = false;
 
     start() {
+        // User has to interact with the page for playing media
         viewport.addEventListener("click", () => this.playLoop());
     }
 
@@ -27,6 +28,8 @@ export default class BackgroundAudioPlayer extends Component {
         do {
             for await (const background of audio.background) {
                 const player = AudioPlayer(background, audio.channels.background);
+
+                // Wait out the whole duration of the background audio source
                 if (await playAudio(player)) {
                     await audioEnd(player);
                 }

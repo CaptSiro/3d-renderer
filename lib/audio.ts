@@ -32,6 +32,7 @@ function setSource(player: HTMLAudioElement, channel: string): void {
     const controller = new AbortController();
     signals.set(player, controller);
 
+    // Removing all references to player such that it can be GC-ed
     player.addEventListener("ended", () => set.delete(player), {
         signal: controller.signal,
         once: true
@@ -79,8 +80,8 @@ export async function audioEnd(player: HTMLAudioElement): Promise<void> {
 
 export function setAudioVolume(volume: number, channel: string = AUDIO_DEFAULT_CHANNEL): void {
     channels.set(channel, volume);
-    console.log(channel, volume);
 
+    // Update the volume of currently playing audio sources
     const set = sources.get(channel);
     if (!is(set)) {
         return;

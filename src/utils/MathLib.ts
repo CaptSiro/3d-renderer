@@ -45,7 +45,15 @@ export default class MathLib {
         );
     }
 
+    /**
+     * Checks if the number is 2 to the power of x
+     */
     public static is2PowX(x: number): boolean {
+        // x = 8 -> 0b1000 -> 2^3
+        // 8 - 1 -> 0b0111
+        // bit-wise AND
+        //          ------
+        //          0b0000
         return (x & (x - 1)) === 0;
     }
 }

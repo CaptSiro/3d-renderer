@@ -13,6 +13,10 @@ export default class BezierCurve implements SplineSegment {
     ) {
     }
 
+    /**
+     * Gets point on a curve at position t
+     * @param t
+     */
     public getPoint(t: float01): Vec3 {
         const e = Vector3.lerp(this.a, this.b, t);
         const f = Vector3.lerp(this.b, this.c, t);

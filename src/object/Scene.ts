@@ -311,6 +311,11 @@ export default class Scene {
         }
     }
 
+    /**
+     * Creates game object and if the path points to mesh the mesh is created and bound to the object
+     * @param name
+     * @param path
+     */
     public async loadGameObject(name: string, path: Path): Promise<GameObject> {
         const gameObject = new GameObject(name, undefined, this);
 
@@ -345,6 +350,9 @@ export default class Scene {
         return gameObject;
     }
 
+    /**
+     * Creates empty game object
+     */
     public createGameObject(name: string): GameObject {
         return new GameObject(name, undefined, this);
     }

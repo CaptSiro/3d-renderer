@@ -39,6 +39,7 @@ export default class Spline extends Component {
 
         let index = 0;
         for (const segment of this._segments) {
+            // Segment may be a curve, so split it up to `section` count lines
             for (let i = 0; i <= sections; i++) {
                 const p = segment.getPoint(i / sections);
                 index = Arrays.writeVec3(buffer, index, p);
@@ -49,10 +50,14 @@ export default class Spline extends Component {
         return buffer;
     }
 
+    /**
+     * Gets point on curve (t=0: start, t=1: end)
+     */
     public getPoint(t: float01): Vec3 {
         const section = 1 / this._segments.length;
         const index = Math.floor(t / section);
         const t0 = (t % section) / section;
+
         return this._segments[index].getPoint(t0) ['+'] (this.transform.getWorldPosition());
     }
 }

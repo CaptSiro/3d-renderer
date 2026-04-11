@@ -97,6 +97,9 @@ export default class Path {
         return this.literal;
     }
 
+    /**
+     * Asynchronously fetches the contents of the file and returns it as a string
+     */
     public async read(): Promise<Opt<string>> {
         const response = await fetch(this.literal);
         if (!is(response.headers.get('last-modified'))) {

@@ -3,6 +3,11 @@ import type { Vec2, Vec3 } from "../types.ts";
 
 
 export default class Arrays {
+    /**
+     * Array.map function but the array is mutated instead of creating and return new array
+     * @param array
+     * @param map
+     */
     public static mutateMap<T, R>(array: T[], map: (x: T) => R): R[] {
         const a = array as any[];
 

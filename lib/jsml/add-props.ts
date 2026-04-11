@@ -4,6 +4,13 @@ import { createCSSString } from "./create-css-string.js";
 
 
 
+/**
+ * Add properties to element. The names of the props object directly correspond to the HTML attributes that are going to be set.
+ * Use `on[event-name]` property to set event handlers
+ *
+ * @param element
+ * @param props
+ */
 export default function addProps(element: HTMLElement, props: Props | string): void {
     if (typeof props === "string") {
         return;

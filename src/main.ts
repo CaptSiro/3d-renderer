@@ -108,6 +108,7 @@ async function init() {
         preventDefault: true,
     });
 
+    // Setup WebGL environment
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
     gl.enable(gl.CULL_FACE);
@@ -115,6 +116,7 @@ async function init() {
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
+    // Load developer scene
     mainScene.delete();
     mainScene = await devScene_loader();
 
@@ -134,6 +136,7 @@ async function update() {
 }
 
 async function render() {
+    // Set gray-ish color as base color
     const c = 0.09019607843137255;
     gl.clearColor(c, c, c, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -142,6 +145,7 @@ async function render() {
 
 
 
+// Selecting object through scene ray cast
 viewport.addEventListener("contextmenu", event => {
     const camera = mainScene.getActiveCamera();
     if (!is(camera)) {
@@ -159,6 +163,7 @@ viewport.addEventListener("contextmenu", event => {
     window_open(hit.closest.getEditorWindow());
 });
 
+// Enabling camera movement if the active camera has Movement script
 viewport.addEventListener("click", async () => {
     const camera = mainScene.getActiveCamera();
     if (!is(camera) || !camera.gameObject.hasComponent(Movement)) {
@@ -239,6 +244,7 @@ function frameCallback(): void {
     const statsHidden = !State.isStatisticScreenOpened;
     stats?.classList.toggle('hide', statsHidden);
 
+    // Update scene
     const startUpdate = Date.now();
     update()
         .then(async () => {
@@ -250,6 +256,7 @@ function frameCallback(): void {
                 statsUpdate.textContent = 'update: ' + MathLib.round(u / frame, 2) + "ms";
             }
 
+            // Render scene
             const startRender = postUpdate;
             await render();
             const postRender = Date.now();

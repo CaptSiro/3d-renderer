@@ -114,17 +114,14 @@ export default class Transform {
     }
 
     public getForward(): Vec3 {
-        // return glm.vec3(this.getParentMatrix() ["*"] (Vector4.convertVector3(Vector3.FORWARD)));
         return this.rotation ["*"] (Vector3.FORWARD);
     }
 
     public getLeft(): Vec3 {
-        // return glm.vec3(this.getParentMatrix() ["*"] (Vector4.convertVector3(Vector3.LEFT)));
         return this.rotation ["*"] (Vector3.LEFT);
     }
 
     public getUp(): Vec3 {
-        // return glm.vec3(this.getParentMatrix() ["*"] (Vector4.convertVector3(Vector3.UP)));
         return this.rotation ["*"] (Vector3.UP);
     }
 

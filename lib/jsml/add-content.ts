@@ -2,6 +2,12 @@ import type { Content } from "./jsml.js";
 
 
 
+/**
+ * Add multi type content to element
+ *
+ * @param element
+ * @param content
+ */
 export default function addContent(element: HTMLElement, content: Content): void {
     if (content === undefined) {
         return;

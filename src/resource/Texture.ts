@@ -22,7 +22,7 @@ export default class Texture {
         const texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);
 
-        // load default texture so the gl texture is usable
+        // Load default texture so the gl texture is usable
         gl.texImage2D(
             gl.TEXTURE_2D,
             0,
@@ -38,6 +38,7 @@ export default class Texture {
 
         image.onerror = console.log;
         image.onload = () => {
+            // Image has been loaded and the pixel data can be transferred to the GPU
             ret.markLoaded();
 
             gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -91,6 +92,8 @@ export default class Texture {
 
     private loaded: boolean;
     private deleted: boolean;
+
+    // Manual RC garbage collection of textures
     private references: int = 0;
 
     private constructor(

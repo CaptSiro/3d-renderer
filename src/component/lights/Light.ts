@@ -13,6 +13,7 @@ export const LIGHT_TYPE_POINT = 0;
 export default class Light extends Component {
     @editor(ColorEditor)
     public color: Color = Color.vec3(1, 1, 1);
+
     @editor(NumberEditor)
     public intensity: float = 1;
 

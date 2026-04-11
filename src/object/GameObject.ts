@@ -158,6 +158,9 @@ export default class GameObject {
         return this._scene;
     }
 
+    /**
+     * Creates component objects, binds it to this game objects, and returns the instance of the bound component
+     */
     public addComponent<T extends new () => Component>(componentClass: T): InstanceType<T> {
         const component = new componentClass();
         if (isRenderer(component)) {

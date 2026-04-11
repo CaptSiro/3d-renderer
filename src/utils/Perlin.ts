@@ -29,11 +29,13 @@ export default class Perlin {
         const x_ = Math.floor(x);
         const y_ = Math.floor(y);
 
+        // Get corners of the patch
         const top_left = this.gridDotProductAt(x, y, x_, y_);
         const top_right = this.gridDotProductAt(x, y, x_ + 1, y_);
         const bottom_left = this.gridDotProductAt(x, y, x_, y_ + 1);
         const bottom_right = this.gridDotProductAt(x, y, x_ + 1, y_ + 1);
 
+        // Interpolate the patch
         const a = MathLib.lerp(top_left, top_right, MathLib.smoothStep(x - x_));
         const b = MathLib.lerp(bottom_left, bottom_right, MathLib.smoothStep(x - x_));
         const v = MathLib.lerp(a, b, MathLib.smoothStep(y - y_));

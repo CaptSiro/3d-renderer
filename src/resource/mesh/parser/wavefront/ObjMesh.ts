@@ -13,6 +13,7 @@ const zero = [0, 0, 0];
 
 export default class ObjMesh implements MeshFileParser {
     async parse(path: Path, content: string): Promise<MeshSource[]> {
+        // Parse the file into individual objects
         const description = await new WavefrontObjParser().parse(path, content);
         const meshSources: MeshSource[] = [];
 
@@ -28,6 +29,7 @@ export default class ObjMesh implements MeshFileParser {
             materialSources.set(material.name, MaterialSource.fromMtl(material));
         }
 
+        // Transform objects into meshes
         for (let m = 0; m < description.models.length; m++) {
             const model = description.models[m];
 
@@ -45,7 +47,7 @@ export default class ObjMesh implements MeshFileParser {
 
                     let i = index * meshVertexLayout.getTotalFloats();
 
-                    // Vertex
+                    // Write vertex
                     const vertexIndex = Number(components[0]);
                     const v = vertexIndex > 0
                         ? description.vertexes[vertexIndex - 1]
@@ -59,7 +61,7 @@ export default class ObjMesh implements MeshFileParser {
                         boundingBox.addVertex(v[0], v[1], v[2]);
                     }
 
-                    // Normal
+                    // Write normal
                     const normalIndex = Number(components[2]);
                     const n = normalIndex > 0
                         ? description.normals[normalIndex - 1]
@@ -69,7 +71,7 @@ export default class ObjMesh implements MeshFileParser {
                     vertexData[i++] = n[1];
                     vertexData[i++] = n[2];
 
-                    // Texture Coordinates
+                    // Write texture coord
                     const textureCoordIndex = Number(components[1]);
                     const t = textureCoordIndex > 0
                         ? description.textureCoords[textureCoordIndex - 1]

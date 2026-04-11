@@ -26,6 +26,9 @@ export default class WavefrontObjParser {
 
 
 
+    /**
+     * Parses file line by line and creates intermediate object representation
+     */
     public async parse(path: Path, content: string) {
         this.vertexes = [];
         this.normals = [];

@@ -45,16 +45,33 @@ export default class Component {
 
 
 
-
+    /**
+     * Executed when component is bound to game object
+     */
     public awake(): void {}
 
+    /**
+     * Executed when scene is loaded
+     */
     public start(): void {}
 
+    /**
+     * Executed every frame
+     */
     public update(): void {}
 
+    /**
+     * Executed at fixed interval
+     */
     public fixedUpdate(): void {}
 
+    /**
+     * Executed when game object is deleted from the scene
+     */
     public delete(): void {}
 
+    /**
+     * Executed when property is changed via the editor window
+     */
     public onPropertyChange(property: string, oldValue: any, newValue: any): void {}
 }

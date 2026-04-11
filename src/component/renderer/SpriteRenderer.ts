@@ -74,11 +74,13 @@ export default class SpriteRenderer extends Component {
             });
     }
 
-    public getCurrentMaterial(): Opt<Material> {
+    private getCurrentMaterial(): Opt<Material> {
+        // Update internal variables
         this.time += this.scene.getTime().getDeltaTime();
         const frameDuration = 1 / this.fps;
 
         const frames = Math.floor(this.time / frameDuration);
+        // Forward to current frame
         this.frame += frames;
 
         this.time -= frames * frameDuration;
@@ -97,6 +99,7 @@ export default class SpriteRenderer extends Component {
             return;
         }
 
+        // Render material containing current frame
         this.onMaterialUpdate(material, this);
         this.setMaterial(material);
     }

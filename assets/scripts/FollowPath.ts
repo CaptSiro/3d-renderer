@@ -21,6 +21,7 @@ export default class FollowPath extends Component {
 
 
     public update(): void {
+        // Update the t parameter for path
         this._t += this.scene.getTime().getDeltaTime() / 5;
         this._t -= Math.floor(this._t);
 
@@ -32,6 +33,7 @@ export default class FollowPath extends Component {
             this._path.getPoint(this._t)
         );
 
+        // Debug information
         const section = 1 / this._path.segments.length;
         const index = Math.floor(this._t / section);
         const t0 = this._t % section;

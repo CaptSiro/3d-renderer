@@ -16,6 +16,8 @@ export const EVENT_WINDOW_MAXIMIZED = 'windowMaximized';
 let windowOverlay: Opt<HTMLElement>;
 let windowOverlayActive: Opt<HTMLElement>;
 let isWindowModuleLoaded = false;
+
+// Function can be called even though the window has not been fully loaded yet
 const queue: { fn: (element: HTMLElement) => void, arg: HTMLElement }[] = [];
 
 window.addEventListener('load', () => {
@@ -25,6 +27,7 @@ window.addEventListener('load', () => {
     document.body.append(windowOverlay, windowOverlayActive);
     isWindowModuleLoaded = true;
 
+    // Resolve functions that need window to be loaded
     for (const backlog of queue) {
         backlog.fn(backlog.arg);
     }
@@ -34,6 +37,10 @@ window.addEventListener('load', () => {
 
 
 
+/**
+ * Shows window root element to the user and dispatch custom `EVENT_WINDOW_OPENED` event on the element
+ * @see {EVENT_WINDOW_OPENED}
+ */
 export function window_open(element: HTMLElement): void {
     if (!isWindowModuleLoaded) {
         queue.push({
@@ -62,6 +69,10 @@ function window_move(element: HTMLElement, x: number, y: number): void {
 }
 
 
+/**
+ * Hides content of the window still shows title bar and dispatch custom `EVENT_WINDOW_MINIMIZED` event on the element
+ * @see {EVENT_WINDOW_MINIMIZED}
+ */
 export function window_minimize(
     element: HTMLElement,
     maximize: Opt<HTMLElement> = undefined,
@@ -85,6 +96,7 @@ export function window_minimize(
     element.style.height = "unset";
     const after = element.getBoundingClientRect();
 
+    // Move the title bar now that the content is hidden
     window_move(element, rect.x + after.width / 2, rect.y + after.height / 2);
 
     minimize ??= $('.minimize', element);
@@ -99,6 +111,10 @@ export function window_minimize(
     element.dispatchEvent(new CustomEvent(EVENT_WINDOW_MINIMIZED));
 }
 
+/**
+ * Shows content of the window and dispatch custom `EVENT_WINDOW_MAXIMIZED` event on the element
+ * @see {EVENT_WINDOW_MAXIMIZED}
+ */
 export function window_maximize(
     element: HTMLElement,
     maximize: Opt<HTMLElement> = undefined,
@@ -122,6 +138,7 @@ export function window_maximize(
     element.style.height = element.dataset.height ?? "unset";
     const after = element.getBoundingClientRect();
 
+    // Move the title bar now that the content is show
     window_move(element, rect.x + after.width / 2, rect.y + after.height / 2);
 
     minimize ??= $('.minimize', element);
@@ -138,6 +155,10 @@ export function window_maximize(
 
 
 
+/**
+ * Close the window and dispatch custom `EVENT_WINDOW_CLOSED` event on the element
+ * @see {EVENT_WINDOW_CLOSED}
+ */
 export function window_close(element: HTMLElement) {
     if (!isWindowModuleLoaded) {
         queue.push({
@@ -288,6 +309,9 @@ export function window_create(title: string, content: any, settings: WindowSetti
 
 
 
+/**
+ * @returns {Promise<void>} Resolves when the user closes the window
+ */
 export function window_alert(message: string, settings: WindowSettings = {}): Promise<void> {
     return new Promise(resolve => {
         const w = window_create(
@@ -310,6 +334,9 @@ export function window_alert(message: string, settings: WindowSettings = {}): Pr
 
 
 
+/**
+ * @returns {Promise<void>} Resolves when the user selects their answer. Closing the window resolves as false
+ */
 export function window_confirm(message: string, settings: WindowSettings = {}): Promise<boolean> {
     return new Promise(resolve => {
         let result = false;

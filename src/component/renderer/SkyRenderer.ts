@@ -58,6 +58,7 @@ export default class SkyRenderer extends Component {
 
 
 
+    // Path of the sun with the sun colors
     private lightDescriptions: (Light & { time: float })[] = [
         {
             time: 0,
@@ -154,9 +155,11 @@ export default class SkyRenderer extends Component {
 
     public getSunLight(): Light {
         const current = this.scene.getTime().getDayTime();
+        // Default interval
         let lower: int = this.lightDescriptions.length - 1;
         let upper: int = 0;
 
+        // Find current interval
         for (let j = 0; j < this.lightDescriptions.length; j++) {
             const light = this.lightDescriptions[j];
 
@@ -167,6 +170,7 @@ export default class SkyRenderer extends Component {
             }
         }
 
+        // Wrap around if the bounds are on the edges
         if (lower >= this.lightDescriptions.length) {
             lower -= this.lightDescriptions.length;
         }
@@ -185,6 +189,7 @@ export default class SkyRenderer extends Component {
             ? MathLib.normalize(lowerLight.time, 1.0, current)
             : MathLib.normalize(lowerLight.time, upperLight.time, current);
 
+        // Interpolate found interval
         return {
             ambient: MathLib.lerpColor(lowerLight.ambient, upperLight.ambient, t),
             diffuse: MathLib.lerpColor(lowerLight.diffuse, upperLight.diffuse, t),
@@ -192,6 +197,10 @@ export default class SkyRenderer extends Component {
         };
     }
 
+    /**
+     * Constants determining the scattering strength of each wavelength giving the sky its signature colors at different times of the day
+     * @private
+     */
     private getInverseWavelengths(): Vec3 {
         return glm.vec3(
             Math.pow(180 / this.wavelengths.x, 4) * this.scatteringStrength,

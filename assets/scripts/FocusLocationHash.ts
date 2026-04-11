@@ -15,12 +15,14 @@ export default class FocusLocationHash extends Component {
                 return;
             }
 
+            // Strip prepended # character
             const hash = location.hash.substring(1);
             if (hash === this.gameObject.getId()) {
                 return;
             }
 
             const gameObject = this.scene.findGameObject(x => x.getId() === hash);
+            // Game object exists and has world position
             if (!is(gameObject) || Vector3.equal(gameObject.transform.getWorldPosition(), Vector3.ZERO)) {
                 return;
             }
