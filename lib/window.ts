@@ -57,6 +57,16 @@ export function window_open(element: HTMLElement): void {
     element.classList.remove('hide');
     element.dispatchEvent(new CustomEvent(EVENT_WINDOW_OPENED));
     windowOverlayActive?.appendChild(element);
+
+    element.style.animationName = "window-open";
+
+    const timeoutId = element.dataset.windowCloseTimeout;
+    if (!is(timeoutId)) {
+        return;
+    }
+
+    element.dataset.windowCloseTimeout = undefined;
+    clearTimeout(Number(timeoutId));
 }
 
 export function window_isOpened(element: ModalWindow): boolean {
@@ -68,6 +78,25 @@ function window_move(element: HTMLElement, x: number, y: number): void {
     element.style.top = String(y / window.innerHeight * 100) + "%";
 }
 
+
+
+function window_minmax(minmax: Opt<HTMLElement>, isMinimized: boolean): void {
+    if (!is(minmax)) {
+        return;
+    }
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("stroke", "white");
+    path.setAttribute("stroke-width", "16");
+    path.setAttribute("fill", "transparent");
+
+    path.setAttribute("d", isMinimized
+        ? "M 0 0 L 0 100 L 100 100 L 100 0 L 0 0"
+        : "M 0 50 L 100 50");
+
+    minmax.textContent = "";
+    minmax.append(path);
+}
 
 /**
  * Hides content of the window still shows title bar and dispatch custom `EVENT_WINDOW_MINIMIZED` event on the element
@@ -99,15 +128,16 @@ export function window_minimize(
     // Move the title bar now that the content is hidden
     window_move(element, rect.x + after.width / 2, rect.y + after.height / 2);
 
-    minimize ??= $('.minimize', element);
-    maximize ??= $('.maximize', element);
+    window_minmax($(".minmax", element), true);
+    // minimize ??= $('.minimize', element);
+    // maximize ??= $('.maximize', element);
+    //
+    // if (!is(minimize) || !is(maximize)) {
+    //     return;
+    // }
 
-    if (!is(minimize) || !is(maximize)) {
-        return;
-    }
-
-    minimize.classList.add('hide');
-    maximize.classList.remove('hide');
+    // minimize.classList.add('hide');
+    // maximize.classList.remove('hide');
     element.dispatchEvent(new CustomEvent(EVENT_WINDOW_MINIMIZED));
 }
 
@@ -141,15 +171,16 @@ export function window_maximize(
     // Move the title bar now that the content is show
     window_move(element, rect.x + after.width / 2, rect.y + after.height / 2);
 
-    minimize ??= $('.minimize', element);
-    maximize ??= $('.maximize', element);
+    // minimize ??= $('.minimize', element);
+    // maximize ??= $('.maximize', element);
+    //
+    // if (!is(minimize) || !is(maximize)) {
+    //     return;
+    // }
 
-    if (!is(minimize) || !is(maximize)) {
-        return;
-    }
-
-    maximize.classList.add('hide');
-    minimize.classList.remove('hide');
+    window_minmax($(".minmax", element), false);
+    // maximize.classList.add('hide');
+    // minimize.classList.remove('hide');
     element.dispatchEvent(new CustomEvent(EVENT_WINDOW_MAXIMIZED));
 }
 
@@ -168,9 +199,14 @@ export function window_close(element: HTMLElement) {
         return;
     }
 
-    element.classList.add('hide');
-    windowOverlay?.appendChild(element);
-    element.dispatchEvent(new CustomEvent(EVENT_WINDOW_CLOSED));
+    element.style.animationName = "window-close";
+
+    element.dataset.windowCloseTimeout = String(setTimeout(() => {
+        element.dataset.windowCloseTimeout = undefined;
+        element.classList.add('hide');
+        windowOverlay?.appendChild(element);
+        element.dispatchEvent(new CustomEvent(EVENT_WINDOW_CLOSED));
+    }, 250));
 }
 
 
@@ -280,9 +316,37 @@ export function window_create(title: string, content: any, settings: WindowSetti
     ];
 
     if (settings.isMinimizable === true) {
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("viewBox", "0 0 100 100");
+        svg.setAttribute("width", "16");
+        svg.setAttribute("height", "16");
+        svg.classList.add("minmax");
+
+        let isMinimized = false;
         controls.unshift(
-            jsml.button("minimize", Icon("nf-fa-window_minimize", '_')),
-            jsml.button("maximize", Icon("nf-fa-window_maximize", '[]')),
+            jsml.button({
+                onClick: (event: Event) => {
+                    const target = event.target
+                    if (!(target instanceof Element)) {
+                        return;
+                    }
+
+                    const win = target.closest(".window");
+                    if (!(win instanceof HTMLElement)) {
+                        return;
+                    }
+
+                    if (isMinimized) {
+                        window_maximize(win);
+                    } else {
+                        window_minimize(win);
+                    }
+
+                    isMinimized = !isMinimized;
+                }
+            }, svg),
+            // jsml.button("minimize", Icon("nf-fa-window_minimize", '_')),
+            // jsml.button("maximize", Icon("nf-fa-window_maximize", '[]')),
         );
     }
 
