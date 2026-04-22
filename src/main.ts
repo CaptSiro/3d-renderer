@@ -10,6 +10,7 @@ import Movement from "./component/Movement.ts";
 import HelpWindow, { HelpWindow_wasOpen } from "./HelpWindow.ts";
 
 declare global {
+    // Functions from glm that the project uses
     const glm: {
         lookAt(...a: any[]): any,
         vec3(...a: any[]): Vec3,
@@ -230,7 +231,7 @@ let frame = 1;
 let frameStart = 0;
 
 export function areStatsHidden(): boolean {
-    return State.isStatisticScreenOpened || Date.now() - frameStart < 1000;
+    return State.isStatisticScreenOpened || performance.now() - frameStart < 1000;
 }
 
 let u = 0;
@@ -245,10 +246,10 @@ function frameCallback(): void {
     stats?.classList.toggle('hide', statsHidden);
 
     // Update scene
-    const startUpdate = Date.now();
+    const startUpdate = performance.now();
     update()
         .then(async () => {
-            const postUpdate = Date.now();
+            const postUpdate = performance.now();
             const renderStats = postUpdate - frameStart >= 1000 && !statsHidden;
             u += Math.round(postUpdate - startUpdate);
 
@@ -259,7 +260,7 @@ function frameCallback(): void {
             // Render scene
             const startRender = postUpdate;
             await render();
-            const postRender = Date.now();
+            const postRender = performance.now();
             r += Math.round(postRender - startRender);
             fps += Math.round(1000 / Math.round(postRender - startUpdate));
 

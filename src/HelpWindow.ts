@@ -4,6 +4,9 @@ import Editor from "./editor/Editor.ts";
 
 
 
+// zdenek.vlach@firma.seznam.cz
+
+
 export const LS_KEY_HELP_WINDOW_OPENED = "hw";
 
 export default function HelpWindow(): ModalWindow {
